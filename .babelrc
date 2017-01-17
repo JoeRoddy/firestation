@@ -1,0 +1,21 @@
+{
+  "presets": ["es2015", "stage-0", "react"],
+  "plugins": ["typecheck", "syntax-flow", "transform-flow-strip-types", "add-module-exports", "syntax-decorators", "transform-decorators-legacy"],
+  "env": {
+    "production": {
+      "presets": ["react-optimize"],
+      "plugins": [
+        "babel-plugin-dev-expression"
+      ]
+    },
+    "development": {
+      "presets": ["react-hmre"]
+    },
+    "test": {
+      "plugins": [
+        ["webpack-loaders", { "config": "webpack.config.node.js", "verbose": false }],
+        ["typecheck", {"disable": {"production": true}}]
+      ]
+    }
+  }
+}
