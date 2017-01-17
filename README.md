@@ -1,4 +1,4 @@
-# electron-react-boilerplate
+# electron-react-webpack-mobx-boilerplate
 Electron app boilerplate with React, MobX and Webpack
 
 Mashup of [this repo](https://github.com/chentsulin/electron-react-boilerplate) and [this repo](https://github.com/BarakChamo/electron-react-boilerplate) with minor modifications
