@@ -1,4 +1,4 @@
-# electron-react-boilerplate
+# electron-react-webpack-mobx-boilerplate
 Electron app boilerplate with React, MobX and Webpack
 
 Mashup of [this repo](https://github.com/chentsulin/electron-react-boilerplate) and [this repo](https://github.com/BarakChamo/electron-react-boilerplate) with minor modifications
@@ -6,7 +6,9 @@ Mashup of [this repo](https://github.com/chentsulin/electron-react-boilerplate) 
 ## Install
 
 * **Note: requires a node version >= 6 and an npm version >= 3.**
+
 First, clone this repo via git and then install dependencies.
+
 **ProTip**: Install with [yarn](https://github.com/yarnpkg/yarn) for faster and safer installation
 
 ```bash
