@@ -9,6 +9,9 @@ import Workbook from './Workbook';
 import ObjectTree from './object_tree/ObjectTree';
 import SideMenu from './SideMenu';
 import QueryHistory from './QueryHistory';
+var vex = require('vex-js')
+vex.registerPlugin(require('vex-dialog'))
+vex.defaultOptions.className = 'vex-theme-os'
 
 @observer
 export default class Workstation extends Component {
@@ -42,11 +45,7 @@ export default class Workstation extends Component {
     }
 
     saveQuery() {
-        if (!this.props.store.query) { return null; }
-        const title = prompt("Give your query a name:");
-        const query = { title: title, body: this.props.store.query };
-        this.setState({ savedQueriesIsOpen: true });
-        this.props.store.saveQuery(query);
+        this.props.store.modal = "saveQuery";
     }
 
     deleteQuery(query) {
@@ -143,9 +142,6 @@ export default class Workstation extends Component {
                     {this.props.store.queryHistoryIsOpen &&
                         <QueryHistory history={this.props.store.getQueryHistory()} {...props} />
                     }
-                    {/*{this.props.results && payloadSize && this.props.commitQuery &&
-                        <h2>{this.getResultsTitle()} ({payloadSize}):</h2>
-                    }*/}
                     {this.props.results && payloadSize !== undefined &&
                         <div><h4>{this.getResultsTitle(payloadSize)}</h4>
                             {payloadSize > 0 && this.props.results.payload != null &&

@@ -108,8 +108,8 @@ export default class App extends Component {
     // const path = location.pathname;
     console.log("app props:", this.props)
     console.log('store:', this.props.store);
-    const savedQueries = (this.props.store.savedQueriesByDb && this.props.store.currentDatabase && this.props.store.currentDatabase.config)
-      ? this.props.store.savedQueriesByDb[this.props.store.currentDatabase.config.databaseURL] : null;
+    const savedQueries = (this.props.store.savedQueriesByDb && this.props.store.currentDatabase)
+      ? this.props.store.savedQueriesByDb[this.props.store.currentDatabase.url] : null;
 
     const props = {
       results: this.props.store.results,
