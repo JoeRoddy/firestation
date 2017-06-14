@@ -44,7 +44,8 @@ export default class ObjectNode extends React.Component {
         e.stopPropagation();
         const confirmationMsg = "warning All data at this location, including nested data, will be permanently deleted: \nData location: " + path;
         if (confirm(confirmationMsg)) {
-            UpdateHelper.deleteObject(this.props.store.currentDatabase.config.databaseURL, path);
+            var db = admin.app(this.props.store.currentDatabase.url).database();        
+            UpdateHelper.deleteObject(db, path);
         }
     }
 

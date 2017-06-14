@@ -17,10 +17,10 @@ export default class QueryHelper {
     })
   }
 
-  static getFirebaseApp(dbUrl){
+  static getFirebaseApp(dbUrl) {
     let apps = admin.apps;
-    for(let i=0;i<apps.length;i++){
-      if(apps[i].name === dbUrl){
+    for (let i = 0; i < apps.length; i++) {
+      if (apps[i].name === dbUrl) {
         return apps[i];
       }
     }
@@ -29,14 +29,14 @@ export default class QueryHelper {
 
   static executeQuery(query, database, callback, commitResults) {
     let app = this.getFirebaseApp(database.url);
-    if(!app){
+    if (!app) {
       app = admin.initializeApp({
-          credential: admin.credential.cert(database.serviceKey),
-          databaseURL: database.url
+        credential: admin.credential.cert(database.serviceKey),
+        databaseURL: database.url
       }, database.url);
     }
 
-    let db  = app.database();   
+    let db = app.database();
     let ref = db.ref("/");
     ref.off("value");
     query = this.formatAndCleanQuery(query);
@@ -64,7 +64,7 @@ export default class QueryHelper {
     let insertObject = this.getObjectFromInsert(query);
     const path = collection + "/";
     if (commitResults) {
-      UpdateHelper.pushObject(db.config.databaseURL, path, insertObject);
+      UpdateHelper.pushObject(db, path, insertObject);
     }
     let results = {
       statementType: INSERT_STATEMENT,
@@ -82,7 +82,7 @@ export default class QueryHelper {
         if (dataToAlter && commitResults) {
           Object.keys(dataToAlter.payload).forEach(function (objKey, index) {
             const path = collection + "/" + objKey;
-            UpdateHelper.deleteObject(db.config.databaseURL, path);
+            UpdateHelper.deleteObject(db, path);
           })
         }
         let results = {
@@ -133,12 +133,9 @@ export default class QueryHelper {
     var ref = db.ref(collection);
     let results = { queryType: SELECT_STATEMENT, path: collection, firebaseListener: ref };
     if (!selectedFields && !wheres) {
-      debugger;
       ref = db.ref(collection);
       ref.on("value", snapshot => {
-        debugger;
         results.payload = snapshot.val();
-    console.log("select results: ",results)
         return callback(results);
       })
     } else if (!wheres) {
@@ -147,8 +144,6 @@ export default class QueryHelper {
         if (selectedFields) {
           results.payload = this.removeNonSelectedFieldsFromResults(results.payload, selectedFields);
         }
-    console.log("select results: ",results)
-        
         return callback(results);
       })
     } else {
@@ -156,16 +151,14 @@ export default class QueryHelper {
       if (mainWhere.error && mainWhere.error === NO_EQUALITY_STATEMENTS) {
         ref.on("value", snapshot => {
           results.payload = this.filterWheresAndNonSelectedFields(snapshot.val(), wheres, selectedFields);
-    console.log("select results: ",results)
-          
           return callback(results);
         })
       }
       else {
         ref.orderByChild(mainWhere.field).equalTo(mainWhere.value).on("value", snapshot => {
           results.payload = this.filterWheresAndNonSelectedFields(snapshot.val(), wheres, selectedFields);
-    console.log("select results: ",results)
-         
+          console.log("select results: ", results)
+
           return callback(results);
         })
       }
@@ -180,7 +173,8 @@ export default class QueryHelper {
   }
 
   static determineQueryType(query) {
-    let firstTerm = query.split(" ")[0].trim().toLowerCase();
+    let q = query.trim();
+    let firstTerm = q.split(" ")[0].trim().toLowerCase();
     switch (firstTerm) {
       case "select":
         return SELECT_STATEMENT;
@@ -262,7 +256,6 @@ export default class QueryHelper {
   }
 
   static getCollection(q, statementType) {
-    debugger
     let query = q.replace(/\(.*\)/, '').trim();
     let terms = query.split(" ");
     if (statementType === UPDATE_STATEMENT) {
