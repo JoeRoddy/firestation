@@ -9,7 +9,12 @@ export default {
     }, {
       test: /\.json$/,
       loader: 'json-loader'
-    }]
+    },
+    {
+      test: /\.s?css$/,
+      loader: 'style!css!sass'
+    }
+    ]
   },
   output: {
     path: path.join(__dirname, 'dist'),

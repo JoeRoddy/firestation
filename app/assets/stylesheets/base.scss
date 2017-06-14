@@ -1,0 +1,472 @@
+// html, body, div, span, applet, object, iframe,
+// h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+// a, abbr, acronym, address, big, cite, code,
+// del, dfn, em, img, ins, kbd, q, s, samp,
+// small, strike, strong, sub, sup, tt, var,
+// b, u, i, center,
+// dl, dt, dd, ol, ul, li,
+// fieldset, form, label, legend,
+// table, caption, tbody, tfoot, thead, tr, th, td,
+// article, aside, canvas, details, embed,
+// figure, figcaption, footer, header, hgroup,
+// menu, nav, output, ruby, section, summary,
+// time, mark, audio, video {
+// 	margin: 0;
+// 	padding: 0;
+// 	border: 0;
+// 	font-size: 100%;
+// 	font: inherit;
+// 	vertical-align: baseline;
+// }
+// /* HTML5 display-role reset for older browsers */
+// article, aside, details, figcaption, figure,
+// footer, header, hgroup, menu, nav, section {
+// 	display: block;
+// }
+// body {
+// 	line-height: 1;
+// }
+// ol, ul {
+// 	list-style: none;
+// }
+// blockquote, q {
+// 	quotes: none;
+// }
+// blockquote:before, blockquote:after,
+// q:before, q:after {
+// 	content: '';
+// 	content: none;
+// }
+// table {
+// 	border-collapse: collapse;
+// 	border-spacing: 0;
+// }
+
+$lavender: #9370DB;
+$turq:#0fb8ad;
+$turqhover:#1fc8db;
+#root {
+    //using # to override bootstrap
+    font-family: "Roboto", 'Helvetica Neue, Helvetica, Arial', sans-serif;
+}
+
+body {
+    font-style: normal;
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #212121;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+.App {
+	min-height: 100vh;
+    .App-Body {}
+}
+
+.Workstation {
+    display: flex;
+    height: 100%;
+    margin-left: 260px;
+    margin-top: 100px;
+    .workArea {
+        width: 100%;
+        display: block;
+    }
+    .commitbtn {
+        margin-right: 5px;
+    }
+    .workstation-btns {
+        display: flex;
+        justify-content: space-between;
+    }
+    .util-btns {
+        display: flex;
+        button {
+            margin-left: 3px;
+        }
+    }
+    .QueryHistory {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 2vh;
+        .hist-item {
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+    }
+}
+
+.Workbook {
+    .AceEditor {
+        textarea {
+            // width: 100% !important;
+            // height: 20vh !important;
+        }
+        margin-bottom: 7px;
+    }
+    .commitbtn {
+        margin-right: 5px;
+    }
+}
+
+.Modal {
+    position: fixed;
+    z-index: 6;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: none;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+    .modal-content {
+        position: relative;
+        margin-left: 6vw;
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 550px;
+    }
+    .closeBtn {
+        position: absolute;
+        top: 9px;
+        right: 9px;
+    }
+}
+
+.Sidemenu {
+    height: 100%;
+    width: 250px;
+    padding-top: 80px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background: linear-gradient(141deg, #f4c242 0%, #e2c844 51%, #e2a844 75%);
+    display: flex;
+    flex-direction: column;
+    a {
+        margin-top: 5px;
+        margin-left: 30px;
+        color: #e5e2dc !important;
+        font-size: 20px;
+        cursor: pointer;
+        font-weight: 500;
+        &:hover {
+            color: white !important;
+        }
+    }
+    .sidemenu-savedQueries {
+        margin-top: .5vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .sidemenu-savedQuery {
+        width: 130px;
+        display: flex;
+        justify-content: space-between;
+        color: #e5e2dc;
+        cursor: pointer;
+        i {
+            display: none;
+        }
+        i:hover {
+            color: red;
+        }
+        &:hover {
+            color: white !important;
+            i {
+                display: block;
+            }
+        }
+    }
+}
+
+.Landing {
+    margin-top: 100px;
+}
+
+.Demo {}
+
+h1,
+h2 {
+    color: $turq !important;
+}
+
+h3 {
+    color: goldenrod;
+}
+
+h4 {
+    color: $turq;
+    font-weight: bold;
+}
+
+.navbar {
+    z-index: 5;
+    display: flex !important;
+    flex-direction: row;
+    text-align: center;
+    span {
+        color: white;
+    }
+    background: linear-gradient(141deg, $turq 0%, $turqhover 51%, #2cb5e8 75%);
+    li {
+        color: white !important;
+    }
+    .nav-db {
+        a {
+            color: white !important;
+        }
+        padding-top: .2vh;
+    }
+    .navbar-brand {
+        display: flex;
+        img {
+            height: 3vh;
+        }
+        span {
+            padding-top: .2vh;
+        }
+    }
+    .nav-item.dropdown {
+        padding-top: .4vh;
+    }
+    .nav-link.dropdown-toggle {
+        color: white !important;
+        cursor: pointer;
+    }
+    .dropdown-menu {
+        .dropdown-toggle {
+            background-color: transparent !important;
+        }
+        a {
+            cursor: pointer;
+        }
+        a:hover {
+            color: $turqhover;
+        }
+        a {
+            color: $turq;
+        }
+    }
+    .navbar-collapse.collapse {
+        .dropdown-menu {
+            position: absolute !important;
+        }
+    }
+}
+
+//// BUTTON CSS ////
+.closeBtn {
+    cursor: pointer;
+    color: #aaa;
+    float: right;
+    font-size: 16px;
+    font-weight: bold;
+    &:hover {
+        color: red;
+    }
+}
+
+.bt {
+    width: 120px;
+    height: 40px;
+    padding: 0;
+    overflow: hidden;
+    border-width: 0;
+    outline: none;
+    border-radius: 2px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .6);
+    background-color: #2ecc71;
+    color: #ecf0f1;
+    transition: background-color .3s;
+    cursor: pointer;
+}
+
+.bt:hover,
+.bt:focus {
+    background-color: #27ae60;
+}
+
+.bt>* {
+    position: relative;
+}
+
+.bt span {
+    display: block;
+    padding: 12px 24px;
+}
+
+.bt:before {
+    content: "";
+    display: block;
+    width: 0;
+    padding-top: 0;
+    border-radius: 70%;
+    background-color: rgba(236, 240, 241, .3);
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.bt:active:before {
+    width: 120%;
+    padding-top: 120%;
+    transition: width .2s ease-out, padding-top .2s ease-out;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+
+.bt.blue {
+    background-color: #0fb8ad;
+    &:hover {
+        background-color: #1fc8db; // color: white;
+    }
+}
+
+.bt.red {
+    background-color: #f4425f;
+    &:hover {
+        background-color: #ad2d41; // color: white;
+    }
+}
+
+.bt.white {
+    background-color: #9191a3;
+    &:hover {
+        background-color: #565666; // color: white;
+    }
+}
+
+.bt.sm {
+    width: 40px;
+}
+
+//// END - BUTTON CSS ////
+
+//// OBJECT TREE ////
+.onClickOutside {
+    position: fixed;
+    z-index: 0;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.object-tree {
+    z-index: 2;
+    .editable {
+        &:hover {
+            outline: 2px solid black;
+        }
+    }
+    .object-node {
+        .object-label {
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            .toggle-icon {
+                display: inline-block;
+                width: 12px;
+                height: 12px;
+                font-size: 14px;
+                line-height: 12px;
+                text-align: center;
+                font-style: normal;
+                border: 1px dotted #aaa;
+                &:before {
+                    content: "+";
+                }
+                &.opened {
+                    &:before {
+                        content: "-";
+                    }
+                }
+            }
+            .object-type {
+                font-style: italic;
+            }
+            &:hover{
+                i{
+                    margin-right:3px;
+                    display: inline-block;
+                }
+            i.fa-times{
+                color:red;
+                &:hover{
+                    color:black;
+                }
+
+            }
+            i.fa-plus{
+                color:green;
+            }
+            }
+        }
+        table {
+            i {
+                display: none;
+            }
+            width: 100%;
+            tr {
+                vertical-align: top;
+                th.prop-name {
+                    cursor: text;
+                    padding: 4px 8px;
+                    text-align: left;
+                    background-color: #eee;
+                    color: #333;
+                    input{
+                        border: 0;
+                        outline: 0px;
+                    }
+                    &:hover {
+                        border: 2px solid black;
+                        background-color: white;
+                    }
+                }
+                td.prop-value {
+                    cursor: text;
+                    padding: 4px 8px;
+                    width: 145%;
+                    border-top: 1px solid #aaa;
+                    display: flex;
+                    min-width: 15vw;
+                    div {
+                        min-width: 8vw;
+                    }
+                }
+                tr:hover {
+                    i {
+                        margin-top: 1px;
+                        margin-left: 3px;
+                        display: block;
+                        cursor: pointer;
+                        color: red;
+                        &:hover {
+                            color: black;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+//// END - OBJECT TREE ////

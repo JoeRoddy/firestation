@@ -70,7 +70,9 @@
     "json-loader": "^0.5.4",
     "minimist": "^1.2.0",
     "node-libs-browser": "^1.0.0",
+    "node-sass": "^3.4.2",
     "react-addons-test-utils": "^15.3.1",
+    "sass-loader": "^3.2.0",
     "spectron": "^3.3.0",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.2",
@@ -80,11 +82,15 @@
   },
   "dependencies": {
     "electron-debug": "^1.0.1",
+    "firebase": "^3.9.0",
     "mobx": "^2.4.4",
     "mobx-react": "^3.5.5",
     "mobx-react-devtools": "^4.2.5",
     "react": "^15.3.1",
+    "react-ace": "^4.3.0",
+    "react-tooltip": "^3.3.0",
     "react-dom": "^15.3.1",
-    "source-map-support": "^0.4.2"
+    "source-map-support": "^0.4.2",
+    "type-name": "^2.0.2"
   }
 }

@@ -35,10 +35,10 @@ app.on('ready', async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    height: 360,
-    width: 245,
-    maxHeight: 360,
-    minHeight: 360,
+    height: 800,
+    width: 1200,
+    maxHeight: 1600,
+    minHeight: 5000,
   })
 
   mainWindow.loadURL(`file://${__dirname}/app/index.html`)
