@@ -1,4 +1,5 @@
 import { app, BrowserWindow, Menu, shell } from 'electron'
+import path from 'path';
 
 let menu
 let template
@@ -25,7 +26,7 @@ const installExtensions = async () => {
     for (const name of extensions) {
       try {
         await installer.default(installer[name], forceDownload);
-      } catch (e) {} // eslint-disable-line
+      } catch (e) { } // eslint-disable-line
     }
   }
 }
@@ -36,9 +37,12 @@ app.on('ready', async () => {
   mainWindow = new BrowserWindow({
     show: false,
     height: 800,
-    width: 1200,
+    width: 1281,
     maxHeight: 1600,
     minHeight: 5000,
+    icon: path.join(__dirname, 'app/assets/images/favicon.png'),
+    title:"Firestation"
+
   })
 
   mainWindow.loadURL(`file://${__dirname}/app/index.html`)
