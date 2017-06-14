@@ -262,7 +262,8 @@ export default class QueryHelper {
   }
 
   static getCollection(q, statementType) {
-    let query = q.replace(/\(.*\)/, '');
+    debugger
+    let query = q.replace(/\(.*\)/, '').trim();
     let terms = query.split(" ");
     if (statementType === UPDATE_STATEMENT) {
       return StringHelper.replaceAll(terms[1], /\./, "/");
