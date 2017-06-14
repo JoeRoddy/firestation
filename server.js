@@ -16,10 +16,14 @@ const devMiddleware = webpackDevMiddleware(compiler, {
   stats: { colors: true }
 })
 
+
 app.use(devMiddleware)
 
 app.use(webpackHotMiddleware(compiler))
 
+app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
+app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
+app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css')); // redirect CSS bootstrap
 const server = app.listen(PORT, 'localhost', err => {
   if (err) return console.error(err)
 

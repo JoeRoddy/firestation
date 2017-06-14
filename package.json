@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-webpack-mobx-boilerplate",
-  "version": "0.0.1",
+  "name": "firestation-electron",
+  "version": "0.1.0",
   "description": "Electron Development Boilerplate",
   "productName": "Electron Development Boilerplate",
   "main": "main.js",
@@ -18,11 +18,6 @@
   },
   "bin": {
     "electron": "./node_modules/.bin/electron"
-  },
-  "author": {
-    "name": "Benana",
-    "email": "emailbensullivan@gmail.com",
-    "url": "https://github.com/drsloth"
   },
   "license": "MIT",
   "devDependencies": {
@@ -83,13 +78,14 @@
   "dependencies": {
     "electron-debug": "^1.0.1",
     "firebase": "^3.9.0",
+    "jquery": "^3.2.1",
     "mobx": "^2.4.4",
     "mobx-react": "^3.5.5",
     "mobx-react-devtools": "^4.2.5",
     "react": "^15.3.1",
     "react-ace": "^4.3.0",
-    "react-tooltip": "^3.3.0",
     "react-dom": "^15.3.1",
+    "react-tooltip": "^3.3.0",
     "source-map-support": "^0.4.2",
     "type-name": "^2.0.2"
   }
