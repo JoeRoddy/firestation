@@ -1,7 +1,7 @@
-import firebase from 'firebase';
 import StringHelper from './StringHelper';
 import UpdateHelper from './UpdateHelper';
-
+const ServiceAccount = require('electron').remote.require('./ServiceAccount');
+import * as admin from "firebase-admin";
 const NO_EQUALITY_STATEMENTS = "NO_EQUALITY_STATEMENTS";
 const SELECT_STATEMENT = "SELECT_STATEMENT";
 const UPDATE_STATEMENT = "UPDATE_STATEMENT";
@@ -17,8 +17,27 @@ export default class QueryHelper {
     })
   }
 
-  static executeQuery(query, db, callback, commitResults) {
-    let ref = firebase.database(firebase.app(db.config.databaseURL)).ref("/");
+  static getFirebaseApp(dbUrl){
+    let apps = admin.apps;
+    for(let i=0;i<apps.length;i++){
+      if(apps[i].name === dbUrl){
+        return apps[i];
+      }
+    }
+    return null;
+  }
+
+  static executeQuery(query, database, callback, commitResults) {
+    let app = this.getFirebaseApp(database.url);
+    if(!app){
+      app = admin.initializeApp({
+          credential: admin.credential.cert(database.serviceKey),
+          databaseURL: database.url
+      }, database.url);
+    }
+
+    let db  = app.database();   
+    let ref = db.ref("/");
     ref.off("value");
     query = this.formatAndCleanQuery(query);
     const statementType = this.determineQueryType(query);
@@ -96,7 +115,7 @@ export default class QueryHelper {
           that.updateItemWithSets(data[objKey], sets);
           const path = collection + "/" + objKey;
           if (commitResults) {
-            UpdateHelper.updateFields(db.config.databaseURL, path, data[objKey], Object.keys(sets));
+            UpdateHelper.updateFields(db, path, data[objKey], Object.keys(sets));
           }
         })
         let results = {
@@ -111,13 +130,15 @@ export default class QueryHelper {
 
   static getDataForSelect(db, collection, selectedFields, wheres, callback) {
     console.log("getData (collection, selectedFields, wheres):", collection, selectedFields, wheres)
-    const currentDbUrl = db.config.databaseURL;
-    var ref = firebase.database(firebase.app(currentDbUrl)).ref(collection);
+    var ref = db.ref(collection);
     let results = { queryType: SELECT_STATEMENT, path: collection, firebaseListener: ref };
     if (!selectedFields && !wheres) {
-      ref = firebase.database(firebase.app(currentDbUrl)).ref(collection);
+      debugger;
+      ref = db.ref(collection);
       ref.on("value", snapshot => {
+        debugger;
         results.payload = snapshot.val();
+    console.log("select results: ",results)
         return callback(results);
       })
     } else if (!wheres) {
@@ -126,6 +147,8 @@ export default class QueryHelper {
         if (selectedFields) {
           results.payload = this.removeNonSelectedFieldsFromResults(results.payload, selectedFields);
         }
+    console.log("select results: ",results)
+        
         return callback(results);
       })
     } else {
@@ -133,12 +156,16 @@ export default class QueryHelper {
       if (mainWhere.error && mainWhere.error === NO_EQUALITY_STATEMENTS) {
         ref.on("value", snapshot => {
           results.payload = this.filterWheresAndNonSelectedFields(snapshot.val(), wheres, selectedFields);
+    console.log("select results: ",results)
+          
           return callback(results);
         })
       }
       else {
         ref.orderByChild(mainWhere.field).equalTo(mainWhere.value).on("value", snapshot => {
           results.payload = this.filterWheresAndNonSelectedFields(snapshot.val(), wheres, selectedFields);
+    console.log("select results: ",results)
+         
           return callback(results);
         })
       }

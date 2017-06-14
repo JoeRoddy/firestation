@@ -5,13 +5,13 @@ import Workstation from './Workstation';
 import firebase from 'firebase';
 import Demo from './Demo';
 import CacheHelper from '../helpers/CacheHelper';
-import AddDatabase from './AddDatabase';
 import Navbar from './Navbar';
 import Landing from './Landing';
 import QueryHelper from '../helpers/QueryHelper';
-import Modal from './Modal';
+import Modal from './modals/Modal';
 // import { Router, Route, browserHistory, Link } from 'react-router';
 import { inject, observer } from 'mobx-react';
+const ServiceAccount = require('electron').remote.require('./ServiceAccount');
 
 // @inject('routing')
 @observer
@@ -34,18 +34,18 @@ export default class App extends Component {
     this.startFirebaseForDb(currentDatabase);
     this.props.store.setCurrentDatabase(currentDatabase);
     const that = this;
-    QueryHelper.getRootKeysPromise(currentDatabase).then(rootKeys => {
-      console.log(rootKeys)
-      this.props.store.rootKeys = rootKeys;
-    })
+    // QueryHelper.getRootKeysPromise(currentDatabase).then(rootKeys => {
+    //   console.log(rootKeys)
+    //   this.props.store.rootKeys = rootKeys;
+    // })
     CacheHelper.updateLocalStore("currentDatabase", currentDatabase);
   }
 
   updateSavedQueries(db) {
-    // const dbUrl = db.config.databaseURL;
-    // let queriesByDb = CacheHelper.getFromLocalStore("savedQueriesByDb");
-    // let savedQueries = (!queriesByDb || !queriesByDb[dbUrl]) ? null : queriesByDb[dbUrl];
-    // this.setState({ savedQueries });
+    const dbUrl = db.config.databaseURL;
+    let queriesByDb = CacheHelper.getFromLocalStore("savedQueriesByDb");
+    let savedQueries = (!queriesByDb || !queriesByDb[url]) ? null : queriesByDb[url];
+    this.setState({ savedQueries });
   }
 
   createDb(database) {
@@ -60,12 +60,14 @@ export default class App extends Component {
   }
 
   startFirebaseForDb(db) {
-    if (!db || !db.config || !db.config.databaseURL) { return; }
-    let apps = firebase.apps;
-    for (let i = 0; i < apps.length; i++) {
-      if (apps[i].name_ === db.config.databaseURL) { return; }
-    }
-    firebase.initializeApp(db.config, db.config.databaseURL)
+    // ServiceAccount.initializeDb(db.serviceAccount);
+
+    // if (!db || !db.config || !db.config.databaseURL) { return; }
+    // let apps = firebase.apps;
+    // for (let i = 0; i < apps.length; i++) {
+    //   if (apps[i].name_ === db.config.databaseURL) { return; }
+    // }
+    // firebase.initializeApp(db.config, db.config.databaseURL)
   }
 
   executeQuery(query) {
@@ -123,7 +125,8 @@ export default class App extends Component {
       cancelCommit: this.cancelCommit,
       savedQueries: savedQueries,
       updateSavedQueries: this.updateSavedQueries,
-      store: this.props.store
+      store: this.props.store,
+      newDb: this.props.store.newDb
       // routing: this.props.routing
     }
 

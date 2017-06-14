@@ -41,6 +41,7 @@
 // 	border-collapse: collapse;
 // 	border-spacing: 0;
 // }
+//^was part of original proj, not sure if neccessary for electron
 
 $lavender: #9370DB;
 $turq:#0fb8ad;
@@ -139,6 +140,63 @@ body {
     }
 }
 
+.detailText{
+    color: #7b879e;
+    font-size:14px;
+    font-family: Lato,sans-serif;
+    &.sm{
+        font-size: 12px;
+    }
+}
+.AddDatabase{
+    h5{
+        display: flex;
+        span{
+            margin-top:8px;
+            margin-left:8px;
+        }
+        small{
+            margin-left: 4px;
+            font-size: 12px;
+            font-style: italic;
+        }
+    }
+    a{
+        color: #0000EE !important;
+        text-decoration: underline !important;
+        cursor: pointer;
+    }
+    .bt,.white{
+        margin-right:15px;
+    }
+}
+.DatabaseConfig{
+    .serviceAcctEdit{
+        display: flex;
+        button{
+            margin-right:10px;
+        }
+        margin-bottom: 20px;
+    }
+    .nameEdit{
+        display: flex;
+        input{
+            margin-left: 10px;
+            margin-bottom: 8px;
+        }
+        margin-bottom: 16px;
+    }
+    .red{
+        margin-left: 10px;
+    }
+}
+
+b{
+    font-weight: bold;
+}
+i{
+    font-style: italic;
+}
 .Sidemenu {
     height: 100%;
     width: 250px;
@@ -264,15 +322,18 @@ h4 {
 }
 
 //// BUTTON CSS ////
-.closeBtn {
+i.fa-times{
     cursor: pointer;
+    &:hover{
+        color:red;
+    }
+}
+
+.closeBtn {
     color: #aaa;
     float: right;
     font-size: 16px;
     font-weight: bold;
-    &:hover {
-        color: red;
-    }
 }
 
 .bt {
@@ -470,3 +531,65 @@ h4 {
 }
 
 //// END - OBJECT TREE ////
+
+//// SLIDER TOGGLE CSS ////
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: $turq;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px $turqhover;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+//// END: SLIDER TOGGLE ////

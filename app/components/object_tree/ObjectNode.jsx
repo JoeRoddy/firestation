@@ -6,6 +6,7 @@ import ValueRow from './ValueRow';
 import PropTypes from 'prop-types';
 import StringHelper from '../../helpers/StringHelper';
 import UpdateHelper from '../../helpers/UpdateHelper';
+import admin from 'firebase-admin';
 
 export default class ObjectNode extends React.Component {
     constructor(props) {
@@ -126,7 +127,7 @@ export default class ObjectNode extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        let dbUrl = this.props.store.currentDatabase.config.databaseURL
+        var db = admin.app(this.props.store.currentDatabase.url).database();
         let newValue = StringHelper.getParsedValue(this.state.newVal);
         let path = this.props.fbPath;
         const pathUnderEdit = this.props.pathUnderEdit;
@@ -138,7 +139,7 @@ export default class ObjectNode extends React.Component {
             newValue = newObject;
         }
 
-        UpdateHelper.set(dbUrl, path, newValue);
+        UpdateHelper.set(db, path, newValue);
         this.setState({ newVal: null, keyEdit: false });
         this.props.setPathUnderEdit(null);
     }

@@ -1,11 +1,10 @@
-import firebase from 'firebase';
+import admin from 'firebase-admin';
 
 export default class UpdateHelper {
-    static updateFields(dbURL, path, object, fields) {
+    static updateFields(db, path, object, fields) {
         if (!fields || !object) {
             return;
         }
-        var db = firebase.database(firebase.app(dbURL))
         var ref = db.ref(path);
         ref.once("value", function (snapshot) {
             let results = snapshot.val();
@@ -18,18 +17,15 @@ export default class UpdateHelper {
         });
     }
 
-    static deleteObject(dbURL, path) {
-        var db = firebase.database(firebase.app(dbURL))
+    static deleteObject(db, path) {
         db.ref(path).remove();
     }
 
-    static pushObject(dbURL, path, object) {
-        var db = firebase.database(firebase.app(dbURL))
+    static pushObject(db, path, object) {
         db.ref(path).push(object);
     }
 
-    static set(dbURL, path, object) {
-        var db = firebase.database(firebase.app(dbURL))
+    static set(db, path, object) {
         db.ref(path).set(object);
     }
 }

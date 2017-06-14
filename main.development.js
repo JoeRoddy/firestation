@@ -38,8 +38,6 @@ app.on('ready', async () => {
     show: false,
     height: 800,
     width: 1281,
-    maxHeight: 1600,
-    minHeight: 5000,
     icon: path.join(__dirname, 'app/assets/images/favicon.png'),
     title:"Firestation"
 

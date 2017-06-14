@@ -12,6 +12,9 @@ class Store {
   @observable modal = null;
   @observable queryHistoryByDb = CacheHelper.getFromLocalStore("queryHistoryByDb");
   @observable firebaseListeners = [];
+
+  //Modals
+  @observable newDb = null;
   
   //Workstation
   @observable queryHistoryIsOpen = false;
@@ -21,7 +24,10 @@ class Store {
   @observable focus = false;
   @observable selectedText = "";
   constructor() {
-
+    // CacheHelper.updateLocalStore("databases",null);
+    // CacheHelper.updateLocalStore("currentDatabase",null);
+    // CacheHelper.updateLocalStore("savedQueriesByDb",null);
+    // CacheHelper.updateLocalStore("queryHistoryByDb",null);
   }
 
   appendQuery(text) {
@@ -30,13 +36,13 @@ class Store {
   }
 
   getQueryHistory() {
-    if (!this.currentDatabase || !this.currentDatabase.config || !this.queryHistoryByDb) { return null; }
-    return this.queryHistoryByDb[this.currentDatabase.config.databaseURL];
+    if (!this.currentDatabase || !this.queryHistoryByDb) { return null; }
+    return this.queryHistoryByDb[this.currentDatabase.url];
   }
 
   addQueryToHistory(query) {
     if (!this.currentDatabase) { return; }
-    const dbURL = this.currentDatabase.config.databaseURL;
+    const dbURL = this.currentDatabase.url;
     let queryHistoryByDb = this.queryHistoryByDb ? this.queryHistoryByDb : {};
     let history = Object.keys(queryHistoryByDb).length > 0 && queryHistoryByDb[dbURL] ? queryHistoryByDb[dbURL] : [];
     let queryObj = { body: query, date: new Date() }
@@ -74,7 +80,7 @@ class Store {
 
   updateDatabase(database) {
     let databases = this.databases.map(db => {
-      if (database.config.databaseURL === db.config.databaseURL) {
+      if (database.serviceKey.project_id === db.serviceKey.project_id) {
         return database;
       } else {
         return db;
@@ -87,13 +93,16 @@ class Store {
   }
 
   checkDbForErrors(database) {
+    console.log(database);
     let databases = this.databases;
     databases = databases ? databases : [];
     for (let i = 0; i < databases.length; i++) {
       let db = databases[i];
       if (db.title === database.title) {
         return "You already have a database with the name \"" + db.title + "\".";
-      } else if (db.config.databaseURL === database.config.databaseURL) {
+      } 
+      else if (db.serviceKey.project_id === database.serviceKey.project_id) {
+        debugger;
         return "This DB already exists as \"" + db.title + "\"";
       }
     }
@@ -101,28 +110,28 @@ class Store {
   }
 
   saveQuery(query) {
-    const dbUrl = this.currentDatabase.config.databaseURL;
+    const url = this.currentDatabase.url;
     let queriesByDb = CacheHelper.getFromLocalStore("savedQueriesByDb");
     queriesByDb = queriesByDb ? queriesByDb : {};
-    let queriesForThisDb = (queriesByDb && queriesByDb[dbUrl]) ? queriesByDb[dbUrl] : [];
+    let queriesForThisDb = (queriesByDb && queriesByDb[url]) ? queriesByDb[url] : [];
     queriesForThisDb.push(query);
-    queriesByDb[dbUrl] = queriesForThisDb;
+    queriesByDb[url] = queriesForThisDb;
     this.savedQueriesByDb = queriesByDb;
     CacheHelper.updateLocalStore("savedQueriesByDb", queriesByDb);
   }
 
   deleteQuery(query) {
-    const dbUrl = this.currentDatabase.config.databaseURL;
+    const url = this.currentDatabase.url;
     let queriesByDb = CacheHelper.getFromLocalStore("savedQueriesByDb");
     queriesByDb = queriesByDb ? queriesByDb : {};
-    let queriesForThisDb = (queriesByDb && queriesByDb[dbUrl]) ? queriesByDb[dbUrl] : [];
+    let queriesForThisDb = (queriesByDb && queriesByDb[url]) ? queriesByDb[url] : [];
     var i = queriesForThisDb.length;
     while (i--) {
       if (queriesForThisDb[i].body === query) {
         queriesForThisDb.splice(i, 1);
       }
     }
-    queriesByDb[dbUrl] = queriesForThisDb;
+    queriesByDb[url] = queriesForThisDb;
     this.savedQueriesByDb = queriesByDb;
     CacheHelper.updateLocalStore("savedQueriesByDb", queriesByDb);
   }
