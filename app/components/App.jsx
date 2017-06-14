@@ -88,6 +88,8 @@ export default class App extends Component {
     this.killFirebaseListeners();
     if (!this.props.store.commitQuery || !this.props.store.currentDatabase) { return; }
     QueryHelper.executeQuery(this.props.store.commitQuery, this.props.store.currentDatabase, (results => {
+      this.props.store.firebaseListeners.push(results.firebaseListener);
+      this.killFirebaseListeners();
       this.props.store.clearResults();
     }), true);
   }

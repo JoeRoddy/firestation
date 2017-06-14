@@ -64,6 +64,7 @@ export default class QueryHelper {
     let insertObject = this.getObjectFromInsert(query);
     const path = collection + "/";
     if (commitResults) {
+      debugger;
       UpdateHelper.pushObject(db, path, insertObject);
     }
     let results = {
@@ -88,6 +89,7 @@ export default class QueryHelper {
         let results = {
           statementType: DELETE_STATEMENT,
           payload: dataToAlter.payload,
+          firebaseListener: dataToAlter.firebaseListener,
           path: collection
         }
         callback(results);
@@ -121,6 +123,7 @@ export default class QueryHelper {
         let results = {
           statementType: UPDATE_STATEMENT,
           payload: data,
+          firebaseListener: dataToAlter.firebaseListener,          
           path: collection
         }
         callback(results);
