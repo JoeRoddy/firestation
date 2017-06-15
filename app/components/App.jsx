@@ -2,7 +2,6 @@ import '../assets/stylesheets/base.scss';
 import React, { Component } from 'react';
 import Workbook from './Workbook';
 import Workstation from './Workstation';
-import firebase from 'firebase';
 import Demo from './Demo';
 import CacheHelper from '../helpers/CacheHelper';
 import Navbar from './Navbar';
@@ -11,7 +10,7 @@ import QueryHelper from '../helpers/QueryHelper';
 import Modal from './modals/Modal';
 // import { Router, Route, browserHistory, Link } from 'react-router';
 import { inject, observer } from 'mobx-react';
-const ServiceAccount = require('electron').remote.require('./ServiceAccount');
+import admin from 'firebase-admin'
 
 // @inject('routing')
 @observer
@@ -59,15 +58,16 @@ export default class App extends Component {
     // browserHistory.push("/workstation")
   }
 
-  startFirebaseForDb(db) {
-    // ServiceAccount.initializeDb(db.serviceAccount);
-
-    // if (!db || !db.config || !db.config.databaseURL) { return; }
-    // let apps = firebase.apps;
-    // for (let i = 0; i < apps.length; i++) {
-    //   if (apps[i].name_ === db.config.databaseURL) { return; }
-    // }
-    // firebase.initializeApp(db.config, db.config.databaseURL)
+  startFirebaseForDb(db) {    
+    if (!db || !db.url) { return; }
+    let apps = admin.apps;
+    for (let i = 0; i < apps.length; i++) {
+      if (apps[i].name_ === db.url) { return; }
+    }
+    admin.initializeApp({
+        credential: admin.credential.cert(db.serviceKey),
+        databaseURL: db.url
+      }, db.url)
   }
 
   executeQuery(query) {

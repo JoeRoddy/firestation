@@ -102,7 +102,6 @@ class Store {
         return "You already have a database with the name \"" + db.title + "\".";
       } 
       else if (db.serviceKey.project_id === database.serviceKey.project_id) {
-        debugger;
         return "This DB already exists as \"" + db.title + "\"";
       }
     }

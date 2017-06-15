@@ -1,5 +1,4 @@
 import React from 'react';
-const { dialog } = require('electron').remote
 
 const DatabaseConfig = ({currentDatabase, store, handleFile, closeModal}) => {
     const save = () => {

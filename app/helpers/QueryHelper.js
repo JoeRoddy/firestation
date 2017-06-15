@@ -64,7 +64,6 @@ export default class QueryHelper {
     let insertObject = this.getObjectFromInsert(query);
     const path = collection + "/";
     if (commitResults) {
-      debugger;
       UpdateHelper.pushObject(db, path, insertObject);
     }
     let results = {
