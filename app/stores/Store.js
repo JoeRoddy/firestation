@@ -64,6 +64,7 @@ class Store {
   setCurrentDatabase(database) {
     this.currentDatabase = database;
     this.queryHistoryIsOpen = false;
+    this.query = "";
     this.clearResults();
     CacheHelper.updateLocalStore("currentDatabase", database);
   }

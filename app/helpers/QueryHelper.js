@@ -78,7 +78,7 @@ export default class QueryHelper {
     const collection = this.getCollection(query, DELETE_STATEMENT);
     const that = this;
     this.getWheres(query, db, (wheres) => {
-      this.getDataForSelect(db, collection, null, wheres, (dataToAlter => {
+      this.getDataForSelect(db, collection, null, wheres, null, (dataToAlter => {
         if (dataToAlter && commitResults) {
           Object.keys(dataToAlter.payload).forEach(function (objKey, index) {
             const path = collection + "/" + objKey;
@@ -98,9 +98,10 @@ export default class QueryHelper {
 
   static executeSelect(query, db, callback) {
     const collection = this.getCollection(query, SELECT_STATEMENT);
+    const orderBys = this.getOrderBys(query);
     const selectedFields = this.getSelectedFields(query);
     this.getWheres(query, db, (wheres) => {
-      this.getDataForSelect(db, collection, selectedFields, wheres, callback);
+      this.getDataForSelect(db, collection, selectedFields, wheres, orderBys, callback);
     });
   }
 
@@ -110,7 +111,7 @@ export default class QueryHelper {
     if (!sets) { return null; }
     const that = this;
     this.getWheres(query, db, (wheres) => {
-      this.getDataForSelect(db, collection, null, wheres, dataToAlter => {
+      this.getDataForSelect(db, collection, null, wheres, null, dataToAlter => {
         let data = dataToAlter.payload;
         Object.keys(data).forEach(function (objKey, index) {
           that.updateItemWithSets(data[objKey], sets);
@@ -122,7 +123,7 @@ export default class QueryHelper {
         let results = {
           statementType: UPDATE_STATEMENT,
           payload: data,
-          firebaseListener: dataToAlter.firebaseListener,          
+          firebaseListener: dataToAlter.firebaseListener,
           path: collection
         }
         callback(results);
@@ -130,10 +131,10 @@ export default class QueryHelper {
     });
   }
 
-  static getDataForSelect(db, collection, selectedFields, wheres, callback) {
+  static getDataForSelect(db, collection, selectedFields, wheres, orderBys, callback) {
     console.log("getData (collection, selectedFields, wheres):", collection, selectedFields, wheres)
     var ref = db.ref(collection);
-    let results = { queryType: SELECT_STATEMENT, path: collection, firebaseListener: ref };
+    let results = { queryType: SELECT_STATEMENT, path: collection, orderBys: orderBys, firebaseListener: ref };
     if (!selectedFields && !wheres) {
       ref = db.ref(collection);
       ref.on("value", snapshot => {
@@ -196,7 +197,9 @@ export default class QueryHelper {
     if (whereIndexStart < 1) {
       return callback(null);
     }
-    let wheresArr = query.substring(whereIndexStart + 5).split(" and ");
+    const orderByIndex = query.toUpperCase().indexOf("ORDER BY");
+    const whereIndexEnd = orderByIndex >= 0 ? orderByIndex : query.length;
+    let wheresArr = query.substring(whereIndexStart + 5, whereIndexEnd).split(" and ");
     wheresArr[wheresArr.length - 1] = wheresArr[wheresArr.length - 1].replace(";", "");
     let wheres = [];
     wheresArr.forEach(where => {
@@ -245,6 +248,30 @@ export default class QueryHelper {
       }
     })
     return sets;
+  }
+
+  static getOrderBys(query) {
+    let caps = query.toUpperCase();
+    const ORDER_BY = "ORDER BY";
+    let index = caps.indexOf(ORDER_BY);
+    if (index < 0) { return null; }
+    let orderByStr = query.substring(index + ORDER_BY.length);
+    let split = orderByStr.split(",");
+    let orderBys = split.map(orderBy => {
+      let propToSort = orderBy.replace(";", "").trim();
+      propToSort = propToSort.indexOf(" ") >= 0 ?
+        propToSort.substring(0, propToSort.indexOf(" "))
+        : propToSort;
+      let orderByObj = {
+        ascending: true,
+        propToSort: propToSort.trim()
+      };
+      if (orderBy.toUpperCase().includes("DESC")) {
+        orderByObj.ascending = false;
+      }
+      return orderByObj;
+    })
+    return orderBys;
   }
 
   static filterWheresAndNonSelectedFields(results, wheres, selectedFields) {

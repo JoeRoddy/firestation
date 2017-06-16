@@ -40,17 +40,48 @@ export default class ObjectNode extends React.Component {
         );
     }
 
-    deleteConfirmation(e,path) {
+    deleteConfirmation(e, path) {
         e.stopPropagation();
         const confirmationMsg = "warning All data at this location, including nested data, will be permanently deleted: \nData location: " + path;
         if (confirm(confirmationMsg)) {
-            var db = admin.app(this.props.store.currentDatabase.url).database();        
+            var db = admin.app(this.props.store.currentDatabase.url).database();
             UpdateHelper.deleteObject(db, path);
         }
     }
 
     addProperty(path, value) {
 
+    }
+
+    sortByOrderBys(resultsArr) {
+        let orderBys = this.props.store.results.orderBys;
+        if (!orderBys) { return resultsArr };
+
+        const compare = (a, b) => {
+            if (!a) { return -1; }
+            else if (!b) { return 1; }
+            if (typeof a === "string" || typeof b === "string") {
+                return (a + "").toLowerCase().localeCompare((b + "").toLowerCase());
+            } else {
+                return a - b;
+            }
+        }
+
+        //earliest orderBy's takes precedence, so we'll .reverse()
+        orderBys.reverse().forEach(orderBy => {
+            let propToSort = orderBy.propToSort;
+            resultsArr.sort((a, b) => {
+                a = a.value[propToSort];
+                b = b.value[propToSort];
+                if (!orderBy.ascending) {
+                    return compare(b, a);
+                } else {
+                    return compare(a, b);
+                }
+            });
+        })
+
+        return resultsArr;
     }
 
     renderObject(obj, type) {
@@ -64,20 +95,23 @@ export default class ObjectNode extends React.Component {
                 Object.keys(obj).sort(function (a, b) {
                     return a.toLowerCase().localeCompare(b.toLowerCase());
                 }).map((prop) => ({ prop, value: obj[prop] }));
+        if (level === 2) {
+            iter = this.sortByOrderBys(iter);
+        }
         return (
             <div className='object-node'>
                 <div className='object-label'>
-                    <i onClick={this.toggleNode.bind(this)} className={classnames('toggle-icon', { opened })} data-tip data-for={'data-collapse '+fbPath}/>
-                    <ReactTooltip id={'data-collapse '+fbPath} type='dark' effect='solid' place="top">
-                            {opened?<span>Collapse</span>:<span>Expand</span>} Data
+                    <i onClick={this.toggleNode.bind(this)} className={classnames('toggle-icon', { opened })} data-tip data-for={'data-collapse ' + fbPath} />
+                    <ReactTooltip id={'data-collapse ' + fbPath} type='dark' effect='solid' place="top">
+                        {opened ? <span>Collapse</span> : <span>Expand</span>} Data
                     </ReactTooltip>
                     {clevel !== 1 && <span>
-                        <i data-tip data-for={'add-child '+fbPath} className="fa fa-plus"></i>
-                        <ReactTooltip id={'add-child '+fbPath} type='dark' effect='solid' place="top">
+                        <i data-tip data-for={'add-child ' + fbPath} className="fa fa-plus"></i>
+                        <ReactTooltip id={'add-child ' + fbPath} type='dark' effect='solid' place="top">
                             Add Property
                     </ReactTooltip>
-                        <i onClick={e => this.deleteConfirmation(e,fbPath)} data-tip data-for={'delete-child '+fbPath} className="fa fa-times"></i>
-                        <ReactTooltip id={'delete-child '+fbPath} type='dark' effect='solid' place="top">
+                        <i onClick={e => this.deleteConfirmation(e, fbPath)} data-tip data-for={'delete-child ' + fbPath} className="fa fa-times"></i>
+                        <ReactTooltip id={'delete-child ' + fbPath} type='dark' effect='solid' place="top">
                             Delete Object
                     </ReactTooltip></span>}
                 </div>
@@ -111,7 +145,7 @@ export default class ObjectNode extends React.Component {
                                             pathUnderEdit={this.props.pathUnderEdit} setPathUnderEdit={this.props.setPathUnderEdit}
                                             level={clevel} key={prop} />
                                         <th>
-                                            <i data-tip data-for="delete-child" onClick={e => this.deleteConfirmation(e,entireFbPath)}
+                                            <i data-tip data-for="delete-child" onClick={e => this.deleteConfirmation(e, entireFbPath)}
                                                 className="fa fa-times" aria-hidden="true"></i>
                                             <ReactTooltip id='delete-child' type='dark' effect='solid' place="top">
                                                 Delete Property
