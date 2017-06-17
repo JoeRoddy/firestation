@@ -275,6 +275,10 @@ h4 {
     display: flex !important;
     flex-direction: row;
     text-align: center;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
     span {
         color: white;
     }
@@ -472,16 +476,29 @@ i.fa-times{
                     margin-right:3px;
                     display: inline-block;
                 }
-            i.fa-times{
-                color:red;
-                &:hover{
-                    color:black;
-                }
+                i.fa-times{
+                    color:red;
+                    &:hover{
+                        color:black;
+                    }
 
+                }
+                i.fa-plus{
+                    color:green;
+                }
             }
-            i.fa-plus{
-                color:green;
-            }
+            .new-prop{
+                display: flex;
+                margin-bottom:5px;
+                .new-prop-btns{
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-around;
+                }
+                button{
+                    height: 18px;
+                    width: 55px;
+                }
             }
         }
         table {

@@ -9,23 +9,31 @@ export default class ObjectTree extends React.Component {
   constructor(props) {
     super(props);
     this.setPathUnderEdit = this.setPathUnderEdit.bind(this);
+    this.setCreationPath = this.setCreationPath.bind(this);
     this.state = {
-      pathUnderEdit: null
+      pathUnderEdit: null,
+      creationPath: null
     }
   }
 
   setPathUnderEdit(pathUnderEdit) {
-    this.setState({ pathUnderEdit });
+    this.setState({ pathUnderEdit, creationPath: null });
+  }
+
+  setCreationPath(creationPath) {
+    this.setState({ creationPath, pathUnderEdit: null });
   }
 
   render() {
     const { className, value, level, noValue, store } = this.props;
-    if(!value || value.payload == undefined){ return <span />}
+    if (!value || value.payload == undefined) { return <span /> }
     const props = {
       value: value.payload,
       path: '',
       pathUnderEdit: this.state.pathUnderEdit,
       setPathUnderEdit: this.setPathUnderEdit,
+      creationPath: this.state.creationPath,
+      setCreationPath: this.setCreationPath,
       fbPath: value.path,
       level: level,
       noValue: noValue,

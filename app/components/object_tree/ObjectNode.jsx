@@ -11,7 +11,7 @@ import admin from 'firebase-admin';
 export default class ObjectNode extends React.Component {
     constructor(props) {
         super(props);
-        this.handleChange = this.handleChange.bind(this);
+        this.handleEditChange = this.handleEditChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.VALUE_EDIT = "FIRESTATION_RESERVED_VALUE_EDIT";
         this.state = {
@@ -105,14 +105,28 @@ export default class ObjectNode extends React.Component {
                     <ReactTooltip id={'data-collapse ' + fbPath} type='dark' effect='solid' place="top">
                         {opened ? <span>Collapse</span> : <span>Expand</span>} Data
                     </ReactTooltip>
-                    {clevel !== 1 && <span>
-                        <i data-tip data-for={'add-child ' + fbPath} className="fa fa-plus"></i>
-                        <ReactTooltip id={'add-child ' + fbPath} type='dark' effect='solid' place="top">
-                            Add Property
-                    </ReactTooltip>
-                        <i onClick={e => this.deleteConfirmation(e, fbPath)} data-tip data-for={'delete-child ' + fbPath} className="fa fa-times"></i>
-                        <ReactTooltip id={'delete-child ' + fbPath} type='dark' effect='solid' place="top">
-                            Delete Object
+                    {clevel !== 1 && that.props.creationPath === fbPath &&
+                        <div className="new-prop">
+                            <div>
+                                <input type="text" placeholder="Key"
+                                    onChange={e => this.setState({ newKey: e.target.value })} /> <br />
+                                <input type="text" placeholder="Value"
+                                    onChange={e => this.setState({ newVal: e.target.value })} /><br />
+                            </div>
+                            <div className="new-prop-btns">
+                                <button onClick={this.createNewProperty.bind(this)} className="bt sm">Save</button>
+                                <button onClick={e => this.props.setCreationPath(null)} className="bt red sm">Cancel</button>
+                            </div>
+                        </div>}
+                    {clevel !== 1 && !that.props.creationPath &&
+                        <span>
+                            <i onClick={e => that.props.setCreationPath(fbPath)} data-tip data-for={'add-child ' + fbPath} className="fa fa-plus"></i>
+                            <ReactTooltip id={'add-child ' + fbPath} type='dark' effect='solid' place="top">
+                                Add Property
+                        </ReactTooltip>
+                            <i onClick={e => this.deleteConfirmation(e, fbPath)} data-tip data-for={'delete-child ' + fbPath} className="fa fa-times"></i>
+                            <ReactTooltip id={'delete-child ' + fbPath} type='dark' effect='solid' place="top">
+                                Delete Object
                     </ReactTooltip></span>}
                 </div>
                 <table style={{ display: opened ? 'block' : 'none' }}>
@@ -133,7 +147,7 @@ export default class ObjectNode extends React.Component {
                                     {this.props.pathUnderEdit && this.props.pathUnderEdit === entireFbPath ?
                                         <th className='prop-name' onClick={e => { e.stopPropagation() }}>
                                             <form onSubmit={that.handleSubmit}>
-                                                <input onChange={that.handleChange} type="text" defaultValue={prop}
+                                                <input onChange={that.handleEditChange} type="text" defaultValue={prop}
                                                     autoFocus="autofocus" className="objNode-input" />
                                             </form>
                                             <div className="onClickOutside" onClick={e => this.props.setPathUnderEdit(null)} />
@@ -143,6 +157,7 @@ export default class ObjectNode extends React.Component {
                                     {!this.props.noValue && <td className='prop-value'>
                                         <ObjectNode store={this.props.store} value={value} path={cpath} fbPath={entireFbPath}
                                             pathUnderEdit={this.props.pathUnderEdit} setPathUnderEdit={this.props.setPathUnderEdit}
+                                            creationPath={this.props.creationPath} setCreationPath={this.props.setCreationPath}
                                             level={clevel} key={prop} />
                                         <th>
                                             <i data-tip data-for="delete-child" onClick={e => this.deleteConfirmation(e, entireFbPath)}
@@ -179,8 +194,14 @@ export default class ObjectNode extends React.Component {
         this.props.setPathUnderEdit(null);
     }
 
-    handleChange(e) {
+    handleEditChange(e) {
         this.setState({ newVal: e.target.value })
+    }
+
+    createNewProperty(e) {
+        var db = admin.app(this.props.store.currentDatabase.url).database();
+        UpdateHelper.set(db, this.props.creationPath + "/" + this.state.newKey, this.state.newVal);
+        this.props.setCreationPath(null);
     }
 
     renderValue(value, type) {
@@ -190,7 +211,7 @@ export default class ObjectNode extends React.Component {
                     this.props.pathUnderEdit === this.props.fbPath + this.props.prop ?
                         <div className='object-node' onClick={this.stopProp} >
                             <form onSubmit={this.handleSubmit}>
-                                <input onChange={this.handleChange} type="text" defaultValue={JSON.stringify(value)}
+                                <input onChange={this.handleEditChange} type="text" defaultValue={JSON.stringify(value)}
                                     autoFocus="autofocus" className="objNode-input" onClick={e => e.stopPropagation()} />
                                 <span className="onClickOutside" onClick={e => this.props.setPathUnderEdit(null)} />
                             </form>
