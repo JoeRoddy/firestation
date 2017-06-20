@@ -9,9 +9,6 @@ import Workbook from './Workbook';
 import ObjectTree from './object_tree/ObjectTree';
 import SideMenu from './SideMenu';
 import QueryHistory from './QueryHistory';
-var vex = require('vex-js')
-vex.registerPlugin(require('vex-dialog'))
-vex.defaultOptions.className = 'vex-theme-os'
 
 @observer
 export default class Workstation extends Component {
