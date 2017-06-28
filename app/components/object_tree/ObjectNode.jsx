@@ -5,7 +5,7 @@ import ReactTooltip from 'react-tooltip';
 import ValueRow from './ValueRow';
 import PropTypes from 'prop-types';
 import StringHelper from '../../helpers/StringHelper';
-import UpdateHelper from '../../helpers/UpdateHelper';
+import UpdateService from '../../service/UpdateService';
 import admin from 'firebase-admin';
 
 export default class ObjectNode extends React.Component {
@@ -45,7 +45,7 @@ export default class ObjectNode extends React.Component {
         const confirmationMsg = "warning All data at this location, including nested data, will be permanently deleted: \nData location: " + path;
         if (confirm(confirmationMsg)) {
             var db = admin.app(this.props.store.currentDatabase.url).database();
-            UpdateHelper.deleteObject(db, path);
+            UpdateService.deleteObject(db, path);
         }
     }
 
@@ -189,7 +189,7 @@ export default class ObjectNode extends React.Component {
             newValue = newObject;
         }
 
-        UpdateHelper.set(db, path, newValue);
+        UpdateService.set(db, path, newValue);
         this.setState({ newVal: null, keyEdit: false });
         this.props.setPathUnderEdit(null);
     }
@@ -200,7 +200,7 @@ export default class ObjectNode extends React.Component {
 
     createNewProperty(e) {
         var db = admin.app(this.props.store.currentDatabase.url).database();
-        UpdateHelper.set(db, this.props.creationPath + "/" + this.state.newKey, this.state.newVal);
+        UpdateService.set(db, this.props.creationPath + "/" + this.state.newKey, this.state.newVal);
         this.props.setCreationPath(null);
     }
 
