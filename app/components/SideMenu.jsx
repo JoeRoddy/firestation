@@ -1,5 +1,5 @@
 import React from 'react';
-import admin from 'firebase-admin';
+import FirebaseService from '../service/FirebaseService';
 import fs from 'fs';
 import moment from 'moment';
 const { dialog, app } = require('electron').remote;
@@ -34,10 +34,10 @@ const SideMenu = ({ savedQueries, deleteQuery,
     }
 
     const downloadBackup = () => {
-        var db = admin.app(store.currentDatabase.url).database();
+        let db = FirebaseService.startFirebaseApp(store.currentDatabase).database();
         db.ref("/").once("value", snap => {
             let dbContent = snap.val();
-            let path = app.getPath("desktop") +"/"+ moment().format("MMMDo_")+store.currentDatabase.title+".json";
+            let path = app.getPath("desktop") + "/" + moment().format("MMMDo_") + store.currentDatabase.title + ".json";
             dialog.showSaveDialog({ defaultPath: path }, fileName => {
                 if (fileName === undefined) return;
                 fs.writeFile(fileName, JSON.stringify(dbContent), function (err) {

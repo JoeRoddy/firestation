@@ -71,6 +71,7 @@ const AddDatabase = ({ store, createDb, serviceAccount, handleFile }) => {
                     <p>1) <a onClick={e => shell.openExternal('https://console.firebase.google.com/u/0/project/_/settings/serviceaccounts/adminsdk')}>
                         Select your project on Firebase</a></p>
                     <p>2) Select "GENERATE NEW PRIVATE KEY"</p>
+                    <p>3) Import the key into Firestation</p>
                     <div>
                         <button onClick={handleFile} className="bt white">
                             <i className="fa fa-file-text-o" /> Import Key</button>

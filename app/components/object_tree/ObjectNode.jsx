@@ -6,7 +6,7 @@ import ValueRow from './ValueRow';
 import PropTypes from 'prop-types';
 import StringHelper from '../../helpers/StringHelper';
 import UpdateService from '../../service/UpdateService';
-import admin from 'firebase-admin';
+import FirebaseService from '../../service/FirebaseService';
 
 export default class ObjectNode extends React.Component {
     constructor(props) {
@@ -44,7 +44,7 @@ export default class ObjectNode extends React.Component {
         e.stopPropagation();
         const confirmationMsg = "warning All data at this location, including nested data, will be permanently deleted: \nData location: " + path;
         if (confirm(confirmationMsg)) {
-            var db = admin.app(this.props.store.currentDatabase.url).database();
+            let db = FirebaseService.startFirebaseApp(this.props.store.currentDatabase).database();
             UpdateService.deleteObject(db, path);
         }
     }
@@ -177,7 +177,7 @@ export default class ObjectNode extends React.Component {
 
     handleSubmit(e) {
         e.preventDefault();
-        var db = admin.app(this.props.store.currentDatabase.url).database();
+        let db = FirebaseService.startFirebaseApp(this.props.store.currentDatabase).database();
         let newValue = StringHelper.getParsedValue(this.state.newVal);
         let path = this.props.fbPath;
         const pathUnderEdit = this.props.pathUnderEdit;
@@ -199,7 +199,7 @@ export default class ObjectNode extends React.Component {
     }
 
     createNewProperty(e) {
-        var db = admin.app(this.props.store.currentDatabase.url).database();
+        let db = FirebaseService.startFirebaseApp(this.props.store.currentDatabase).database();
         UpdateService.set(db, this.props.creationPath + "/" + this.state.newKey, this.state.newVal);
         this.props.setCreationPath(null);
     }

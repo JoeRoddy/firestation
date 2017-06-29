@@ -1,7 +1,7 @@
 import StringHelper from './StringHelper';
 import UpdateService from '../service/UpdateService';
+import FirebaseService from '../service/FirebaseService';
 const ServiceAccount = require('electron').remote.require('./ServiceAccount');
-import * as admin from "firebase-admin";
 const NO_EQUALITY_STATEMENTS = "NO_EQUALITY_STATEMENTS";
 const SELECT_STATEMENT = "SELECT_STATEMENT";
 const UPDATE_STATEMENT = "UPDATE_STATEMENT";
@@ -17,25 +17,8 @@ export default class QueryHelper {
     })
   }
 
-  static getFirebaseApp(dbUrl) {
-    let apps = admin.apps;
-    for (let i = 0; i < apps.length; i++) {
-      if (apps[i].name === dbUrl) {
-        return apps[i];
-      }
-    }
-    return null;
-  }
-
   static executeQuery(query, database, callback, commitResults) {
-    let app = this.getFirebaseApp(database.url);
-    if (!app) {
-      app = admin.initializeApp({
-        credential: admin.credential.cert(database.serviceKey),
-        databaseURL: database.url
-      }, database.url);
-    }
-
+    let app = FirebaseService.startFirebaseApp(database);
     let db = app.database();
     let ref = db.ref("/");
     ref.off("value");

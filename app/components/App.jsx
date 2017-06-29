@@ -10,7 +10,7 @@ import QueryHelper from '../helpers/QueryHelper';
 import Modal from './modals/Modal';
 // import { Router, Route, browserHistory, Link } from 'react-router';
 import { inject, observer } from 'mobx-react';
-import admin from 'firebase-admin'
+import FirebaseService from '../service/FirebaseService';
 
 // @inject('routing')
 @observer
@@ -30,14 +30,12 @@ export default class App extends Component {
   setCurrentDb(currentDatabase) {
     if (!currentDatabase) { return }
     this.killFirebaseListeners();
-    this.startFirebaseForDb(currentDatabase);
+    FirebaseService.startFirebaseApp(currentDatabase);
     this.props.store.setCurrentDatabase(currentDatabase);
-    const that = this;
     // QueryHelper.getRootKeysPromise(currentDatabase).then(rootKeys => {
     //   console.log(rootKeys)
     //   this.props.store.rootKeys = rootKeys;
     // })
-    CacheHelper.updateLocalStore("currentDatabase", currentDatabase);
   }
 
   updateSavedQueries(db) {
@@ -58,16 +56,8 @@ export default class App extends Component {
     // browserHistory.push("/workstation")
   }
 
-  startFirebaseForDb(db) {    
-    if (!db || !db.url) { return; }
-    let apps = admin.apps;
-    for (let i = 0; i < apps.length; i++) {
-      if (apps[i].name_ === db.url) { return; }
-    }
-    admin.initializeApp({
-        credential: admin.credential.cert(db.serviceKey),
-        databaseURL: db.url
-      }, db.url)
+  startFirebaseForDb(db) {
+    FirebaseService.startFirebaseApp(db.url);
   }
 
   executeQuery(query) {

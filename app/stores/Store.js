@@ -1,5 +1,6 @@
 import { observable } from 'mobx';
 import CacheHelper from '../helpers/CacheHelper';
+import FirebaseService from '../service/FirebaseService';
 
 class Store {
   @observable databases = CacheHelper.getFromLocalStore("databases");
@@ -14,8 +15,8 @@ class Store {
   @observable firebaseListeners = [];
 
   //Modals
-  @observable newDb = null;
-  
+  @observable newDb = {data:null};
+
   //Workstation
   @observable queryHistoryIsOpen = false;
   @observable query = "";
@@ -24,10 +25,7 @@ class Store {
   @observable focus = false;
   @observable selectedText = "";
   constructor() {
-    // CacheHelper.updateLocalStore("databases",null);
-    // CacheHelper.updateLocalStore("currentDatabase",null);
-    // CacheHelper.updateLocalStore("savedQueriesByDb",null);
-    // CacheHelper.updateLocalStore("queryHistoryByDb",null);
+
   }
 
   appendQuery(text) {
@@ -94,17 +92,19 @@ class Store {
   }
 
   checkDbForErrors(database) {
-    console.log(database);
     let databases = this.databases;
     databases = databases ? databases : [];
     for (let i = 0; i < databases.length; i++) {
       let db = databases[i];
       if (db.title === database.title) {
         return "You already have a database with the name \"" + db.title + "\".";
-      } 
+      }
       else if (db.serviceKey.project_id === database.serviceKey.project_id) {
         return "This DB already exists as \"" + db.title + "\"";
       }
+    }
+    if (!FirebaseService.databaseConfigInitializes(database)) {
+      return "Something went wrong with your file. It should look something like: myDatabaseName-firebase-adminsdk-4ieef-1521f1bc13.json"
     }
     return false;
   }
