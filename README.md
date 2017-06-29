@@ -1,7 +1,4 @@
-# electron-react-webpack-mobx-boilerplate
-Electron app boilerplate with React, MobX and Webpack
-
-Mashup of [this repo](https://github.com/chentsulin/electron-react-boilerplate) and [this repo](https://github.com/BarakChamo/electron-react-boilerplate) with minor modifications
+# Firestation Native Electron App
 
 ## Install
 
@@ -29,3 +26,22 @@ or run two servers with one command
 ```bash
 $ npm run dev
 ```
+
+# To Do
+
+### Bugs
+* fix app crash when query returns many results
+
+### Features
+* change history to a table
+* build commits into history, allow user to revert back to previous data
+* deploy documentation
+
+## Later
+
+### Keymap
+* give shortcuts preview (ctrl+enter --> execute query, etc)
+* allow users to add shortcuts to paste saved queries
+
+### Query Translator
+* javascript first, then ios or android

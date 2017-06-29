@@ -66,6 +66,7 @@
     "minimist": "^1.2.0",
     "node-libs-browser": "^1.0.0",
     "node-sass": "^3.4.2",
+    "prettier": "^1.5.2",
     "react-addons-test-utils": "^15.3.1",
     "sass-loader": "^3.2.0",
     "spectron": "^3.3.0",
