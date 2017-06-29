@@ -54,6 +54,18 @@ class Store {
     CacheHelper.updateLocalStore("queryHistoryByDb", queryHistoryByDb);
   }
 
+  markQueryAsCommitted(query){
+    try {
+      let history = this.queryHistoryByDb[this.currentDatabase.url];
+      if(history[0].body.trim() !== query.trim()){ return; }
+      history[0].committed = true;
+      this.queryHistoryByDb[this.currentDatabase.url] = history;
+      CacheHelper.updateLocalStore("queryHistoryByDb", this.queryHistoryByDb);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   clearResults() {
     this.commitQuery = null;
     this.results = null;

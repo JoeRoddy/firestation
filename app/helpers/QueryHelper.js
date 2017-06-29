@@ -22,7 +22,6 @@ export default class QueryHelper {
     let db = app.database();
     let ref = db.ref("/");
     ref.off("value");
-    query = this.formatAndCleanQuery(query);
     const statementType = this.determineQueryType(query);
     if (statementType === SELECT_STATEMENT) {
       this.executeSelect(query, db, callback);
@@ -36,6 +35,7 @@ export default class QueryHelper {
   }
 
   static formatAndCleanQuery(query) {
+    //called by App.jsx to remove comments before saving to history
     query = StringHelper.replaceAll(query, /(\/\/|--).+/, "");
     query = query.replace(/\r?\n|\r/g, " ");
     return query;

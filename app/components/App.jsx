@@ -62,6 +62,8 @@ export default class App extends Component {
 
   executeQuery(query) {
     this.killFirebaseListeners();
+    query = QueryHelper.formatAndCleanQuery(query);
+    this.props.store.addQueryToHistory(query);
     QueryHelper.executeQuery(query, this.props.store.currentDatabase, (results => {
       if (results && results.queryType != "SELECT_STATEMENT") {
         this.props.store.commitQuery = query;
@@ -77,7 +79,9 @@ export default class App extends Component {
   commit() {
     this.killFirebaseListeners();
     if (!this.props.store.commitQuery || !this.props.store.currentDatabase) { return; }
-    QueryHelper.executeQuery(this.props.store.commitQuery, this.props.store.currentDatabase, (results => {
+    const query = QueryHelper.formatAndCleanQuery(this.props.store.commitQuery);
+    this.props.store.markQueryAsCommitted(query);
+    QueryHelper.executeQuery(query, this.props.store.currentDatabase, (results => {
       this.props.store.firebaseListeners.push(results.firebaseListener);
       this.killFirebaseListeners();
       this.props.store.clearResults();

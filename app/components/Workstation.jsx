@@ -37,7 +37,6 @@ export default class Workstation extends Component {
         if (selectedText && query.includes(selectedText)) {
             query = selectedText;
         }
-        this.props.store.addQueryToHistory(query);
         this.props.executeQuery(query);
     }
 

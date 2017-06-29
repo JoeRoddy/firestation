@@ -23,10 +23,10 @@ const QueryHistory = ({ history, store }) => {
                             <tr key={i} >
                                 <td>{formatDate(query.date)}</td>
                                 <td data-tip data-for={'q-bodyTooltip ' + i} className="clickable" onClick={e => store.appendQuery(query.body)}>
-                                    {query.body.substring(0, queryTextLimit)}
-                                    {query.body.length>queryTextLimit&&<span>...</span>}
+                                    {query.body.length<=queryTextLimit ? query.body
+                                    :query.body.substring(0, queryTextLimit-3)+"..."}
                                 </td>
-                                <td><i className="fa fa-check"></i></td>                                                                
+                                <td>{query.committed && <i className="fa fa-check"></i>}</td>                                                                
                                 {query.body.length > queryTextLimit &&
                                     <ReactTooltip id={'q-bodyTooltip ' + i} type='dark' effect='float' place="top">
                                         <span>{StringHelper.getJsxWithNewLines(query.body)}</span>

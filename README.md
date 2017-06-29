@@ -33,7 +33,6 @@ $ npm run dev
 * fix app crash when query returns many results
 
 ### Features
-* change history to a table
 * build commits into history, allow user to revert back to previous data
 * deploy documentation
 
