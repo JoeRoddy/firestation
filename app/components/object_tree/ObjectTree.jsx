@@ -2,6 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import ObjectNode from './ObjectNode';
+import {subObject} from '../../helpers/ObjectHelper'; 
 /**
  * https://github.com/stomita/react-object-tree/
  */
@@ -27,8 +28,13 @@ export default class ObjectTree extends React.Component {
   render() {
     const { className, value, level, noValue, store } = this.props;
     if (!value || value.payload == undefined) { return <span /> }
+
+    console.log("results b4:", Object.keys(value.payload).length);
+    const resultsToDisplayInTree = subObject(value.payload, 0, 50);
+    console.log("results after:", Object.keys(resultsToDisplayInTree).length);
+
     const props = {
-      value: value.payload,
+      value: resultsToDisplayInTree,
       path: '',
       pathUnderEdit: this.state.pathUnderEdit,
       setPathUnderEdit: this.setPathUnderEdit,

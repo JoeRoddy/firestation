@@ -81,6 +81,7 @@
     "firebase": "^3.9.0",
     "firebase-admin": "^5.0.0",
     "jquery": "^3.2.1",
+    "lodash": "^4.17.4",
     "mobx": "^2.4.4",
     "mobx-react": "^3.5.5",
     "mobx-react-devtools": "^4.2.5",

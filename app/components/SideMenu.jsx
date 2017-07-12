@@ -55,9 +55,9 @@ const SideMenu = ({ savedQueries, deleteQuery,
                     <i className="fa fa-floppy-o" /> &nbsp;Saved Queries {savedCaret()}</a>}
             {savedQueries && savedQueries.length > 0 && savedQueriesIsOpen &&
                 <div className="sidemenu-savedQueries">{renderSavedQueries()}</div>}
-            <a className="sidemenu-item"><i className="fa fa-code" /> Query Translator</a>
+            {/*<a className="sidemenu-item"><i className="fa fa-code" /> Query Translator</a>*/}
             <a onClick={downloadBackup} className="sidemenu-item"><i className="fa fa-download" /> &nbsp;Download Backup</a>
-            <a className="sidemenu-item"><i className="fa fa-book" /> &nbsp;Documentation</a>
+            {/*<a className="sidemenu-item"><i className="fa fa-book" /> &nbsp;Documentation</a>*/}
         </div>
     )
 }

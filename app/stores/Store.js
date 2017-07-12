@@ -43,7 +43,7 @@ class Store {
     const dbURL = this.currentDatabase.url;
     let queryHistoryByDb = this.queryHistoryByDb ? this.queryHistoryByDb : {};
     let history = Object.keys(queryHistoryByDb).length > 0 && queryHistoryByDb[dbURL] ? queryHistoryByDb[dbURL] : [];
-    let queryObj = { body: query, date: new Date() }
+    let queryObj = { body: query.trim(), date: new Date() }
     if (history && history.length >= 15) {
       history = history.slice(0, 14);
     }

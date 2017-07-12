@@ -1,47 +1,23 @@
-// html, body, div, span, applet, object, iframe,
-// h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-// a, abbr, acronym, address, big, cite, code,
-// del, dfn, em, img, ins, kbd, q, s, samp,
-// small, strike, strong, sub, sup, tt, var,
-// b, u, i, center,
-// dl, dt, dd, ol, ul, li,
-// fieldset, form, label, legend,
-// table, caption, tbody, tfoot, thead, tr, th, td,
-// article, aside, canvas, details, embed,
-// figure, figcaption, footer, header, hgroup,
-// menu, nav, output, ruby, section, summary,
-// time, mark, audio, video {
-// 	margin: 0;
-// 	padding: 0;
-// 	border: 0;
-// 	font-size: 100%;
-// 	font: inherit;
-// 	vertical-align: baseline;
-// }
-// /* HTML5 display-role reset for older browsers */
-// article, aside, details, figcaption, figure,
-// footer, header, hgroup, menu, nav, section {
-// 	display: block;
-// }
-// body {
-// 	line-height: 1;
-// }
-// ol, ul {
-// 	list-style: none;
-// }
-// blockquote, q {
-// 	quotes: none;
-// }
-// blockquote:before, blockquote:after,
-// q:before, q:after {
-// 	content: '';
-// 	content: none;
-// }
-// table {
-// 	border-collapse: collapse;
-// 	border-spacing: 0;
-// }
-//^was part of original proj, not sure if neccessary for electron
+$break-small: 800px;
+$break-large: 1300px;
+@mixin respond-to($media) {
+    @if $media==small {
+        @media only screen and (max-width: $break-small) {
+            @content;
+        }
+    }
+    @else if $media==medium-screens {
+        @media only screen and (min-width: $break-small + 1) and (max-width: $break-large - 1) {
+            @content;
+        }
+    }
+    @else if $media==wide-screens {
+        @media only screen and (min-width: $break-large) {
+            @content;
+        }
+    }
+}
+
 $lavender: #9370DB;
 $turq:#0fb8ad;
 $turqhover:#1fc8db;
@@ -62,7 +38,7 @@ body {
 }
 
 .App {
-    min-height: 100vh;
+    // min-height: 80vh;
     .App-Body {}
 }
 
@@ -70,7 +46,11 @@ body {
     display: flex;
     height: 100%;
     margin-left: 260px;
-    margin-top: 100px;
+    margin-top: 8vh;
+    overflow: hidden !important;
+    @include respond-to(small) {
+        margin-left: 0px;
+    }
     .workArea {
         width: 100%;
         display: block;
@@ -89,11 +69,32 @@ body {
         }
     }
     .QueryHistory {
+        .histTable-container {
+            max-height: 55vh;
+            height: 20vh;
+            flex-grow: 2;
+            overflow: auto;
+        }
         .clickable {
             cursor: pointer;
             &:hover {
                 background-color: lightgray;
             }
+        }
+    }
+    .workstation-underWorkbook {
+        height: 50vh;
+        max-height: 55vh;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        justify-content: space-between;
+        .objectTree-container {
+            max-height: 55vh;
+            flex-grow: 3;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
     }
 }
@@ -210,6 +211,10 @@ i {
     background: linear-gradient(141deg, #f4c242 0%, #e2c844 51%, #e2a844 75%);
     display: flex;
     flex-direction: column;
+    @include respond-to(small) {
+        width: 0px;
+        display: none;
+    }
     a {
         margin-top: 2.5px;
         margin-bottom: 2.5px;
@@ -472,9 +477,13 @@ i.fa-times {
             .object-type {
                 font-style: italic;
             }
+            i {
+                display: none;
+                margin-top: 1px;
+                margin-left: 3px;
+            }
             &:hover {
                 i {
-                    margin-right: 3px;
                     display: inline-block;
                 }
                 i.fa-times {
@@ -519,8 +528,11 @@ i.fa-times {
                         outline: 0px;
                     }
                     &:hover {
-                        border: 2px solid black;
+                        // border: 2px solid black;
                         background-color: white;
+                        -webkit-box-shadow: inset 0px 0px 0px 2px black;
+                        -moz-box-shadow: inset 0px 0px 0px 2px black;
+                        box-shadow: inset 0px 0px 0px 2px black;
                     }
                 }
                 td.prop-value {
@@ -536,13 +548,14 @@ i.fa-times {
                 }
                 tr:hover {
                     i {
-                        margin-top: 1px;
-                        margin-left: 3px;
                         display: block;
                         cursor: pointer;
                         color: red;
                         &:hover {
                             color: black;
+                        }
+                        &.delete-prop {
+                            margin-left: 5px;
                         }
                     }
                 }

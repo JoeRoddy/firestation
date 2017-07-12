@@ -9,7 +9,8 @@ const QueryHistory = ({ history, store }) => {
     return (
         <div className="QueryHistory">
             <h4>History</h4>
-            <table className="table">
+            <div className="histTable-container">
+            <table className="table table-bordered table-sm">
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -37,6 +38,7 @@ const QueryHistory = ({ history, store }) => {
                     }) }
                 </tbody>
             </table>
+            </div>
         </div>
     )
 }
