@@ -1,7 +1,6 @@
 import StringHelper from './StringHelper';
 import UpdateService from '../service/UpdateService';
 import FirebaseService from '../service/FirebaseService';
-const ServiceAccount = require('electron').remote.require('./ServiceAccount');
 const NO_EQUALITY_STATEMENTS = "NO_EQUALITY_STATEMENTS";
 const SELECT_STATEMENT = "SELECT_STATEMENT";
 const UPDATE_STATEMENT = "UPDATE_STATEMENT";

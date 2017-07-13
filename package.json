@@ -1,8 +1,8 @@
 {
-  "name": "firestation-electron",
+  "name": "firestation",
   "version": "0.1.0",
-  "description": "Electron Development Boilerplate",
-  "productName": "Electron Development Boilerplate",
+  "description": "Firestation",
+  "productName": "Firestation",
   "main": "main.js",
   "scripts": {
     "lint": "eslint app test *.js",
