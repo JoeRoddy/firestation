@@ -30,7 +30,6 @@ $ npm run dev
 # To Do
 
 ### Bugs
-* fix app crash when query returns many results
 
 ### Features
 * build commits into history, allow user to revert back to previous data
