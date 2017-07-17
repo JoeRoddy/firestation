@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import firebase from 'firebase';
-import PropTypes from 'prop-types';
 import ReactTooltip from 'react-tooltip';
-// import { browserHistory } from 'react-router';
 import { observer } from 'mobx-react';
 import Workbook from './Workbook';
 import ObjectTree from './object_tree/ObjectTree';
@@ -68,8 +65,8 @@ export default class Workstation extends Component {
     }
 
     getResultsTitle(payloadSize) {
-        let payloadDesc = payloadSize>50?"Displaying 50 of "+payloadSize:payloadSize;
-        switch (this.props.results.statementType) {
+        let payloadDesc = payloadSize > 50 ? "Displaying 50 of " + payloadSize : payloadSize;
+        switch (this.props.store.results.statementType) {
             case "UPDATE_STATEMENT":
                 return <span>Updated Records ({payloadDesc}):</span>;
             case "INSERT_STATEMENT":
@@ -83,15 +80,15 @@ export default class Workstation extends Component {
     }
 
     render() {
-        console.log('workstations props:',this.props)
-        if (!this.props.store.databases[0]) {
+        const store = this.props.store;
+        if (!store.databases[0]) {
             return <span />;
         }
         let payloadSize;
-        if (this.props.results) {
-            if (this.props.results.payload === Object(this.props.results.payload)) {
-                payloadSize = Object.keys(this.props.results.payload).length;
-            } else if (this.props.results.payload === null) {
+        if (store.results && !store.results.error) {
+            if (store.results.payload === Object(store.results.payload)) {
+                payloadSize = Object.keys(store.results.payload).length;
+            } else if (store.results.payload === null) {
                 payloadSize = 0;
             } else { //primitive payload
                 payloadSize = 1;
@@ -99,7 +96,7 @@ export default class Workstation extends Component {
         }
 
         const props = {
-            store: this.props.store
+            store: store
         }
 
         return (
@@ -108,12 +105,12 @@ export default class Workstation extends Component {
                     deleteQuery={this.deleteQuery} savedQueriesIsOpen={this.state.savedQueriesIsOpen}
                     toggleSavedQueries={this.toggleSavedQueries} {...props} />
                 <div className="workArea col-md-12">
-                    <h1 className="workstation-dbTitle">{this.props.currentDatabase.title}</h1>
-                    {/*{this.props.rootKeys &&
-                        <div>Root Keys: <ObjectTree value={this.props.rootKeys} level={0} noValue={true} /><br /></div>}*/}
+                    <h1 className="workstation-dbTitle">{store.currentDatabase.title}</h1>
+                    {/*{store.rootKeys &&
+                        <div>Root Keys: <ObjectTree value={store.rootKeys} level={0} noValue={true} /><br /></div>}*/}
                     <Workbook execute={this.execute} {...props} height="100%" />
                     <div className="workstation-btns">
-                        {!this.props.commitQuery || !payloadSize ?
+                        {!store.commitQuery || !payloadSize ?
                             <button className="bt blue" onClick={this.execute}>Execute</button>
                             :
                             <div>
@@ -122,13 +119,13 @@ export default class Workstation extends Component {
                             </div>
                         }
                         <div className="util-btns">
-                            {this.props.store.query && <div>
+                            {store.query && <div>
                                 <button onClick={this.saveQuery.bind(this)} data-tip data-for='saveTooltip'
                                     className="bt sm"><i className="fa fa-floppy-o" /></button>
                                 <ReactTooltip id='saveTooltip' type='dark' effect='solid' place="top">
                                     <span>Save Query</span>
                                 </ReactTooltip></div>}
-                            <button onClick={e => this.props.store.queryHistoryIsOpen = !this.props.store.queryHistoryIsOpen} data-tip data-for='historyTooltip' className="bt sm white">
+                            <button onClick={e => store.queryHistoryIsOpen = !store.queryHistoryIsOpen} data-tip data-for='historyTooltip' className="bt sm white">
                                 <i className="fa fa-clock-o" /></button>
                             <ReactTooltip id='historyTooltip' type='dark' effect='solid' place="top">
                                 <span>History</span>
@@ -137,14 +134,17 @@ export default class Workstation extends Component {
                     </div>
                     <br />
                     <div className="workstation-underWorkbook">
-                        {this.props.results && payloadSize !== undefined &&
+                        {store.results && store.results.error &&
+                            <h4 className="queryError">{store.results.error}</h4>
+                        }
+                        {store.results && payloadSize !== undefined &&
                             <div className="objectTree-container"><h4>{this.getResultsTitle(payloadSize)}</h4>
-                                {payloadSize > 0 && this.props.results.payload != null &&
-                                    <ObjectTree value={this.props.results} level={payloadSize > 30 ? 1 : 2} {...props} />}
+                                {payloadSize > 0 && store.results.payload != null &&
+                                    <ObjectTree value={store.results} level={payloadSize > 30 ? 1 : 2} {...props} />}
                             </div>
                         }
-                        {this.props.store.queryHistoryIsOpen &&
-                            <QueryHistory history={this.props.store.getQueryHistory()} {...props} />
+                        {store.queryHistoryIsOpen &&
+                            <QueryHistory history={store.getQueryHistory()} {...props} />
                         }
                     </div>
                 </div>

@@ -1,18 +1,12 @@
-import '../assets/stylesheets/base.scss';
 import React, { Component } from 'react';
-import Workbook from './Workbook';
-import Workstation from './Workstation';
-import Demo from './Demo';
-import CacheHelper from '../helpers/CacheHelper';
-import Navbar from './Navbar';
-import Landing from './Landing';
-import QueryHelper from '../helpers/QueryHelper';
-import Modal from './modals/Modal';
-// import { Router, Route, browserHistory, Link } from 'react-router';
 import { inject, observer } from 'mobx-react';
+import '../assets/stylesheets/base.scss';
 import FirebaseService from '../service/FirebaseService';
+import QueryHelper from '../helpers/QueryHelper';
+import Workstation from './Workstation';
+import Navbar from './Navbar';
+import Modal from './modals/Modal';
 
-// @inject('routing')
 @observer
 export default class App extends Component {
   constructor(props) {
@@ -40,20 +34,17 @@ export default class App extends Component {
 
   updateSavedQueries(db) {
     const dbUrl = db.config.databaseURL;
-    let queriesByDb = CacheHelper.getFromLocalStore("savedQueriesByDb");
+    let queriesByDb = this.props.store.savedQueriesByDb;
     let savedQueries = (!queriesByDb || !queriesByDb[url]) ? null : queriesByDb[url];
     this.setState({ savedQueries });
   }
 
   createDb(database) {
-    console.log("createdb called for db:", database)
     let err = this.props.store.createNewDatabase(database);
     if (err) { return err; }
-
     this.setCurrentDb(database);
     this.props.store.currentDatabase = database;
     this.props.store.modal = null;
-    // browserHistory.push("/workstation")
   }
 
   startFirebaseForDb(db) {
@@ -64,16 +55,20 @@ export default class App extends Component {
     this.killFirebaseListeners();
     query = QueryHelper.formatAndCleanQuery(query);
     this.props.store.addQueryToHistory(query);
-    QueryHelper.executeQuery(query, this.props.store.currentDatabase, (results => {
-      if (results && results.queryType != "SELECT_STATEMENT") {
-        this.props.store.commitQuery = query;
-        this.props.store.results = results;
-        this.props.store.firebaseListeners.push(results.firebaseListener);
-      } else {
-        this.props.store.results = results;
-        this.props.store.firebaseListeners.push(results.firebaseListener);
-      }
-    }));
+    try {
+      QueryHelper.executeQuery(query, this.props.store.currentDatabase, (results => {
+        if (results && results.queryType != "SELECT_STATEMENT") {
+          this.props.store.commitQuery = query;
+          this.props.store.results = results;
+          this.props.store.firebaseListeners.push(results.firebaseListener);
+        } else {
+          this.props.store.results = results;
+          this.props.store.firebaseListeners.push(results.firebaseListener);
+        }
+      }));
+    } catch (error) {
+      this.props.store.results = { error };
+    }
   }
 
   commit() {
@@ -81,11 +76,15 @@ export default class App extends Component {
     if (!this.props.store.commitQuery || !this.props.store.currentDatabase) { return; }
     const query = QueryHelper.formatAndCleanQuery(this.props.store.commitQuery);
     this.props.store.markQueryAsCommitted(query);
-    QueryHelper.executeQuery(query, this.props.store.currentDatabase, (results => {
-      this.props.store.firebaseListeners.push(results.firebaseListener);
-      this.killFirebaseListeners();
-      this.props.store.clearResults();
-    }), true);
+    try {
+      QueryHelper.executeQuery(query, this.props.store.currentDatabase, (results => {
+        this.props.store.firebaseListeners.push(results.firebaseListener);
+        this.killFirebaseListeners();
+        this.props.store.clearResults();
+      }), true);
+    } catch (error) {
+      this.props.store.results = { error };
+    }
   }
 
   killFirebaseListeners() {
@@ -100,40 +99,28 @@ export default class App extends Component {
   }
 
   render() {
-    // const { location, push, goBack } = this.props.routing;
-    // const path = location.pathname;
-    console.log("app props:", this.props)
     console.log('store:', this.props.store);
     const savedQueries = (this.props.store.savedQueriesByDb && this.props.store.currentDatabase)
       ? this.props.store.savedQueriesByDb[this.props.store.currentDatabase.url] : null;
 
     const props = {
-      results: this.props.store.results,
-      setCurrentDb: this.setCurrentDb.bind(this),
-      executeQuery: this.executeQuery.bind(this),
-      startFirebaseForDb: this.startFirebaseForDb,
-      createDb: this.createDb,
-      currentDatabase: this.props.store.currentDatabase,
-      databases: this.props.store.databases,
-      rootKeys: this.props.store.rootKeys,
-      commitQuery: this.props.store.commitQuery,
-      commit: this.commit,
       cancelCommit: this.cancelCommit,
+      createDb: this.createDb,
+      commit: this.commit,
+      executeQuery: this.executeQuery.bind(this),
+      results: this.props.store.results,
+      newDb: this.props.store.newDb,
       savedQueries: savedQueries,
-      updateSavedQueries: this.updateSavedQueries,
+      setCurrentDb: this.setCurrentDb.bind(this),
+      startFirebaseForDb: this.startFirebaseForDb,
       store: this.props.store,
-      newDb: this.props.store.newDb
-      // routing: this.props.routing
+      updateSavedQueries: this.updateSavedQueries,
     }
 
     return (
       <div className="App">
         <Navbar {...props} />
         {this.props.store.modal && <Modal {...props} />}
-        {/*{path === "/" &&
-          <Landing {...props} />}
-        {path === "/workstation" &&
-          <Workstation {...props} />}*/}
         <Workstation {...props} />
       </div>
     )

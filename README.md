@@ -32,6 +32,7 @@ $ npm run dev
 ### Bugs
 
 ### Features
+* better error messages
 * build commits into history, allow user to revert back to previous data
 * deploy documentation
 

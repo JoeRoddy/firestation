@@ -1,7 +1,7 @@
 {
-  "name": "firestation",
+  "name": "firestation-electron",
   "version": "0.1.0",
-  "description": "Firestation",
+  "description": "Execute SQL Queries Against Your Firestation Database",
   "productName": "Firestation",
   "main": "main.js",
   "scripts": {

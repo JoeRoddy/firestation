@@ -193,7 +193,6 @@ export default class QueryHelper {
       }
       let val = StringHelper.getParsedValue(where.substring(eqCompAndIndex.index + eqCompAndIndex.comparator.length).trim());
       if (typeof val === "string" && val.charAt(0) === "(" && val.charAt(val.length - 1) === ")") {
-        // let cleanedQu
         this.executeSelect(val.substring(1, val.length - 1), db, (results) => {
           whereObj.value = results.payload;
           wheres.push(whereObj);
@@ -267,7 +266,7 @@ export default class QueryHelper {
   }
 
   static getCollection(q, statementType) {
-    let query = q.replace(/\(.*\)/, '').trim();
+    let query = q.replace(/\(.*\)/, '').trim(); //removes nested selects
     let terms = query.split(" ");
     if (statementType === UPDATE_STATEMENT) {
       return StringHelper.replaceAll(terms[1], /\./, "/");
@@ -277,7 +276,8 @@ export default class QueryHelper {
         let collection = terms[0].replace(";", "");
         return StringHelper.replaceAll(collection, /\./, "/");
       }
-      let collectionIndexStart = query.indexOf("from ") + 5;
+      let collectionIndexStart = query.indexOf("from ") + 4;
+      if (collectionIndexStart < 0) { throw "Error determining collection."; }
       if (collectionIndexStart < 5) { return StringHelper.replaceAll(terms[0], /\./, "/"); }
       let trimmedCol = query.substring(collectionIndexStart).trim();
       let collectionIndexEnd = trimmedCol.match(/\ |;|$/).index;
@@ -290,7 +290,7 @@ export default class QueryHelper {
       let term = StringHelper.replaceAll(terms[index], /;/, "");
       return StringHelper.replaceAll(term, /\./, "/");
     }
-    return null;
+    throw "Error determining collection.";
   }
 
   static getSelectedFields(q) {
@@ -350,7 +350,6 @@ export default class QueryHelper {
     if (!results) {
       return null;
     }
-
     let returnedResults = {};
     let nonMatch = {};
     for (let i = 0; i < whereStatements.length; i++) {
@@ -378,6 +377,7 @@ export default class QueryHelper {
   }
 
   static conditionIsTrue(val1, val2, comparator) {
+    debugger;
     switch (comparator) {
       case "=":
         return this.determineEquals(val1, val2);
@@ -396,7 +396,7 @@ export default class QueryHelper {
       case "!like":
         return !this.determineStringIsLike(val1, val2);
       default:
-        return false;
+        throw "Unrecognized comparator: " + comparator;
     }
   }
 
@@ -425,6 +425,7 @@ export default class QueryHelper {
     if (greaterThanEqIndex >= 0) {
       return { comparator: ">=", index: greaterThanEqIndex };
     }
+
     let greaterThanIndex = where.indexOf(">");
     if (greaterThanIndex >= 0) {
       return { comparator: ">", index: greaterThanIndex };
@@ -449,8 +450,14 @@ export default class QueryHelper {
       return { comparator: "like", index: likeIndex };
     }
 
-    return { comparator: "=", index: where.indexOf("=") };
+    let eqIndex = where.indexOf("=");
+    if (eqIndex >= 0) {
+      return { comparator: "=", index: eqIndex };
+    }
+
+    throw "Unrecognized comparator in where clause: '" + where + "'.";
   }
+
 
   static getNotEqualIndex(condition) {
     return StringHelper.regexIndexOf(condition, /!=|<>/);

@@ -2,7 +2,6 @@ import React from 'react';
 import classnames from 'classnames';
 import typeName from 'type-name';
 import ReactTooltip from 'react-tooltip';
-import ValueRow from './ValueRow';
 import PropTypes from 'prop-types';
 import StringHelper from '../../helpers/StringHelper';
 import UpdateService from '../../service/UpdateService';

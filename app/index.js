@@ -15,9 +15,7 @@ if (CACHE_RESET) {
 
 const store = new Store();
 const stores = {
-  // Key can be whatever you want
   store: store
-  // ...other stores
 };
 
 render(
