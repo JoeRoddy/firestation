@@ -1,7 +1,8 @@
 import React from 'react';
 import FirebaseService from '../../service/FirebaseService';
 
-const DatabaseConfig = ({ currentDatabase, store, handleFile, closeModal }) => {
+const DatabaseConfig = ({ store, handleFile, closeModal }) => {
+    const currentDatabase = store.currentDatabase;
     const save = () => {
         let database = store.currentDatabase;
         let title = document.getElementById("db-title-input").value;

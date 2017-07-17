@@ -8,17 +8,10 @@ import QueryHistory from './QueryHistory';
 
 @observer
 export default class Workstation extends Component {
-    constructor(props) {
-        super(props);
-        this.deleteQuery = this.deleteQuery.bind(this);
-        this.toggleSavedQueries = this.toggleSavedQueries.bind(this);
-
-        this.execute = this.execute.bind(this);
-        this.state = {
-            savedQueries: null,
-            savedQueriesIsOpen: true,
-            modal: null
-        }
+    state = {
+        savedQueries: null,
+        savedQueriesIsOpen: true,
+        modal: null
     }
 
     componentDidMount() {
@@ -27,7 +20,7 @@ export default class Workstation extends Component {
         }
     }
 
-    execute() {
+    execute = () => {
         let selectedText = this.getSelectionText();
         let query = this.props.store.query;
         if (selectedText && query.includes(selectedText)) {
@@ -36,19 +29,19 @@ export default class Workstation extends Component {
         this.props.executeQuery(query);
     }
 
-    saveQuery() {
+    saveQuery = () => {
         this.props.store.modal = "saveQuery";
     }
 
-    deleteQuery(query) {
+    deleteQuery = (query) => {
         this.props.store.deleteQuery;
     }
 
-    toggleSavedQueries() {
+    toggleSavedQueries = () => {
         this.setState({ savedQueriesIsOpen: !this.state.savedQueriesIsOpen });
     }
 
-    getSelectionText() {
+    getSelectionText = () => {
         var text = "";
         var activeEl = document.activeElement;
         var activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
@@ -64,7 +57,7 @@ export default class Workstation extends Component {
         return this.props.store.selectedText;
     }
 
-    getResultsTitle(payloadSize) {
+    getResultsTitle = (payloadSize) => {
         let payloadDesc = payloadSize > 50 ? "Displaying 50 of " + payloadSize : payloadSize;
         switch (this.props.store.results.statementType) {
             case "UPDATE_STATEMENT":

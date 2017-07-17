@@ -1,6 +1,6 @@
 import React from 'react';
 
-const FunctionalTemplate = ({ store }) => {
+const SaveQuery = ({ store }) => {
     const save = () => {
         if (!store.query) {
             store.modal = null;
@@ -23,4 +23,4 @@ const FunctionalTemplate = ({ store }) => {
     )
 }
 
-export default FunctionalTemplate;
+export default SaveQuery;

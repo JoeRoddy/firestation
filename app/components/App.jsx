@@ -11,17 +11,17 @@ import Modal from './modals/Modal';
 export default class App extends Component {
   constructor(props) {
     super(props);
-    this.createDb = this.createDb.bind(this);
-    this.commit = this.commit.bind(this);
-    this.cancelCommit = this.cancelCommit.bind(this);
-    this.updateSavedQueries = this.updateSavedQueries.bind(this);
+    // this.createDb = this.createDb.bind(this);
+    // this.commit = this.commit.bind(this);
+    // this.cancelCommit = this.cancelCommit.bind(this);
+    // this.updateSavedQueries = this.updateSavedQueries.bind(this);
   }
 
   componentWillMount() {
     this.setCurrentDb(this.props.store.currentDatabase);
   }
 
-  setCurrentDb(currentDatabase) {
+  setCurrentDb = (currentDatabase) => {
     if (!currentDatabase) { return }
     this.killFirebaseListeners();
     FirebaseService.startFirebaseApp(currentDatabase);
@@ -32,14 +32,14 @@ export default class App extends Component {
     // })
   }
 
-  updateSavedQueries(db) {
+  updateSavedQueries = (db) => {
     const dbUrl = db.config.databaseURL;
     let queriesByDb = this.props.store.savedQueriesByDb;
     let savedQueries = (!queriesByDb || !queriesByDb[url]) ? null : queriesByDb[url];
     this.setState({ savedQueries });
   }
 
-  createDb(database) {
+  createDb = (database) => {
     let err = this.props.store.createNewDatabase(database);
     if (err) { return err; }
     this.setCurrentDb(database);
@@ -47,11 +47,11 @@ export default class App extends Component {
     this.props.store.modal = null;
   }
 
-  startFirebaseForDb(db) {
+  startFirebaseForDb = (db) => {
     FirebaseService.startFirebaseApp(db.url);
   }
 
-  executeQuery(query) {
+  executeQuery = (query) => {
     this.killFirebaseListeners();
     query = QueryHelper.formatAndCleanQuery(query);
     this.props.store.addQueryToHistory(query);
@@ -71,7 +71,7 @@ export default class App extends Component {
     }
   }
 
-  commit() {
+  commit = () => {
     this.killFirebaseListeners();
     if (!this.props.store.commitQuery || !this.props.store.currentDatabase) { return; }
     const query = QueryHelper.formatAndCleanQuery(this.props.store.commitQuery);
@@ -87,14 +87,14 @@ export default class App extends Component {
     }
   }
 
-  killFirebaseListeners() {
+  killFirebaseListeners = () => {
     this.props.store.firebaseListeners.forEach(ref => {
       ref && ref.off("value");
     })
     this.props.store.firebaseListeners = [];
   }
 
-  cancelCommit() {
+  cancelCommit = () => {
     this.props.store.clearResults();
   }
 
@@ -107,11 +107,11 @@ export default class App extends Component {
       cancelCommit: this.cancelCommit,
       createDb: this.createDb,
       commit: this.commit,
-      executeQuery: this.executeQuery.bind(this),
+      executeQuery: this.executeQuery,
       results: this.props.store.results,
       newDb: this.props.store.newDb,
       savedQueries: savedQueries,
-      setCurrentDb: this.setCurrentDb.bind(this),
+      setCurrentDb: this.setCurrentDb,
       startFirebaseForDb: this.startFirebaseForDb,
       store: this.props.store,
       updateSavedQueries: this.updateSavedQueries,
