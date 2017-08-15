@@ -3,6 +3,7 @@ import FirebaseService from '../service/FirebaseService';
 import fs from 'fs';
 import moment from 'moment';
 const { dialog, app } = require('electron').remote;
+const shell = require('electron').shell;
 
 const SideMenu = ({ savedQueries, deleteQuery,
     savedQueriesIsOpen, toggleSavedQueries, store }) => {
@@ -35,9 +36,9 @@ const SideMenu = ({ savedQueries, deleteQuery,
 
     const downloadBackup = () => {
         let db = FirebaseService.startFirebaseApp(store.currentDatabase).database();
+        let path = app.getPath("desktop") + "/" + moment().format("MMMDo_") + store.currentDatabase.title + ".json";
         db.ref("/").once("value", snap => {
             let dbContent = snap.val();
-            let path = app.getPath("desktop") + "/" + moment().format("MMMDo_") + store.currentDatabase.title + ".json";
             dialog.showSaveDialog({ defaultPath: path }, fileName => {
                 if (fileName === undefined) return;
                 fs.writeFile(fileName, JSON.stringify(dbContent), function (err) {
@@ -57,7 +58,8 @@ const SideMenu = ({ savedQueries, deleteQuery,
                 <div className="sidemenu-savedQueries">{renderSavedQueries()}</div>}
             {/*<a className="sidemenu-item"><i className="fa fa-code" /> Query Translator</a>*/}
             <a onClick={downloadBackup} className="sidemenu-item"><i className="fa fa-download" /> &nbsp;Download Backup</a>
-            {/*<a className="sidemenu-item"><i className="fa fa-book" /> &nbsp;Documentation</a>*/}
+            <a className="sidemenu-item" onClick={e => shell.openExternal("https://docs.firestation.io/")}>
+                <i className="fa fa-book" /> &nbsp;Documentation</a>
         </div>
     )
 }

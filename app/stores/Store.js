@@ -87,6 +87,10 @@ class Store {
     this.currentDatabase = database;
     CacheHelper.updateLocalStore("databases", databases);
     CacheHelper.updateLocalStore("currentDatabase", database);
+    let exampleQueries = this.getExampleQueries();
+    exampleQueries.forEach(q=>{
+      this.saveQuery(q);
+    })
   }
 
   updateDatabase(database) {
@@ -147,5 +151,28 @@ class Store {
     this.savedQueriesByDb = queriesByDb;
     CacheHelper.updateLocalStore("savedQueriesByDb", queriesByDb);
   }
+
+  getExampleQueries(){
+    return [
+      {
+        title:"Example Select",
+        body:"select * from users where email = 'johndoe@gmail.com';"
+      },
+      {
+        title:"Example Update",
+        body:"update users set legendaryPlayer = true where level > 100;"
+      },
+      {
+        title:"Example Delete",
+        body:"delete from users where cheater = true;"
+      },
+      {
+        title:"Example Insert",
+        body:"insert into users (name, level, email) values ('Joe', 99, 'joe@gmail.com');"
+      },
+    ]
+  }
 }
+
+
 export default Store;
