@@ -128,7 +128,8 @@ export default class ObjectNode extends React.Component {
                                 Delete Object
                     </ReactTooltip></span>}
                 </div>
-                <table style={{ display: opened ? 'block' : 'none' }}>
+                <table style={{ display: opened ? 'block' : 'none' }}
+                    className={level === 1 ? 'root-table' : 'nested-table'}>
                     <tbody>
                         {iter.map(({ prop, value }) => {
                             const cpath =

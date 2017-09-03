@@ -377,7 +377,6 @@ export default class QueryHelper {
   }
 
   static conditionIsTrue(val1, val2, comparator) {
-    debugger;
     switch (comparator) {
       case "=":
         return this.determineEquals(val1, val2);

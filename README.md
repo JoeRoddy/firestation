@@ -34,7 +34,7 @@ $ npm run dev
 ### Features
 * better error messages
 * build commits into history, allow user to revert back to previous data
-* deploy documentation
+* fix css for nested objects in tree
 
 ## Later
 

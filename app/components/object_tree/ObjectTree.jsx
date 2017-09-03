@@ -27,9 +27,10 @@ export default class ObjectTree extends React.Component {
 
   render() {
     const { className, value, level, noValue, store } = this.props;
-    if (!value || value.payload == undefined) { return <span /> }
-    const resultsToDisplayInTree = subObject(value.payload, 0, 50);
+    if (!value || value.payload == undefined) { return <span /> } 
+    //^ payload can be false
 
+    const resultsToDisplayInTree = subObject(value.payload, 0, 50);
     const props = {
       value: resultsToDisplayInTree,
       path: '',

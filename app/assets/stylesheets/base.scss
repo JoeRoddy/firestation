@@ -70,9 +70,10 @@ body {
         }
     }
     .QueryHistory {
+        margin-top: 20px;
         .histTable-container {
-            max-height: 55vh;
-            height: 20vh;
+            max-height: 30vh;
+            height: 15vh;
             flex-grow: 2;
             overflow: auto;
         }
@@ -84,18 +85,22 @@ body {
         }
     }
     .workstation-underWorkbook {
-        height: 50vh;
-        max-height: 55vh;
+        height: 55vh;
+        max-height: 50vh;
         width: 100%;
         display: flex;
         flex-direction: column;
         overflow: hidden;
         justify-content: space-between;
         .objectTree-container {
-            max-height: 55vh;
-            flex-grow: 3;
+            max-height: 50vh;
+            flex:1;
             overflow-x: hidden;
-            overflow-y: auto;
+        }
+        .root-table{
+            overflow-y:scroll;
+            overflow-x: hidden;            
+            max-height: 44vh;
         }
         .queryError{
             color: red;
