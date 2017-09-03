@@ -48,6 +48,10 @@ const SideMenu = ({ savedQueries, deleteQuery,
         })
     }
 
+    let projectId = store.currentDatabase && store.currentDatabase.serviceKey &&
+        store.currentDatabase.serviceKey.project_id;
+    const firebaseLink = "https://console.firebase.google.com/" + (projectId ? `project/${projectId}/overview` : "");
+
     return (
         <div className="Sidemenu">
             <a className="sidemenu-item" onClick={e => store.modal = "config"}><i className="fa fa-cog" />   &nbsp;DB Config</a>
@@ -60,6 +64,10 @@ const SideMenu = ({ savedQueries, deleteQuery,
             <a onClick={downloadBackup} className="sidemenu-item"><i className="fa fa-download" /> &nbsp;Download Backup</a>
             <a className="sidemenu-item" onClick={e => shell.openExternal("https://docs.firestation.io/")}>
                 <i className="fa fa-book" /> &nbsp;Documentation</a>
+            <a className="sidemenu-item" onClick={e => shell.openExternal(firebaseLink)}>
+                <img src="https://firebasestorage.googleapis.com/v0/b/firestation-e149d.appspot.com/o/images%2FFirebase_icon.png?alt=media&token=fbe8d480-1178-4c16-a9cc-2785135967e9" 
+                alt="" className="sidemenu-icon"/>
+                &nbsp;Firebase Console</a>
         </div>
     )
 }
