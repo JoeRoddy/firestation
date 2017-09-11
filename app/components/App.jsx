@@ -1,28 +1,22 @@
-import React, { Component } from 'react';
-import { inject, observer } from 'mobx-react';
-import '../assets/stylesheets/base.scss';
-import FirebaseService from '../service/FirebaseService';
-import QueryHelper from '../helpers/QueryHelper';
-import Workstation from './Workstation';
-import Navbar from './Navbar';
-import Modal from './modals/Modal';
+import React, { Component } from "react";
+import { inject, observer } from "mobx-react";
+import "../assets/stylesheets/base.scss";
+import FirebaseService from "../service/FirebaseService";
+import QueryHelper from "../helpers/QueryHelper";
+import Workstation from "./Workstation";
+import Navbar from "./Navbar";
+import Modal from "./modals/Modal";
 
 @observer
 export default class App extends Component {
-  constructor(props) {
-    super(props);
-    // this.createDb = this.createDb.bind(this);
-    // this.commit = this.commit.bind(this);
-    // this.cancelCommit = this.cancelCommit.bind(this);
-    // this.updateSavedQueries = this.updateSavedQueries.bind(this);
-  }
-
   componentWillMount() {
     this.setCurrentDb(this.props.store.currentDatabase);
   }
 
-  setCurrentDb = (currentDatabase) => {
-    if (!currentDatabase) { return }
+  setCurrentDb = currentDatabase => {
+    if (!currentDatabase) {
+      return;
+    }
     this.killFirebaseListeners();
     FirebaseService.startFirebaseApp(currentDatabase);
     this.props.store.setCurrentDatabase(currentDatabase);
@@ -30,78 +24,96 @@ export default class App extends Component {
     //   console.log(rootKeys)
     //   this.props.store.rootKeys = rootKeys;
     // })
-  }
+  };
 
-  updateSavedQueries = (db) => {
+  updateSavedQueries = db => {
     const dbUrl = db.config.databaseURL;
     let queriesByDb = this.props.store.savedQueriesByDb;
-    let savedQueries = (!queriesByDb || !queriesByDb[url]) ? null : queriesByDb[url];
+    let savedQueries =
+      !queriesByDb || !queriesByDb[url] ? null : queriesByDb[url];
     this.setState({ savedQueries });
-  }
+  };
 
-  createDb = (database) => {
+  createDb = database => {
     let err = this.props.store.createNewDatabase(database);
-    if (err) { return err; }
+    if (err) {
+      return err;
+    }
     this.setCurrentDb(database);
     this.props.store.currentDatabase = database;
     this.props.store.modal = null;
-  }
+  };
 
-  startFirebaseForDb = (db) => {
+  startFirebaseForDb = db => {
     FirebaseService.startFirebaseApp(db.url);
-  }
+  };
 
-  executeQuery = (query) => {
+  executeQuery = query => {
     this.killFirebaseListeners();
     query = QueryHelper.formatAndCleanQuery(query);
     this.props.store.addQueryToHistory(query);
     try {
-      QueryHelper.executeQuery(query, this.props.store.currentDatabase, (results => {
-        if (results && results.queryType != "SELECT_STATEMENT") {
-          this.props.store.commitQuery = query;
-          this.props.store.results = results;
-          this.props.store.firebaseListeners.push(results.firebaseListener);
-        } else {
-          this.props.store.results = results;
-          this.props.store.firebaseListeners.push(results.firebaseListener);
+      QueryHelper.executeQuery(
+        query,
+        this.props.store.currentDatabase,
+        results => {
+          if (results && results.queryType != "SELECT_STATEMENT") {
+            this.props.store.commitQuery = query;
+            this.props.store.results = results;
+            this.props.store.firebaseListeners.push(results.firebaseListener);
+          } else {
+            this.props.store.results = results;
+            this.props.store.firebaseListeners.push(results.firebaseListener);
+          }
         }
-      }));
+      );
     } catch (error) {
       this.props.store.results = { error };
     }
-  }
+  };
 
   commit = () => {
     this.killFirebaseListeners();
-    if (!this.props.store.commitQuery || !this.props.store.currentDatabase) { return; }
+    if (!this.props.store.commitQuery || !this.props.store.currentDatabase) {
+      return;
+    }
     const query = QueryHelper.formatAndCleanQuery(this.props.store.commitQuery);
     this.props.store.markQueryAsCommitted(query);
     try {
-      QueryHelper.executeQuery(query, this.props.store.currentDatabase, (results => {
-        this.props.store.firebaseListeners.push(results.firebaseListener);
-        this.killFirebaseListeners();
-        this.props.store.clearResults();
-      }), true);
+      QueryHelper.executeQuery(
+        query,
+        this.props.store.currentDatabase,
+        results => {
+          this.props.store.firebaseListeners.push(results.firebaseListener);
+          this.killFirebaseListeners();
+          this.props.store.clearResults();
+        },
+        true
+      );
     } catch (error) {
       this.props.store.results = { error };
     }
-  }
+  };
 
   killFirebaseListeners = () => {
     this.props.store.firebaseListeners.forEach(ref => {
       ref && ref.off("value");
-    })
+    });
     this.props.store.firebaseListeners = [];
-  }
+  };
 
   cancelCommit = () => {
     this.props.store.clearResults();
-  }
+  };
 
   render() {
-    console.log('store:', this.props.store);
-    const savedQueries = (this.props.store.savedQueriesByDb && this.props.store.currentDatabase)
-      ? this.props.store.savedQueriesByDb[this.props.store.currentDatabase.url] : null;
+    console.log("store:", this.props.store);
+    const savedQueries =
+      this.props.store.savedQueriesByDb && this.props.store.currentDatabase
+        ? this.props.store.savedQueriesByDb[
+            this.props.store.currentDatabase.url
+          ]
+        : null;
 
     const props = {
       cancelCommit: this.cancelCommit,
@@ -114,8 +126,8 @@ export default class App extends Component {
       setCurrentDb: this.setCurrentDb,
       startFirebaseForDb: this.startFirebaseForDb,
       store: this.props.store,
-      updateSavedQueries: this.updateSavedQueries,
-    }
+      updateSavedQueries: this.updateSavedQueries
+    };
 
     return (
       <div className="App">
@@ -123,7 +135,6 @@ export default class App extends Component {
         {this.props.store.modal && <Modal {...props} />}
         <Workstation {...props} />
       </div>
-    )
+    );
   }
-};
-
+}
