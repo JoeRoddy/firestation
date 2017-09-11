@@ -179,7 +179,13 @@ export default class Workstation extends Component {
             </div>
           </div>
           <br />
-          <div className="workstation-underWorkbook">
+          <div
+            className={
+              this.state.resultsOpen
+                ? "workstation-underWorkbook"
+                : "workstation-underWorkbook resultsCollapsed"
+            }
+          >
             {store.results &&
               store.results.error &&
               <h4 className="queryError">

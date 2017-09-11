@@ -89,7 +89,7 @@ body {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    justify-content: space-between;
+    justify-content: flex-start;
     .objectTree-container {
       h4 {
         display: inline-block;
@@ -130,6 +130,11 @@ body {
     }
     .queryError {
       color: red;
+    }
+  }
+  .resultsCollapsed {
+    .objectTree-container {
+      flex: .1 !important;
     }
   }
 }
