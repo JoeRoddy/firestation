@@ -1,6 +1,7 @@
+$gray:#aaa;
 $break-small: 800px;
 $break-large: 1300px;
-$break-short: 1000px;
+$break-short: 960px;
 
 @mixin respond-to($media) {
   @if $media==small {
@@ -95,8 +96,12 @@ body {
         display: inline-block;
       }
       .results-header {
-        button {
-          float: right;
+        .gray-icon{
+          float:right;
+          background-color: white;
+          color:$gray;
+          font-size: 30px;
+          cursor: pointer;
         }
       }
       display: flex;

@@ -124,7 +124,8 @@ export default class Workstation extends Component {
             {store.currentDatabase.title}
           </h1>
           {/*{store.rootKeys &&
-                        <div>Root Keys: <ObjectTree value={store.rootKeys} level={0} noValue={true} /><br /></div>}*/}
+          <div>Root Keys: <ObjectTree value={store.rootKeys} 
+          level={0} noValue={true} /><br /></div>}*/}
           <Workbook execute={this.execute} {...props} height="100%" />
           <div className="workstation-btns">
             {!store.commitQuery || !payloadSize
@@ -198,13 +199,28 @@ export default class Workstation extends Component {
                   <h4>
                     {this.getResultsTitle(payloadSize)}
                   </h4>
-                  <button
+                  <ReactTooltip
+                    id="expandTooltip"
+                    type="dark"
+                    effect="solid"
+                    place="top"
+                  >
+                    {this.state.resultsOpen
+                      ? "Collapse results"
+                      : "Expand results"}
+                  </ReactTooltip>
+                  <i
+                    data-tip
+                    data-for="expandTooltip"
+                    className={
+                      "fa fa-" +
+                      (this.state.resultsOpen ? "minus" : "plus") +
+                      "-square-o gray-icon"
+                    }
                     onClick={e => {
                       this.setState({ resultsOpen: !this.state.resultsOpen });
                     }}
-                  >
-                    {this.state.resultsOpen ? "Collapse" : "Expand"}
-                  </button>
+                  />
                 </div>
                 {payloadSize > 0 &&
                   store.results.payload != null &&
