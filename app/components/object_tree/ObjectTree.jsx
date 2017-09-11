@@ -1,8 +1,8 @@
-import React from 'react';
-import classnames from 'classnames';
-import PropTypes from 'prop-types';
-import ObjectNode from './ObjectNode';
-import {subObject} from '../../helpers/ObjectHelper'; 
+import React from "react";
+import classnames from "classnames";
+import PropTypes from "prop-types";
+import ObjectNode from "./ObjectNode";
+import { subObject } from "../../helpers/ObjectHelper";
 /**
  * https://github.com/stomita/react-object-tree/
  */
@@ -14,7 +14,7 @@ export default class ObjectTree extends React.Component {
     this.state = {
       pathUnderEdit: null,
       creationPath: null
-    }
+    };
   }
 
   setPathUnderEdit(pathUnderEdit) {
@@ -27,13 +27,15 @@ export default class ObjectTree extends React.Component {
 
   render() {
     const { className, value, level, noValue, store } = this.props;
-    if (!value || value.payload == undefined) { return <span /> } 
+    if (!value || value.payload == undefined) {
+      return <span />;
+    }
     //^ payload can be false
 
     const resultsToDisplayInTree = subObject(value.payload, 0, 50);
     const props = {
       value: resultsToDisplayInTree,
-      path: '',
+      path: "",
       pathUnderEdit: this.state.pathUnderEdit,
       setPathUnderEdit: this.setPathUnderEdit,
       creationPath: this.state.creationPath,
@@ -42,12 +44,12 @@ export default class ObjectTree extends React.Component {
       level: level,
       noValue: noValue,
       store: store
-    }
+    };
 
     return (
       <div className="ObjectTree">
-        <div className={classnames('object-tree', className)} id="object-tree">
-          <ObjectNode {...props} />
+        <div className={classnames("object-tree", className)} id="object-tree">
+          {this.props.resultsOpen && <ObjectNode {...props} />}
         </div>
       </div>
     );
