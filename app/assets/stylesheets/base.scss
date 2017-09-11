@@ -69,21 +69,6 @@ body {
             margin-left: 3px;
         }
     }
-    .QueryHistory {
-        margin-top: 20px;
-        .histTable-container {
-            max-height: 30vh;
-            height: 15vh;
-            flex-grow: 2;
-            overflow: auto;
-        }
-        .clickable {
-            cursor: pointer;
-            &:hover {
-                background-color: lightgray;
-            }
-        }
-    }
     .workstation-underWorkbook {
         height: 55vh;
         max-height: 50vh;
@@ -91,11 +76,26 @@ body {
         display: flex;
         flex-direction: column;
         overflow: hidden;
-        justify-content: space-between;
+        justify-content: flex-start;
         .objectTree-container {
-            max-height: 50vh;
-            flex:1;
+            // max-height: 50vh;
+            // flex:1;
             overflow-x: hidden;
+        }
+        .QueryHistory {
+            margin-top: 20px;
+            .histTable-container {
+                max-height: 30vh;
+                height: 15vh;
+                flex-grow: 2;
+                overflow: auto;
+            }
+            .clickable {
+                cursor: pointer;
+                &:hover {
+                    background-color: lightgray;
+                }
+            }
         }
         .root-table{
             overflow-y:scroll;
@@ -264,9 +264,11 @@ i {
             }
         }
     }
-    .sidemenu-icon{
-        width: 18px;
+    .firebase-sidemenu-icon{
+        width: 16px;
         margin-right: 5px;
+        margin-left: 2px;
+        padding-bottom: 5px;
     }
 }
 

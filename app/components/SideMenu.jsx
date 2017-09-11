@@ -66,7 +66,7 @@ const SideMenu = ({ savedQueries, deleteQuery,
                 <i className="fa fa-book" /> &nbsp;Documentation</a>
             <a className="sidemenu-item" onClick={e => shell.openExternal(firebaseLink)}>
                 <img src="https://firebasestorage.googleapis.com/v0/b/firestation-e149d.appspot.com/o/images%2FFirebase_icon.png?alt=media&token=fbe8d480-1178-4c16-a9cc-2785135967e9" 
-                alt="" className="sidemenu-icon"/>
+                alt="" className="firebase-sidemenu-icon"/>
                 &nbsp;Firebase Console</a>
         </div>
     )
