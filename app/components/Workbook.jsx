@@ -1,10 +1,12 @@
-import React, { Component } from 'react';
-import AceEditor from 'react-ace';
-import brace from 'brace';
-import 'brace/mode/sql';
-import 'brace/theme/github';
-import 'brace/ext/language_tools'
+import React, { Component } from "react";
+import AceEditor from "react-ace";
+import brace from "brace";
+import "brace/mode/sql";
+import "brace/theme/github";
+import "brace/ext/language_tools";
+import { observer } from "mobx-react";
 
+@observer
 export default class Workbook extends Component {
   componentWillReceiveProps(nextProps) {
     // const langTools = ace.acequire('ace/ext/language_tools');
@@ -17,35 +19,41 @@ export default class Workbook extends Component {
     //     }))
     //   }
     // }
-
     // langTools.addCompleter(customCompleter);
   }
 
+  componenentDidUpdate() {
+    store.focus = false;
+  }
+
   render() {
-    const {store, execute, query, defaultValue, listenForCtrlEnter} = this.props;
+    const { execute, query, defaultValue, listenForCtrlEnter } = this.props;
 
-    if(!store){return <span />;}
+    const store = this.props.store;
+    if (!store) {
+      return <span />;
+    }
 
-    let commands = [{
-      name: "execute",
-      exec: execute,
-      bindKey: { mac: "cmd-enter", win: "ctrl-enter" }
-    }]
-
-    if(store && store.focus && this.refs.code){
+    let commands = [
+      {
+        name: "execute",
+        exec: execute,
+        bindKey: { mac: "cmd-enter", win: "ctrl-enter" }
+      }
+    ];
+    if (store && store.focus && this.refs.code) {
       this.refs.code.editor.focus();
-      store.focus = false;
     }
-
-    let selectedTextChange = (newValue,e) =>{
+    let selectedTextChange = (newValue, e) => {
       store.selectedText = newValue;
-      console.log("e:",e)
-      console.log('selectedTex:',newValue);
-    }
+      console.log("e:", e);
+      console.log("selectedTex:", newValue);
+    };
 
     return (
       <div className="Workbook" id="workbook-query">
-        <AceEditor className="AceEditor"
+        <AceEditor
+          className="AceEditor"
           mode="sql"
           theme="github"
           height="25vh"
@@ -53,7 +61,9 @@ export default class Workbook extends Component {
           fontSize={14}
           ref="code"
           onKeyDown={listenForCtrlEnter}
-          onChange={e=>{store.query = e}}
+          onChange={e => {
+            store.query = e;
+          }}
           defaultValue={defaultValue}
           value={store.query}
           name="UNIQUE_ID_OF_DIV"
@@ -63,6 +73,6 @@ export default class Workbook extends Component {
           enableLiveAutocompletion
         />
       </div>
-    )
+    );
   }
 }

@@ -6,6 +6,7 @@ import Workbook from "./Workbook";
 import SideMenu from "./SideMenu";
 import QueryHistory from "./QueryHistory";
 import QueryResults from "./QueryResults";
+import ButtonRow from "./ButtonRow";
 
 @observer
 export default class Workstation extends Component {
@@ -66,33 +67,6 @@ export default class Workstation extends Component {
     this.setState({ [key]: val });
   };
 
-  // getResultsTitle = payloadSize => {
-  //   let payloadDesc =
-  //     payloadSize > 50 ? "Displaying 50 of " + payloadSize : payloadSize;
-  //   switch (this.props.store.results.statementType) {
-  //     case "UPDATE_STATEMENT":
-  //       return (
-  //         <span>
-  //           Updated Records ({payloadDesc}):
-  //         </span>
-  //       );
-  //     case "INSERT_STATEMENT":
-  //       return "Inserted Records:";
-  //     case "DELETE_STATEMENT":
-  //       return (
-  //         <span>
-  //           Records to Delete ({payloadDesc}):
-  //         </span>
-  //       );
-  //     default:
-  //       return (
-  //         <span>
-  //           Records ({payloadDesc}):
-  //         </span>
-  //       );
-  //   }
-  // };
-
   render() {
     const store = this.props.store;
     if (!store.databases[0]) {
@@ -113,6 +87,7 @@ export default class Workstation extends Component {
     const props = {
       store,
       payloadSize,
+      execute: this.execute,
       resultsOpen: this.state.resultsOpen,
       setWorkstationState: this.setWorkstationState
     };
@@ -133,59 +108,13 @@ export default class Workstation extends Component {
           {/*{store.rootKeys &&
           <div>Root Keys: <ObjectTree value={store.rootKeys} 
           level={0} noValue={true} /><br /></div>}*/}
-          <Workbook execute={this.execute} {...props} height="100%" />
-          <div className="workstation-btns">
-            {!store.commitQuery || !payloadSize
-              ? <button className="bt blue" onClick={this.execute}>
-                  Execute
-                </button>
-              : <div>
-                  <button className="bt commitbtn" onClick={this.props.commit}>
-                    Commit
-                  </button>
-                  <button className="bt red" onClick={this.props.cancelCommit}>
-                    Cancel
-                  </button>
-                </div>}
-            <div className="util-btns">
-              {store.query &&
-                <div>
-                  <button
-                    onClick={this.saveQuery.bind(this)}
-                    data-tip
-                    data-for="saveTooltip"
-                    className="bt sm"
-                  >
-                    <i className="fa fa-floppy-o" />
-                  </button>
-                  <ReactTooltip
-                    id="saveTooltip"
-                    type="dark"
-                    effect="solid"
-                    place="top"
-                  >
-                    <span>Save Query</span>
-                  </ReactTooltip>
-                </div>}
-              <button
-                onClick={e =>
-                  (store.queryHistoryIsOpen = !store.queryHistoryIsOpen)}
-                data-tip
-                data-for="historyTooltip"
-                className="bt sm white"
-              >
-                <i className="fa fa-clock-o" />
-              </button>
-              <ReactTooltip
-                id="historyTooltip"
-                type="dark"
-                effect="solid"
-                place="top"
-              >
-                <span>History</span>
-              </ReactTooltip>
-            </div>
-          </div>
+          <Workbook {...props} height="100%" />
+          <ButtonRow
+            {...props}
+            saveQuery={this.saveQuery}
+            commit={props.commit}
+            cancelCommit={props.cancelCommit}
+          />
           <br />
           <div
             className={
