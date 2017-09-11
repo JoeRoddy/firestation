@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import ReactTooltip from "react-tooltip";
 import { observer } from "mobx-react";
+
 import Workbook from "./Workbook";
-import ObjectTree from "./object_tree/ObjectTree";
 import SideMenu from "./SideMenu";
 import QueryHistory from "./QueryHistory";
+import QueryResults from "./QueryResults";
 
 @observer
 export default class Workstation extends Component {
@@ -61,32 +62,36 @@ export default class Workstation extends Component {
     return this.props.store.selectedText;
   };
 
-  getResultsTitle = payloadSize => {
-    let payloadDesc =
-      payloadSize > 50 ? "Displaying 50 of " + payloadSize : payloadSize;
-    switch (this.props.store.results.statementType) {
-      case "UPDATE_STATEMENT":
-        return (
-          <span>
-            Updated Records ({payloadDesc}):
-          </span>
-        );
-      case "INSERT_STATEMENT":
-        return "Inserted Records:";
-      case "DELETE_STATEMENT":
-        return (
-          <span>
-            Records to Delete ({payloadDesc}):
-          </span>
-        );
-      default:
-        return (
-          <span>
-            Records ({payloadDesc}):
-          </span>
-        );
-    }
+  setWorkstationState = (key, val) => {
+    this.setState({ [key]: val });
   };
+
+  // getResultsTitle = payloadSize => {
+  //   let payloadDesc =
+  //     payloadSize > 50 ? "Displaying 50 of " + payloadSize : payloadSize;
+  //   switch (this.props.store.results.statementType) {
+  //     case "UPDATE_STATEMENT":
+  //       return (
+  //         <span>
+  //           Updated Records ({payloadDesc}):
+  //         </span>
+  //       );
+  //     case "INSERT_STATEMENT":
+  //       return "Inserted Records:";
+  //     case "DELETE_STATEMENT":
+  //       return (
+  //         <span>
+  //           Records to Delete ({payloadDesc}):
+  //         </span>
+  //       );
+  //     default:
+  //       return (
+  //         <span>
+  //           Records ({payloadDesc}):
+  //         </span>
+  //       );
+  //   }
+  // };
 
   render() {
     const store = this.props.store;
@@ -106,8 +111,10 @@ export default class Workstation extends Component {
     }
 
     const props = {
-      store: store,
-      resultsOpen: this.state.resultsOpen
+      store,
+      payloadSize,
+      resultsOpen: this.state.resultsOpen,
+      setWorkstationState: this.setWorkstationState
     };
 
     return (
@@ -194,38 +201,7 @@ export default class Workstation extends Component {
               </h4>}
             {store.results &&
               payloadSize !== undefined &&
-              <div className="objectTree-container">
-                <div className="results-header">
-                  <h4>
-                    {this.getResultsTitle(payloadSize)}
-                  </h4>
-                  <ReactTooltip
-                    id="expandTooltip"
-                    type="dark"
-                    effect="solid"
-                    place="top"
-                  >
-                    {this.state.resultsOpen
-                      ? "Collapse results"
-                      : "Expand results"}
-                  </ReactTooltip>
-                  <i
-                    data-tip
-                    data-for="expandTooltip"
-                    className={
-                      "fa fa-" +
-                      (this.state.resultsOpen ? "minus" : "plus") +
-                      "-square-o gray-icon"
-                    }
-                    onClick={e => {
-                      this.setState({ resultsOpen: !this.state.resultsOpen });
-                    }}
-                  />
-                </div>
-                {payloadSize > 0 &&
-                  store.results.payload != null &&
-                  <ObjectTree value={store.results} level={2} {...props} />}
-              </div>}
+              <QueryResults {...props} />}
             {store.queryHistoryIsOpen &&
               <QueryHistory history={store.getQueryHistory()} {...props} />}
           </div>
