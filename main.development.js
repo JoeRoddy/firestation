@@ -38,7 +38,7 @@ app.on('ready', async () => {
     show: false,
     height: 800,
     width: 1281,
-    icon: path.join(__dirname, 'app/assets/images/favicon.png'),
+    icon: path.join(__dirname, 'app/assets/images/logo.ico'), 
     title:"Firestation"
 
   })
