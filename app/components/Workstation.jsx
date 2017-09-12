@@ -113,8 +113,8 @@ export default class Workstation extends Component {
           <ButtonRow
             {...props}
             saveQuery={this.saveQuery}
-            commit={props.commit}
-            cancelCommit={props.cancelCommit}
+            commit={this.props.commit}
+            cancelCommit={this.props.cancelCommit}
           />
           <br />
           <div

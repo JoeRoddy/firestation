@@ -596,18 +596,15 @@ i.fa-times {
             min-width: 8vw;
           }
         }
-        tr:hover {
-          .delete-prop {
+        tr:hover > .prop-value > th> .delete-prop {
             display: block;
             cursor: pointer;
             color: red;
+            margin-left: 5px;
+            
             &:hover {
               color: black;
             }
-            &.delete-prop {
-              margin-left: 5px;
-            }
-          }
         }
       }
     }
