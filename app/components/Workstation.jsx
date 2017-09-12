@@ -69,6 +69,7 @@ export default class Workstation extends Component {
 
   render() {
     const store = this.props.store;
+    const query = store.query; //updates children
     if (!store.databases[0]) {
       return <span />;
     }

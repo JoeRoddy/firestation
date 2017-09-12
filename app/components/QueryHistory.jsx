@@ -62,7 +62,7 @@ const QueryHistory = ({ history, store }) => {
 };
 
 QueryHistory.propTypes = {
-  history: PropTypes.array.isRequired,
+  history: PropTypes.object.isRequired,
   store: PropTypes.object.isRequired
 };
 

@@ -4,9 +4,7 @@ import brace from "brace";
 import "brace/mode/sql";
 import "brace/theme/github";
 import "brace/ext/language_tools";
-import { observer } from "mobx-react";
 
-@observer
 export default class Workbook extends Component {
   componentWillReceiveProps(nextProps) {
     // const langTools = ace.acequire('ace/ext/language_tools');

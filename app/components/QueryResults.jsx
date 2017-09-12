@@ -7,6 +7,7 @@ import StringHelper from "../helpers/StringHelper";
 import ObjectTree from "./object_tree/ObjectTree";
 
 const QueryResults = props => {
+  console.log("results tree render")
   const store = props.store;
   return (
     <div className="objectTree-container">
