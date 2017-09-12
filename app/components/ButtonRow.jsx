@@ -9,7 +9,9 @@ const ButtonRow = props => {
     <div className="workstation-btns">
       {!store.commitQuery || !payloadSize
         ? <button className="bt blue" onClick={props.execute}>
-            Execute
+            {props.executingQuery
+              ? <i className="fa fa-circle-o-notch fa-spin" />
+              : "Execute"}
           </button>
         : <div>
             <button className="bt commitbtn" onClick={props.commit}>
@@ -66,7 +68,8 @@ ButtonRow.propTypes = {
   execute: PropTypes.func.isRequired,
   commit: PropTypes.func.isRequired,
   cancelCommit: PropTypes.func.isRequired,
-  saveQuery: PropTypes.func.isRequired
+  saveQuery: PropTypes.func.isRequired,
+  executingQuery: PropTypes.bool.isRequired
 };
 
 export default ButtonRow;

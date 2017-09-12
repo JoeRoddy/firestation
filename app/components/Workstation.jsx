@@ -112,6 +112,7 @@ export default class Workstation extends Component {
           <Workbook {...props} height="100%" />
           <ButtonRow
             {...props}
+            executingQuery={store.executingQuery}
             saveQuery={this.saveQuery}
             commit={this.props.commit}
             cancelCommit={this.props.cancelCommit}

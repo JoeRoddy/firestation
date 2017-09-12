@@ -52,11 +52,13 @@ export default class App extends Component {
     this.killFirebaseListeners();
     query = QueryHelper.formatAndCleanQuery(query);
     this.props.store.addQueryToHistory(query);
+    this.props.store.executingQuery = true;
     try {
       QueryHelper.executeQuery(
         query,
         this.props.store.currentDatabase,
         results => {
+          this.props.store.executingQuery = false;
           if (results && results.queryType != "SELECT_STATEMENT") {
             this.props.store.commitQuery = query;
             this.props.store.results = results;
@@ -69,6 +71,7 @@ export default class App extends Component {
       );
     } catch (error) {
       this.props.store.results = { error };
+      this.props.store.executingQuery = false;
     }
   };
 

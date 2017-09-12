@@ -29,18 +29,22 @@ $ npm run dev
 
 # To Do
 
-### Bugs
+## Bugs
 
-### Features
+## Features
 * better error messages
 * build commits into history, allow user to revert back to previous data
-
-## Later
-* implement ctrl-f : window.find like chrome
 
 ### Keymap
 * give shortcuts preview (ctrl+enter --> execute query, etc)
 * allow users to add shortcuts to paste saved queries
 
+### Workbook
+* fix autocompletion, workbook should learn about common collections/props and use them as suggestions
+
+
 ### Query Translator
 * javascript first, then ios or android
+
+## Later
+* implement ctrl-f : window.find like chrome

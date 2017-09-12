@@ -23,6 +23,7 @@ class Store {
   //Workstation
   @observable queryHistoryIsOpen = false;
   @observable query = "";
+  @observable executingQuery = false;
 
   //Workbook
   @observable focus = false;
