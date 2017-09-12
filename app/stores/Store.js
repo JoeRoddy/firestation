@@ -1,21 +1,24 @@
-import { observable } from 'mobx';
-import CacheHelper from '../helpers/CacheHelper';
-import FirebaseService from '../service/FirebaseService';
+import { observable } from "mobx";
+import CacheHelper from "../helpers/CacheHelper";
+import FirebaseService from "../service/FirebaseService";
 
 class Store {
   @observable databases = CacheHelper.getFromLocalStore("databases");
   databases = this.databases ? this.databases : [];
-  @observable currentDatabase = CacheHelper.getFromLocalStore("currentDatabase");
+  @observable
+  currentDatabase = CacheHelper.getFromLocalStore("currentDatabase");
   @observable rootKeys = null;
-  @observable savedQueriesByDb = CacheHelper.getFromLocalStore("savedQueriesByDb");
+  @observable
+  savedQueriesByDb = CacheHelper.getFromLocalStore("savedQueriesByDb");
   @observable results = null;
   @observable commitQuery = null;
   @observable modal = null;
-  @observable queryHistoryByDb = CacheHelper.getFromLocalStore("queryHistoryByDb");
+  @observable
+  queryHistoryByDb = CacheHelper.getFromLocalStore("queryHistoryByDb");
   @observable firebaseListeners = [];
 
   //Modals
-  @observable newDb = {data:null};
+  @observable newDb = { data: null };
 
   //Workstation
   @observable queryHistoryIsOpen = false;
@@ -24,26 +27,32 @@ class Store {
   //Workbook
   @observable focus = false;
   @observable selectedText = "";
-  constructor() {
-
-  }
+  constructor() {}
 
   appendQuery(text) {
     const query = this.query ? this.query + "\n" + text : text;
     this.query = query;
+    this.focus = true;
   }
 
   getQueryHistory() {
-    if (!this.currentDatabase || !this.queryHistoryByDb) { return null; }
+    if (!this.currentDatabase || !this.queryHistoryByDb) {
+      return null;
+    }
     return this.queryHistoryByDb[this.currentDatabase.url];
   }
 
   addQueryToHistory(query) {
-    if (!this.currentDatabase) { return; }
+    if (!this.currentDatabase) {
+      return;
+    }
     const dbURL = this.currentDatabase.url;
     let queryHistoryByDb = this.queryHistoryByDb ? this.queryHistoryByDb : {};
-    let history = Object.keys(queryHistoryByDb).length > 0 && queryHistoryByDb[dbURL] ? queryHistoryByDb[dbURL] : [];
-    let queryObj = { body: query.trim(), date: new Date() }
+    let history =
+      Object.keys(queryHistoryByDb).length > 0 && queryHistoryByDb[dbURL]
+        ? queryHistoryByDb[dbURL]
+        : [];
+    let queryObj = { body: query.trim(), date: new Date() };
     if (history && history.length >= 15) {
       history = history.slice(0, 14);
     }
@@ -54,10 +63,12 @@ class Store {
     CacheHelper.updateLocalStore("queryHistoryByDb", queryHistoryByDb);
   }
 
-  markQueryAsCommitted(query){
+  markQueryAsCommitted(query) {
     try {
       let history = this.queryHistoryByDb[this.currentDatabase.url];
-      if(history[0].body.trim() !== query.trim()){ return; }
+      if (history[0].body.trim() !== query.trim()) {
+        return;
+      }
       history[0].committed = true;
       this.queryHistoryByDb[this.currentDatabase.url] = history;
       CacheHelper.updateLocalStore("queryHistoryByDb", this.queryHistoryByDb);
@@ -81,16 +92,18 @@ class Store {
 
   createNewDatabase(database) {
     let err = this.checkDbForErrors(database);
-    if (err) { return err; }
+    if (err) {
+      return err;
+    }
     let databases = this.databases;
     this.databases.push(database);
     this.currentDatabase = database;
     CacheHelper.updateLocalStore("databases", databases);
     CacheHelper.updateLocalStore("currentDatabase", database);
     let exampleQueries = this.getExampleQueries();
-    exampleQueries.forEach(q=>{
+    exampleQueries.forEach(q => {
       this.saveQuery(q);
-    })
+    });
   }
 
   updateDatabase(database) {
@@ -113,14 +126,13 @@ class Store {
     for (let i = 0; i < databases.length; i++) {
       let db = databases[i];
       if (db.title === database.title) {
-        return "You already have a database with the name \"" + db.title + "\".";
-      }
-      else if (db.serviceKey.project_id === database.serviceKey.project_id) {
-        return "This DB already exists as \"" + db.title + "\"";
+        return 'You already have a database with the name "' + db.title + '".';
+      } else if (db.serviceKey.project_id === database.serviceKey.project_id) {
+        return 'This DB already exists as "' + db.title + '"';
       }
     }
     if (!FirebaseService.databaseConfigInitializes(database)) {
-      return "Something went wrong with your file. It should look something like: myDatabaseName-firebase-adminsdk-4ieef-1521f1bc13.json"
+      return "Something went wrong with your file. It should look something like: myDatabaseName-firebase-adminsdk-4ieef-1521f1bc13.json";
     }
     return false;
   }
@@ -129,7 +141,8 @@ class Store {
     const url = this.currentDatabase.url;
     let queriesByDb = CacheHelper.getFromLocalStore("savedQueriesByDb");
     queriesByDb = queriesByDb ? queriesByDb : {};
-    let queriesForThisDb = (queriesByDb && queriesByDb[url]) ? queriesByDb[url] : [];
+    let queriesForThisDb =
+      queriesByDb && queriesByDb[url] ? queriesByDb[url] : [];
     queriesForThisDb.push(query);
     queriesByDb[url] = queriesForThisDb;
     this.savedQueriesByDb = queriesByDb;
@@ -140,7 +153,8 @@ class Store {
     const url = this.currentDatabase.url;
     let queriesByDb = CacheHelper.getFromLocalStore("savedQueriesByDb");
     queriesByDb = queriesByDb ? queriesByDb : {};
-    let queriesForThisDb = (queriesByDb && queriesByDb[url]) ? queriesByDb[url] : [];
+    let queriesForThisDb =
+      queriesByDb && queriesByDb[url] ? queriesByDb[url] : [];
     var i = queriesForThisDb.length;
     while (i--) {
       if (queriesForThisDb[i].body === query) {
@@ -152,27 +166,27 @@ class Store {
     CacheHelper.updateLocalStore("savedQueriesByDb", queriesByDb);
   }
 
-  getExampleQueries(){
+  getExampleQueries() {
     return [
       {
-        title:"Example Select",
-        body:"select * from users where email = 'johndoe@gmail.com';"
+        title: "Example Select",
+        body: "select * from users where email = 'johndoe@gmail.com';"
       },
       {
-        title:"Example Update",
-        body:"update users set legendaryPlayer = true where level > 100;"
+        title: "Example Update",
+        body: "update users set legendaryPlayer = true where level > 100;"
       },
       {
-        title:"Example Delete",
-        body:"delete from users where cheater = true;"
+        title: "Example Delete",
+        body: "delete from users where cheater = true;"
       },
       {
-        title:"Example Insert",
-        body:"insert into users (name, level, email) values ('Joe', 99, 'joe@gmail.com');"
-      },
-    ]
+        title: "Example Insert",
+        body:
+          "insert into users (name, level, email) values ('Joe', 99, 'joe@gmail.com');"
+      }
+    ];
   }
 }
-
 
 export default Store;

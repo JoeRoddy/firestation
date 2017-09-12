@@ -36,6 +36,7 @@ $ npm run dev
 * build commits into history, allow user to revert back to previous data
 
 ## Later
+* implement ctrl-f : window.find like chrome
 
 ### Keymap
 * give shortcuts preview (ctrl+enter --> execute query, etc)

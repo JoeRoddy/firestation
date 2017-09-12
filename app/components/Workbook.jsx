@@ -20,8 +20,13 @@ export default class Workbook extends Component {
     // langTools.addCompleter(customCompleter);
   }
 
-  componenentDidUpdate() {
-    store.focus = false;
+  componentDidUpdate() {
+    //query inserted, move to end of workbook
+    if (this.props.store && this.props.store.focus && this.refs.code) {
+      this.refs.code.editor.focus();
+      this.refs.code.editor.navigateFileEnd();
+      this.props.store.focus = false;
+    }
   }
 
   render() {
@@ -39,16 +44,16 @@ export default class Workbook extends Component {
         bindKey: { mac: "cmd-enter", win: "ctrl-enter" }
       }
     ];
-    if (store && store.focus && this.refs.code) {
-      this.refs.code.editor.focus();
-    }
+
     let selectedTextChange = (newValue, e) => {
       store.selectedText = newValue;
       console.log("e:", e);
-      console.log("selectedTex:", newValue);
+      console.log("selectedText:", newValue);
     };
 
     return (
+      // add props enableBasicAutocompletion, enableLiveAutocompletion
+      // to re-enable autocomplete
       <div className="Workbook" id="workbook-query">
         <AceEditor
           className="AceEditor"
@@ -67,8 +72,6 @@ export default class Workbook extends Component {
           name="UNIQUE_ID_OF_DIV"
           commands={commands}
           editorProps={{ $blockScrolling: true }}
-          enableBasicAutocompletion
-          enableLiveAutocompletion
         />
       </div>
     );
