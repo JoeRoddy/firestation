@@ -246,24 +246,25 @@ export default class ObjectNode extends React.Component {
                         level={clevel}
                         key={prop}
                       />
-                      <th>
-                        <i
-                          data-tip
-                          data-for="delete-child"
-                          onClick={e =>
-                            this.deleteConfirmation(e, entireFbPath)}
-                          className="fa fa-times delete-prop"
-                          aria-hidden="true"
-                        />
-                        <ReactTooltip
-                          id="delete-child"
-                          type="dark"
-                          effect="solid"
-                          place="top"
-                        >
-                          Delete Property
-                        </ReactTooltip>
-                      </th>
+                      {typeof value !== "object" &&
+                        <th>
+                          <i
+                            data-tip
+                            data-for="delete-child"
+                            onClick={e =>
+                              this.deleteConfirmation(e, entireFbPath)}
+                            className="fa fa-times delete-prop"
+                            aria-hidden="true"
+                          />
+                          <ReactTooltip
+                            id="delete-child"
+                            type="dark"
+                            effect="solid"
+                            place="top"
+                          >
+                            Delete Property
+                          </ReactTooltip>
+                        </th>}
                     </td>}
                 </tr>
               );

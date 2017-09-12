@@ -1,4 +1,4 @@
-$gray:#aaa;
+$gray: #aaa;
 $break-small: 800px;
 $break-large: 1300px;
 $break-short: 960px;
@@ -96,10 +96,10 @@ body {
         display: inline-block;
       }
       .results-header {
-        .gray-icon{
-          float:right;
+        .gray-icon {
+          float: right;
           background-color: white;
-          color:$gray;
+          color: $gray;
           font-size: 30px;
           cursor: pointer;
         }
@@ -597,7 +597,7 @@ i.fa-times {
           }
         }
         tr:hover {
-          i {
+          .delete-prop {
             display: block;
             cursor: pointer;
             color: red;
