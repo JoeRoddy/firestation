@@ -41,7 +41,7 @@ const ButtonRow = props => {
           </div>}
         <button
           onClick={e => (store.queryHistoryIsOpen = !store.queryHistoryIsOpen)}
-          data-tips
+          data-tip
           data-for="historyTooltip"
           className="bt sm white"
         >
