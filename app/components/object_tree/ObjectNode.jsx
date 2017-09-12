@@ -199,7 +199,10 @@ export default class ObjectNode extends React.Component {
                 type === "Array"
                   ? `${path}[${prop}]`
                   : path ? `${path}.${prop}` : prop;
-              const entireFbPath = that.props.fbPath + "/" + prop;
+              const entireFbPath =
+                fbPath +
+                (fbPath.charAt(fbPath.length - 1) === "/" ? "" : "/") +
+                prop;
               const handleClick = () => {
                 this.setState({ keyEdit: true });
                 this.props.setPathUnderEdit(entireFbPath);
@@ -283,7 +286,12 @@ export default class ObjectNode extends React.Component {
     let newValue = StringHelper.getParsedValue(this.state.newVal);
     let path = this.props.fbPath;
     const pathUnderEdit = this.props.pathUnderEdit;
-    if (pathUnderEdit && this.state.keyEdit) {
+    let keyChangeConfirmed = false;
+    const keyConfirmationMsg =
+    "This will permanently move all child data.\n Data location: " +
+    pathUnderEdit + " ---> "+path+newValue;
+    if (pathUnderEdit && this.state.keyEdit && confirm(keyConfirmationMsg)) {
+      keyChangeConfirmed = true;
       let newObject = this.props.value;
       let oldKey = pathUnderEdit.substring(pathUnderEdit.lastIndexOf("/") + 1);
       newObject[newValue] = newObject[oldKey];
@@ -291,7 +299,11 @@ export default class ObjectNode extends React.Component {
       newValue = newObject;
     }
 
-    UpdateService.set(db, path, newValue);
+
+    if (!this.state.keyEdit || keyChangeConfirmed) {
+      UpdateService.set(db, path, newValue);
+    }
+
     this.setState({ newVal: null, keyEdit: false });
     this.props.setPathUnderEdit(null);
   }
