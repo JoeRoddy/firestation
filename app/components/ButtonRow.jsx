@@ -8,7 +8,7 @@ const ButtonRow = props => {
   return (
     <div className="workstation-btns">
       {!store.commitQuery || !payloadSize
-        ? <button className="bt blue" onClick={props.execute}>
+        ? <button className="bt blue" onClick={props.execute} disabled={props.executingQuery}>
             {props.executingQuery
               ? <i className="fa fa-circle-o-notch fa-spin" />
               : "Execute"}
