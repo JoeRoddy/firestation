@@ -252,8 +252,8 @@ i {
   position: fixed;
   z-index: 1;
   top: 0;
-  left: 0;
-  background: linear-gradient(141deg, #f4c242 0%, #e2c844 51%, #e2a844 75%);
+  left: 0;  
+  background: linear-gradient(141deg,$turq 0%, $turqhover 51%, #2cb5e8 75% );
   display: flex;
   flex-direction: column;
   @include respond-to(small) {
@@ -273,7 +273,7 @@ i {
     font-weight: 500;
     padding-top: 2px;
     &:hover {
-      background: #baa746 !important;
+      background: #267E88 !important;
     }
   }
   .sidemenu-savedQueries {
@@ -335,11 +335,15 @@ h4 {
   display: flex !important;
   flex-direction: row;
   text-align: center;
+  -webkit-box-shadow: 0 8px 6px -6px #999;
+  -moz-box-shadow: 0 8px 6px -6px #999;
+  box-shadow: 0 8px 6px -6px #999;
   @extend .noselect;
   span {
     color: white;
   }
-  background: linear-gradient(141deg, $turq 0%, $turqhover 51%, #2cb5e8 75%);
+  
+  background: linear-gradient(141deg, #f4c242 0%, #E2C743 51%, #e2a844 75%);
   li {
     color: white !important;
   }
