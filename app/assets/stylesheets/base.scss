@@ -252,8 +252,8 @@ i {
   position: fixed;
   z-index: 1;
   top: 0;
-  left: 0;  
-  background: linear-gradient(141deg,$turq 0%, $turqhover 51%, #2cb5e8 75% );
+  left: 0;
+  background: linear-gradient(141deg, $turq 0%, $turqhover 51%, #2cb5e8 75%);
   display: flex;
   flex-direction: column;
   @include respond-to(small) {
@@ -273,7 +273,7 @@ i {
     font-weight: 500;
     padding-top: 2px;
     &:hover {
-      background: #267E88 !important;
+      background: #267e88 !important;
     }
   }
   .sidemenu-savedQueries {
@@ -342,8 +342,8 @@ h4 {
   span {
     color: white;
   }
-  
-  background: linear-gradient(141deg, #f4c242 0%, #E2C743 51%, #e2a844 75%);
+
+  background: linear-gradient(141deg, #f4c242 0%, #e2c743 51%, #e2a844 75%);
   li {
     color: white !important;
   }
@@ -356,7 +356,7 @@ h4 {
   .navbar-brand {
     display: flex;
     img {
-      height: 3vh;
+      height:25px;
     }
     span {
       padding-top: .2vh;
@@ -600,15 +600,15 @@ i.fa-times {
             min-width: 8vw;
           }
         }
-        tr:hover > .prop-value > th> .delete-prop {
-            display: block;
-            cursor: pointer;
-            color: red;
-            margin-left: 5px;
-            
-            &:hover {
-              color: black;
-            }
+        tr:hover > .prop-value > th > .delete-prop {
+          display: block;
+          cursor: pointer;
+          color: red;
+          margin-left: 5px;
+
+          &:hover {
+            color: black;
+          }
         }
       }
     }
