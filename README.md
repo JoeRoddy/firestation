@@ -30,6 +30,7 @@ $ npm run dev
 # To Do
 
 ## Bugs
+hangs when deleting many records
 
 ## Features
 * better error messages

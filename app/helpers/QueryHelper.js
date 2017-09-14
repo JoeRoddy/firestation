@@ -1,6 +1,6 @@
-import StringHelper from './StringHelper';
-import UpdateService from '../service/UpdateService';
-import FirebaseService from '../service/FirebaseService';
+import StringHelper from "./StringHelper";
+import UpdateService from "../service/UpdateService";
+import FirebaseService from "../service/FirebaseService";
 const NO_EQUALITY_STATEMENTS = "NO_EQUALITY_STATEMENTS";
 const SELECT_STATEMENT = "SELECT_STATEMENT";
 const UPDATE_STATEMENT = "UPDATE_STATEMENT";
@@ -9,11 +9,16 @@ const DELETE_STATEMENT = "DELETE_STATEMENT";
 
 export default class QueryHelper {
   static getRootKeysPromise(database) {
-    if (!database) { return null; }
-    const url = "https://" + database.config.projectId + ".firebaseio.com//.json?shallow=true";
+    if (!database) {
+      return null;
+    }
+    const url =
+      "https://" +
+      database.config.projectId +
+      ".firebaseio.com//.json?shallow=true";
     return fetch(url).then(response => {
-      return response.json()
-    })
+      return response.json();
+    });
   }
 
   static executeQuery(query, database, callback, commitResults) {
@@ -44,37 +49,41 @@ export default class QueryHelper {
     const collection = this.getCollection(query, INSERT_STATEMENT);
     const that = this;
     let insertObject = this.getObjectFromInsert(query);
+    let insertCount = this.getInsertCount(query);
     const path = collection + "/";
     if (commitResults) {
-      UpdateService.pushObject(db, path, insertObject);
+      for (let i = 0; i < insertCount; i++) {
+        UpdateService.pushObject(db, path, insertObject);
+      }
     }
     let results = {
+      insertCount: insertCount,
       statementType: INSERT_STATEMENT,
       payload: insertObject,
       path: path
-    }
+    };
     callback(results);
   }
 
   static executeDelete(query, db, callback, commitResults) {
     const collection = this.getCollection(query, DELETE_STATEMENT);
     const that = this;
-    this.getWheres(query, db, (wheres) => {
-      this.getDataForSelect(db, collection, null, wheres, null, (dataToAlter => {
+    this.getWheres(query, db, wheres => {
+      this.getDataForSelect(db, collection, null, wheres, null, dataToAlter => {
         if (dataToAlter && commitResults) {
-          Object.keys(dataToAlter.payload).forEach(function (objKey, index) {
+          Object.keys(dataToAlter.payload).forEach(function(objKey, index) {
             const path = collection + "/" + objKey;
             UpdateService.deleteObject(db, path);
-          })
+          });
         }
         let results = {
           statementType: DELETE_STATEMENT,
           payload: dataToAlter.payload,
           firebaseListener: dataToAlter.firebaseListener,
           path: collection
-        }
+        };
         callback(results);
-      }));
+      });
     });
   }
 
@@ -82,78 +91,122 @@ export default class QueryHelper {
     const collection = this.getCollection(query, SELECT_STATEMENT);
     const orderBys = this.getOrderBys(query);
     const selectedFields = this.getSelectedFields(query);
-    this.getWheres(query, db, (wheres) => {
-      this.getDataForSelect(db, collection, selectedFields, wheres, orderBys, callback);
+    this.getWheres(query, db, wheres => {
+      this.getDataForSelect(
+        db,
+        collection,
+        selectedFields,
+        wheres,
+        orderBys,
+        callback
+      );
     });
   }
 
   static executeUpdate(query, db, callback, commitResults) {
     const collection = this.getCollection(query, UPDATE_STATEMENT);
     const sets = this.getSets(query);
-    if (!sets) { return null; }
+    if (!sets) {
+      return null;
+    }
     const that = this;
-    this.getWheres(query, db, (wheres) => {
+    this.getWheres(query, db, wheres => {
       this.getDataForSelect(db, collection, null, wheres, null, dataToAlter => {
         let data = dataToAlter.payload;
-        Object.keys(data).forEach(function (objKey, index) {
+        Object.keys(data).forEach(function(objKey, index) {
           that.updateItemWithSets(data[objKey], sets);
           const path = collection + "/" + objKey;
           if (commitResults) {
-            UpdateService.updateFields(db, path, data[objKey], Object.keys(sets));
+            UpdateService.updateFields(
+              db,
+              path,
+              data[objKey],
+              Object.keys(sets)
+            );
           }
-        })
+        });
         let results = {
           statementType: UPDATE_STATEMENT,
           payload: data,
           firebaseListener: dataToAlter.firebaseListener,
           path: collection
-        }
+        };
         callback(results);
-      })
+      });
     });
   }
 
-  static getDataForSelect(db, collection, selectedFields, wheres, orderBys, callback) {
-    console.log("getData (collection, selectedFields, wheres):", collection, selectedFields, wheres)
+  static getDataForSelect(
+    db,
+    collection,
+    selectedFields,
+    wheres,
+    orderBys,
+    callback
+  ) {
+    console.log(
+      "getData (collection, selectedFields, wheres):",
+      collection,
+      selectedFields,
+      wheres
+    );
     var ref = db.ref(collection);
-    let results = { queryType: SELECT_STATEMENT, path: collection, orderBys: orderBys, firebaseListener: ref };
+    let results = {
+      queryType: SELECT_STATEMENT,
+      path: collection,
+      orderBys: orderBys,
+      firebaseListener: ref
+    };
     if (!selectedFields && !wheres) {
       ref = db.ref(collection);
       ref.on("value", snapshot => {
         results.payload = snapshot.val();
         return callback(results);
-      })
+      });
     } else if (!wheres) {
       ref.on("value", snapshot => {
         results.payload = snapshot.val();
         if (selectedFields) {
-          results.payload = this.removeNonSelectedFieldsFromResults(results.payload, selectedFields);
+          results.payload = this.removeNonSelectedFieldsFromResults(
+            results.payload,
+            selectedFields
+          );
         }
         return callback(results);
-      })
+      });
     } else {
       let mainWhere = wheres[0];
       if (mainWhere.error && mainWhere.error === NO_EQUALITY_STATEMENTS) {
         ref.on("value", snapshot => {
-          results.payload = this.filterWheresAndNonSelectedFields(snapshot.val(), wheres, selectedFields);
+          results.payload = this.filterWheresAndNonSelectedFields(
+            snapshot.val(),
+            wheres,
+            selectedFields
+          );
           return callback(results);
-        })
-      }
-      else {
-        ref.orderByChild(mainWhere.field).equalTo(mainWhere.value).on("value", snapshot => {
-          results.payload = this.filterWheresAndNonSelectedFields(snapshot.val(), wheres, selectedFields);
-          console.log("select results: ", results)
+        });
+      } else {
+        ref
+          .orderByChild(mainWhere.field)
+          .equalTo(mainWhere.value)
+          .on("value", snapshot => {
+            results.payload = this.filterWheresAndNonSelectedFields(
+              snapshot.val(),
+              wheres,
+              selectedFields
+            );
+            console.log("select results: ", results);
 
-          return callback(results);
-        })
+            return callback(results);
+          });
       }
     }
   }
 
   static updateItemWithSets(obj, sets) {
-    Object.keys(sets).forEach(function (objKey, index) {
+    Object.keys(sets).forEach(function(objKey, index) {
       obj[objKey] = sets[objKey];
-    })
+    });
     return obj;
   }
 
@@ -181,25 +234,42 @@ export default class QueryHelper {
     }
     const orderByIndex = query.toUpperCase().indexOf("ORDER BY");
     const whereIndexEnd = orderByIndex >= 0 ? orderByIndex : query.length;
-    let wheresArr = query.substring(whereIndexStart + 5, whereIndexEnd).split(" and ");
-    wheresArr[wheresArr.length - 1] = wheresArr[wheresArr.length - 1].replace(";", "");
+    let wheresArr = query
+      .substring(whereIndexStart + 5, whereIndexEnd)
+      .split(" and ");
+    wheresArr[wheresArr.length - 1] = wheresArr[wheresArr.length - 1].replace(
+      ";",
+      ""
+    );
     let wheres = [];
     wheresArr.forEach(where => {
       where = StringHelper.replaceAllIgnoreCase(where, "not like", "!like");
       let eqCompAndIndex = this.determineComparatorAndIndex(where);
       let whereObj = {
-        field: StringHelper.replaceAll(where.substring(0, eqCompAndIndex.index).trim(), "\\.", "/"),
+        field: StringHelper.replaceAll(
+          where.substring(0, eqCompAndIndex.index).trim(),
+          "\\.",
+          "/"
+        ),
         comparator: eqCompAndIndex.comparator
-      }
-      let val = StringHelper.getParsedValue(where.substring(eqCompAndIndex.index + eqCompAndIndex.comparator.length).trim());
-      if (typeof val === "string" && val.charAt(0) === "(" && val.charAt(val.length - 1) === ")") {
-        this.executeSelect(val.substring(1, val.length - 1), db, (results) => {
+      };
+      let val = StringHelper.getParsedValue(
+        where
+          .substring(eqCompAndIndex.index + eqCompAndIndex.comparator.length)
+          .trim()
+      );
+      if (
+        typeof val === "string" &&
+        val.charAt(0) === "(" &&
+        val.charAt(val.length - 1) === ")"
+      ) {
+        this.executeSelect(val.substring(1, val.length - 1), db, results => {
           whereObj.value = results.payload;
           wheres.push(whereObj);
           if (wheresArr.length === wheres.length) {
             return callback(this.optimizeWheres(wheres));
           }
-        })
+        });
       } else {
         whereObj.value = val;
         wheres.push(whereObj);
@@ -207,27 +277,34 @@ export default class QueryHelper {
           return callback(this.optimizeWheres(wheres));
         }
       }
-    })
+    });
   }
 
   static getSets(query) {
     const setIndexStart = query.indexOf(" set ") + 1;
-    if (setIndexStart < 1) { return null; }
+    if (setIndexStart < 1) {
+      return null;
+    }
     const whereIndexStart = query.indexOf(" where ") + 1;
     let setsArr;
     if (whereIndexStart > 0) {
       setsArr = query.substring(setIndexStart + 3, whereIndexStart).split(", ");
     } else {
       setsArr = query.substring(setIndexStart + 3).split(", ");
-      setsArr[setsArr.length - 1] = setsArr[setsArr.length - 1].replace(";", "");
+      setsArr[setsArr.length - 1] = setsArr[setsArr.length - 1].replace(
+        ";",
+        ""
+      );
     }
     let sets = {};
     setsArr.forEach(item => {
       let keyValSplit = item.split("=");
       if (keyValSplit.length === 2) {
-        sets[keyValSplit[0].trim()] = StringHelper.getParsedValue(keyValSplit[1].trim());
+        sets[keyValSplit[0].trim()] = StringHelper.getParsedValue(
+          keyValSplit[1].trim()
+        );
       }
-    })
+    });
     return sets;
   }
 
@@ -235,14 +312,17 @@ export default class QueryHelper {
     let caps = query.toUpperCase();
     const ORDER_BY = "ORDER BY";
     let index = caps.indexOf(ORDER_BY);
-    if (index < 0) { return null; }
+    if (index < 0) {
+      return null;
+    }
     let orderByStr = query.substring(index + ORDER_BY.length);
     let split = orderByStr.split(",");
     let orderBys = split.map(orderBy => {
       let propToSort = orderBy.replace(";", "").trim();
-      propToSort = propToSort.indexOf(" ") >= 0 ?
-        propToSort.substring(0, propToSort.indexOf(" "))
-        : propToSort;
+      propToSort =
+        propToSort.indexOf(" ") >= 0
+          ? propToSort.substring(0, propToSort.indexOf(" "))
+          : propToSort;
       let orderByObj = {
         ascending: true,
         propToSort: propToSort.trim()
@@ -251,7 +331,7 @@ export default class QueryHelper {
         orderByObj.ascending = false;
       }
       return orderByObj;
-    })
+    });
     return orderBys;
   }
 
@@ -260,31 +340,41 @@ export default class QueryHelper {
       results = this.filterResultsByWhereStatements(results, wheres.slice(1));
     }
     if (selectedFields) {
-      results = this.removeNonSelectedFieldsFromResults(results, selectedFields);
+      results = this.removeNonSelectedFieldsFromResults(
+        results,
+        selectedFields
+      );
     }
     return results;
   }
 
   static getCollection(q, statementType) {
-    let query = q.replace(/\(.*\)/, '').trim(); //removes nested selects
+    let query = q.replace(/\(.*\)/, "").trim(); //removes nested selects
     let terms = query.split(" ");
     if (statementType === UPDATE_STATEMENT) {
       return StringHelper.replaceAll(terms[1], /\./, "/");
     } else if (statementType === SELECT_STATEMENT) {
-      if (terms.length === 2 && terms[0] === "from") { return StringHelper.replaceAll(terms[1], ".", "/"); }
-      else if (terms.length === 1) {
+      if (terms.length === 2 && terms[0] === "from") {
+        return StringHelper.replaceAll(terms[1], ".", "/");
+      } else if (terms.length === 1) {
         let collection = terms[0].replace(";", "");
         return StringHelper.replaceAll(collection, /\./, "/");
       }
       let collectionIndexStart = query.indexOf("from ") + 4;
-      if (collectionIndexStart < 0) { throw "Error determining collection."; }
-      if (collectionIndexStart < 5) { return StringHelper.replaceAll(terms[0], /\./, "/"); }
+      if (collectionIndexStart < 0) {
+        throw "Error determining collection.";
+      }
+      if (collectionIndexStart < 5) {
+        return StringHelper.replaceAll(terms[0], /\./, "/");
+      }
       let trimmedCol = query.substring(collectionIndexStart).trim();
       let collectionIndexEnd = trimmedCol.match(/\ |;|$/).index;
       let collection = trimmedCol.substring(0, collectionIndexEnd);
       return StringHelper.replaceAll(collection, /\./, "/");
     } else if (statementType === INSERT_STATEMENT) {
-      return StringHelper.replaceAll(terms[2], /\./, "/");
+      let collectionToInsert =
+        terms[1].toUpperCase() === "INTO" ? terms[2] : terms[3];
+      return StringHelper.replaceAll(collectionToInsert, /\./, "/");
     } else if (statementType === DELETE_STATEMENT) {
       let index = terms.length > 2 ? 2 : 1;
       let term = StringHelper.replaceAll(terms[index], /;/, "");
@@ -300,13 +390,17 @@ export default class QueryHelper {
     }
     let regExp = /(.*select\s+)(.*)(\s+from.*)/;
     let froms = query.replace(regExp, "$2");
-    if (froms.length === query.length) { return null; }
+    if (froms.length === query.length) {
+      return null;
+    }
     let fields = froms.split(",");
-    if (fields.length === 0) { return null; }
+    if (fields.length === 0) {
+      return null;
+    }
     let selectedFields = {};
     fields.map(field => {
       selectedFields[field.trim()] = true;
-    })
+    });
     return selectedFields;
   }
 
@@ -314,13 +408,17 @@ export default class QueryHelper {
     let valuesStr = query.match(/(values).+\);/)[0];
     let keysStr = query.substring(query.indexOf("(") + 1, query.indexOf(")"));
     let keys = keysStr.split(",");
-    let values = valuesStr.substring(valuesStr.indexOf("(") + 1, valuesStr.indexOf(")")).split(",");
+    let values = valuesStr
+      .substring(valuesStr.indexOf("(") + 1, valuesStr.indexOf(")"))
+      .split(",");
     if (!keys || !values || keys.length !== values.length) {
       throw "Badly formatted insert statement";
     }
     let insertObject = {};
     keys.forEach((key, i) => {
-      insertObject[StringHelper.getParsedValue(key.trim())] = StringHelper.getParsedValue(values[i].trim());
+      insertObject[
+        StringHelper.getParsedValue(key.trim())
+      ] = StringHelper.getParsedValue(values[i].trim());
     });
     return insertObject;
   }
@@ -329,21 +427,22 @@ export default class QueryHelper {
     if (!results || !selectedFields) {
       return results;
     }
-    Object.keys(results).forEach(function (objKey, index) {
+    Object.keys(results).forEach(function(objKey, index) {
       if (typeof results[objKey] !== "object") {
         if (!selectedFields[objKey]) {
           delete results[objKey];
         }
-      }
-      else {
-        Object.keys(results[objKey]).forEach(function (propKey, index) {
+      } else {
+        Object.keys(results[objKey]).forEach(function(propKey, index) {
           if (!selectedFields[propKey]) {
             delete results[objKey][propKey];
           }
         });
       }
     });
-    return Object.keys(results).length === 1 ? results[Object.keys(results)[0]] : results;
+    return Object.keys(results).length === 1
+      ? results[Object.keys(results)[0]]
+      : results;
   }
 
   static filterResultsByWhereStatements(results, whereStatements) {
@@ -356,7 +455,7 @@ export default class QueryHelper {
       let indexOffset = 1;
       let where = whereStatements[i];
       const that = this;
-      Object.keys(results).forEach(function (key, index) {
+      Object.keys(results).forEach(function(key, index) {
         let thisResult = results[key][where.field];
         if (!that.conditionIsTrue(thisResult, where.value, where.comparator)) {
           nonMatch[key] = results[key];
@@ -364,7 +463,7 @@ export default class QueryHelper {
       });
     }
     if (nonMatch) {
-      Object.keys(results).forEach(function (key, index) {
+      Object.keys(results).forEach(function(key, index) {
         if (!nonMatch[key]) {
           returnedResults[key] = results[key];
         }
@@ -373,7 +472,6 @@ export default class QueryHelper {
     } else {
       return results;
     }
-
   }
 
   static conditionIsTrue(val1, val2, comparator) {
@@ -400,15 +498,15 @@ export default class QueryHelper {
   }
 
   static determineEquals(val1, val2) {
-    val1 = (typeof val1 == "undefined" || val1 == "null") ? null : val1;
-    val2 = (typeof val2 == "undefined" || val2 == "null") ? null : val2;
+    val1 = typeof val1 == "undefined" || val1 == "null" ? null : val1;
+    val2 = typeof val2 == "undefined" || val2 == "null" ? null : val2;
     return val1 === val2;
   }
 
   static determineStringIsLike(val1, val2) {
     //TODO: LIKE fails on reserved regex characters (., +, etc)
-    let regex = StringHelper.replaceAll(val2, '%', '.*');
-    regex = StringHelper.replaceAll(regex, '_', '.{1}');
+    let regex = StringHelper.replaceAll(val2, "%", ".*");
+    regex = StringHelper.replaceAll(regex, "_", ".{1}");
     // regex= StringHelper.replaceAll(regex,'\+','\+');
     let re = new RegExp("^" + regex + "$", "g");
     return re.test(val1);
@@ -457,14 +555,21 @@ export default class QueryHelper {
     throw "Unrecognized comparator in where clause: '" + where + "'.";
   }
 
+  static getInsertCount(query) {
+    const splitQ = query.split(" ");
+    if (splitQ[0].toUpperCase() === "INSERT" && parseInt(splitQ[1]) > 1) {
+      return parseInt(splitQ[1]);
+    }
+    return 1;
+  }
 
   static getNotEqualIndex(condition) {
     return StringHelper.regexIndexOf(condition, /!=|<>/);
   }
 
   static optimizeWheres(wheres) {
-    //rearranges wheres so first statement is an equal, or error if no equals 
-    //firebase has no != method, so we'll grab whole collection, and filter on client    
+    //rearranges wheres so first statement is an equal, or error if no equals
+    //firebase has no != method, so we'll grab whole collection, and filter on client
     const firstNotEqStatement = wheres[0];
     for (let i = 0; i < wheres.length; i++) {
       if (wheres[i].value != null && wheres[i].comparator === "=") {
@@ -477,5 +582,4 @@ export default class QueryHelper {
     wheres.unshift({ error: NO_EQUALITY_STATEMENTS });
     return wheres;
   }
-
 }

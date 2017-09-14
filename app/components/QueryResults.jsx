@@ -12,7 +12,7 @@ const QueryResults = props => {
     <div className="objectTree-container">
       <div className="results-header">
         <h4>
-          {renderResultsTitle(props.payloadSize, store.results.statementType, store.results.path)}
+          {renderResultsTitle(props.payloadSize, store.results)}
         </h4>
         <ReactTooltip id="expandTooltip" type="dark" effect="solid" place="top">
           {props.resultsOpen ? "Collapse results" : "Expand results"}
@@ -37,10 +37,10 @@ const QueryResults = props => {
   );
 };
 
-const renderResultsTitle = (payloadSize, statementType, path) => {
+const renderResultsTitle = (payloadSize, results) => {
   let payloadDescription =
     payloadSize > 50 ? "Displaying 50 of " + payloadSize : payloadSize;
-  switch (statementType) {
+  switch (results.statementType) {
     case "UPDATE_STATEMENT":
       return (
         <span>
@@ -48,7 +48,7 @@ const renderResultsTitle = (payloadSize, statementType, path) => {
         </span>
       );
     case "INSERT_STATEMENT":
-      return "Inserted Records:";
+      return "Inserted Records: "+ (results.insertCount > 1?results.insertCount:"");
     case "DELETE_STATEMENT":
       return (
         <span>
@@ -58,7 +58,7 @@ const renderResultsTitle = (payloadSize, statementType, path) => {
     default:
       return (
         <span>
-          {path} ({payloadDescription}):
+          {results.path} ({payloadDescription}):
         </span>
       );
   }
