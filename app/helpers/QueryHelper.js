@@ -301,7 +301,8 @@ export default class QueryHelper {
     setsArr.forEach(item => {
       let keyValSplit = item.split("=");
       if (keyValSplit.length === 2) {
-        sets[keyValSplit[0].trim()] = StringHelper.getParsedValue(
+        let key = keyValSplit[0].replace('.','/').trim();
+        sets[key] = StringHelper.getParsedValue(
           keyValSplit[1].trim()
         );
       }
