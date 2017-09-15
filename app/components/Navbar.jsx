@@ -37,7 +37,7 @@ export default class Navbar extends Component {
             <nav className="navbar fixed-top navbar-toggleable-xl navbar-inverse bg-primary">
                 <a className="navbar-brand" onClick={e => { }}>
                     <img src="https://firebasestorage.googleapis.com/v0/b/firestation-e149d.appspot.com/o/logo.ico?alt=media&token=7d5634ac-d956-42a8-8942-60bdeb21c06b" alt="" />
-                    <span> &nbsp;FireStation</span></a>
+                    <span> &nbsp;Firestation</span></a>
                 <div className="navbar-collapse collapse">
                     <ul className="navbar-nav">
                         {this.getDatabaseJsx()}

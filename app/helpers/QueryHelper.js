@@ -1,6 +1,7 @@
 import StringHelper from "./StringHelper";
 import UpdateService from "../service/UpdateService";
 import FirebaseService from "../service/FirebaseService";
+import { isValidDate, executeDateComparison } from "../helpers/DateHelper";
 const NO_EQUALITY_STATEMENTS = "NO_EQUALITY_STATEMENTS";
 const SELECT_STATEMENT = "SELECT_STATEMENT";
 const UPDATE_STATEMENT = "UPDATE_STATEMENT";
@@ -481,13 +482,10 @@ export default class QueryHelper {
       case "!=":
         return !this.determineEquals(val1, val2);
       case "<=":
-        return val1 <= val2;
       case "<":
-        return val1 < val2;
       case ">=":
-        return val1 >= val2;
       case ">":
-        return val1 > val2;
+        return this.determineGreaterOrLess(val1, val2, comparator);
       case "like":
         return this.determineStringIsLike(val1, val2);
       case "!like":
@@ -501,6 +499,27 @@ export default class QueryHelper {
     val1 = typeof val1 == "undefined" || val1 == "null" ? null : val1;
     val2 = typeof val2 == "undefined" || val2 == "null" ? null : val2;
     return val1 === val2;
+  }
+
+  static determineGreaterOrLess(val1, val2, comparator) {
+    let isNum = false;
+    if (isNaN(val1) || isNaN(val2)) {
+      if (isValidDate(val1) && isValidDate(val2)) {
+        return executeDateComparison(val1, val2, comparator);
+      }
+    } else {
+      isNum = true;
+    }
+    switch (comparator) {
+      case "<=":
+        return isNum ? val1 <= val2 : val1.length <= val2.length;
+      case ">=":
+        return isNum ? val1 >= val2 : val1.length >= val2.length;
+      case ">":
+        return isNum ? val1 > val2 : val1.length < val2.length;
+      case "<":
+        return isNum ? val1 < val2 : val1.length < val2.length;
+    }
   }
 
   static determineStringIsLike(val1, val2) {
