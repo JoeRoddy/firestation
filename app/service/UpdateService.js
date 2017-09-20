@@ -9,7 +9,13 @@ export default class UpdateService {
         ref.once("value", function (snapshot) {
             let results = snapshot.val();
             fields.forEach(field => {
-                results[field] = object[field];
+                if(field.includes('/')){
+                    let keyValSplit = field.split('/');
+                    results[keyValSplit[0]] = results[keyValSplit[0]] || {};
+                    results[keyValSplit[0]][keyValSplit[1]] = object[field];
+                }else {
+                    results[field] = object[field];
+                }
             })
             return db.ref(path).update(results);
         }, function (errorObject) {

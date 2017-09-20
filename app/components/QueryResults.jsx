@@ -48,7 +48,8 @@ const renderResultsTitle = (payloadSize, results) => {
         </span>
       );
     case "INSERT_STATEMENT":
-      return "Inserted Records: "+ (results.insertCount > 1?results.insertCount:"");
+      let numInserted = results.insertCount > 1 ? " (" + results.insertCount + "): " : ": ";
+      return "Inserted Records" + numInserted;
     case "DELETE_STATEMENT":
       return (
         <span>
