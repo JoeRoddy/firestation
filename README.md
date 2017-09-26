@@ -1,8 +1,8 @@
 # Firestation Desktop Client
-Firestation is a cross-platform Firebase admin tool that allows you to execute SQL queries against your Firebase databases.
+Firestation is a Firebase admin tool that executes SQL queries against Firebase databases.
 
 
-http://firestation.io
+[App Downloads & Examples](http://www.firestation.io)
 
 ![](/select.gif)
 
