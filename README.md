@@ -2,7 +2,7 @@
 Firestation is a Firebase admin tool that executes SQL queries against Firebase databases.
 
 
-[App Downloads & Examples](http://www.firestation.io)
+[App Downloads](https://www.firestation.io/#download)
 
 ![](/select.gif)
 
