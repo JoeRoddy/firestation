@@ -208,6 +208,7 @@ export default class QueryHelper {
 
   static updateItemWithSets(obj, sets) {
     const that = this;
+    debugger;
     Object.keys(sets).forEach(function(objKey, index) {
       const thisSet = sets[objKey];
       if (
@@ -225,8 +226,17 @@ export default class QueryHelper {
             return;
           }
         }
+        debugger;
         //not an equation, treat it as an individual prop
-        obj[objKey] = obj[newVal];
+        let finalValue = obj[newVal];
+        if(newVal.includes(".")){
+          let props = newVal.split(".");
+          finalValue = obj[props[0]];
+          for(let i=1;i<props.length;i++){
+            finalValue = finalValue[props[i]];
+          }
+        }
+        obj[objKey] = finalValue;
       } else {
         obj[objKey] = thisSet;
       }
@@ -236,6 +246,7 @@ export default class QueryHelper {
 
   static executeUpdateEquation(existingObject, equation) {
     //replace variable names with corresponding values:
+    debugger;
     existingObject &&
       Object.keys(existingObject).forEach(key => {
         let newValue = existingObject[key];

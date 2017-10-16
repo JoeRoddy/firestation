@@ -56,7 +56,7 @@ export default class StringHelper {
       return null;
     } else if (quotesMandatory) {
       stringVal = stringVal.trim();
-      if (stringVal.match(/["|'].+["|']/)) {
+      if (stringVal.match(/^["|'].+["|']$/)) {
         return stringVal.replace(/["']/g, "");
       } else {
         return {
