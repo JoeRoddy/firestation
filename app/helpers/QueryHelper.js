@@ -7,6 +7,8 @@ const SELECT_STATEMENT = "SELECT_STATEMENT";
 const UPDATE_STATEMENT = "UPDATE_STATEMENT";
 const INSERT_STATEMENT = "INSERT_STATEMENT";
 const DELETE_STATEMENT = "DELETE_STATEMENT";
+const FIRESTATION_DATA_PROP = "FIRESTATION_DATA_PROP";
+const EQUATION_IDENTIFIERS = [" / ", " + ", " - ", " * "];
 
 export default class QueryHelper {
   static getRootKeysPromise(database) {
@@ -49,8 +51,8 @@ export default class QueryHelper {
   static executeInsert(query, db, callback, commitResults) {
     const collection = this.getCollection(query, INSERT_STATEMENT);
     const that = this;
-    let insertObject = this.getObjectFromInsert(query);
-    let insertCount = this.getInsertCount(query);
+    const insertObject = this.getObjectFromInsert(query);
+    const insertCount = this.getInsertCount(query);
     const path = collection + "/";
     if (commitResults) {
       for (let i = 0; i < insertCount; i++) {
@@ -205,10 +207,45 @@ export default class QueryHelper {
   }
 
   static updateItemWithSets(obj, sets) {
+    const that = this;
     Object.keys(sets).forEach(function(objKey, index) {
-      obj[objKey] = sets[objKey];
+      const thisSet = sets[objKey];
+      if (
+        thisSet &&
+        typeof thisSet === "object" &&
+        thisSet.hasOwnProperty(FIRESTATION_DATA_PROP)
+      ) {
+        const newVal = thisSet.FIRESTATION_DATA_PROP;
+        for (let i = 0; i < EQUATION_IDENTIFIERS.length; i++) {
+          if (newVal.includes(EQUATION_IDENTIFIERS[i])) {
+            obj[objKey] = that.executeUpdateEquation(
+              obj,
+              thisSet.FIRESTATION_DATA_PROP
+            );
+            return;
+          }
+        }
+        //not an equation, treat it as an individual prop
+        obj[objKey] = obj[newVal];
+      } else {
+        obj[objKey] = thisSet;
+      }
     });
     return obj;
+  }
+
+  static executeUpdateEquation(existingObject, equation) {
+    //replace variable names with corresponding values:
+    existingObject &&
+      Object.keys(existingObject).forEach(key => {
+        let newValue = existingObject[key];
+        if (typeof newValue !== "number") {
+          newValue = '"' + newValue + '"';
+        }
+        equation = StringHelper.replaceAll(equation, key, newValue);
+      });
+    //execute
+    return eval(equation);
   }
 
   static determineQueryType(query) {
@@ -301,10 +338,8 @@ export default class QueryHelper {
     setsArr.forEach(item => {
       let keyValSplit = item.split("=");
       if (keyValSplit.length === 2) {
-        let key = keyValSplit[0].replace('.','/').trim();
-        sets[key] = StringHelper.getParsedValue(
-          keyValSplit[1].trim()
-        );
+        let key = keyValSplit[0].replace(".", "/").trim();
+        sets[key] = StringHelper.getParsedValue(keyValSplit[1].trim(), true);
       }
     });
     return sets;
