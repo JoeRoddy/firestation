@@ -51,18 +51,22 @@ export default class QueryHelper {
   static executeInsert(query, db, callback, commitResults) {
     const collection = this.getCollection(query, INSERT_STATEMENT);
     const that = this;
-    const insertObject = this.getObjectFromInsert(query);
+    const insertObjects = this.getObjectsFromInsert(query);
     const insertCount = this.getInsertCount(query);
     const path = collection + "/";
     if (commitResults) {
-      for (let i = 0; i < insertCount; i++) {
-        UpdateService.pushObject(db, path, insertObject);
+      for (let i = 1; i < insertCount; i++) {
+        //insert clones
+        UpdateService.pushObject(db, path, insertObjects[0]);
+      }
+      for (let key in insertObjects) {
+        UpdateService.pushObject(db, path, insertObjects[key]);
       }
     }
     let results = {
       insertCount: insertCount,
       statementType: INSERT_STATEMENT,
-      payload: insertObject,
+      payload: insertObjects,
       path: path
     };
     callback(results);
@@ -227,10 +231,10 @@ export default class QueryHelper {
         }
         //not an equation, treat it as an individual prop
         let finalValue = obj[newVal];
-        if(newVal.includes(".")){
+        if (newVal.includes(".")) {
           let props = newVal.split(".");
           finalValue = obj[props[0]];
-          for(let i=1;i<props.length;i++){
+          for (let i = 1; i < props.length; i++) {
             finalValue = finalValue[props[i]];
           }
         }
@@ -449,23 +453,32 @@ export default class QueryHelper {
     return selectedFields;
   }
 
-  static getObjectFromInsert(query) {
+  static getObjectsFromInsert(query) {
     let valuesStr = query.match(/(values).+\);/)[0];
     let keysStr = query.substring(query.indexOf("(") + 1, query.indexOf(")"));
     let keys = keysStr.split(",");
-    let values = valuesStr
-      .substring(valuesStr.indexOf("(") + 1, valuesStr.indexOf(")"))
-      .split(",");
-    if (!keys || !values || keys.length !== values.length) {
+    let valuesStrArr = valuesStr.split("(");
+    valuesStrArr.shift(); //removes "values ("
+    let valuesArr = valuesStrArr.map(valueStr => {
+      return valueStr.substring(0, valueStr.indexOf(")")).split(",");
+    });
+
+    if (!keys || !valuesArr) {
       throw "Badly formatted insert statement";
     }
-    let insertObject = {};
-    keys.forEach((key, i) => {
-      insertObject[
-        StringHelper.getParsedValue(key.trim())
-      ] = StringHelper.getParsedValue(values[i].trim());
+
+    let insertObjects = {};
+    valuesArr.forEach((values, i) => {
+      let insertObject = {};
+      keys.forEach((key, i) => {
+        insertObject[
+          StringHelper.getParsedValue(key.trim())
+        ] = StringHelper.getParsedValue(values[i].trim());
+      });
+      insertObjects["pushId_" + i] = insertObject;
     });
-    return insertObject;
+
+    return insertObjects;
   }
 
   static removeNonSelectedFieldsFromResults(results, selectedFields) {
