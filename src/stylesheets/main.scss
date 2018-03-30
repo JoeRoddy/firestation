@@ -1,3 +1,10 @@
+body {
+  button {
+    color: pink;
+    background-color: blue($color: #000000);
+  }
+}
+
 html,
 body {
   width: 100%;
