@@ -2,7 +2,7 @@
 
 Electron, React, Mobx, Sass
 
-Forked and extended from [this project].(https://github.com/szwacz/electron-boilerplate)
+Forked and extended from [this project](https://github.com/szwacz/electron-boilerplate)
 
 # Quick start
 
