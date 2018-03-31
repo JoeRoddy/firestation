@@ -1,0 +1,717 @@
+@import "~bootstrap/scss/bootstrap";
+$gray: #aaa;
+$break-small: 800px;
+$break-large: 1300px;
+$break-short: 960px;
+
+@mixin respond-to($media) {
+  @if $media==small {
+    @media only screen and (max-width: $break-small) {
+      @content;
+    }
+  } @else if $media==medium-screens {
+    @media only screen and (min-width: $break-small + 1) and (max-width: $break-large - 1) {
+      @content;
+    }
+  } @else if $media==wide-screens {
+    @media only screen and (min-width: $break-large) {
+      @content;
+    }
+  } @else if $media==short {
+    @media only screen and (max-height: $break-short) {
+      @content;
+    }
+  }
+}
+
+@mixin non-highlightable() {
+}
+
+$lavender: #9370db;
+$turq: #0fb8ad;
+$turqhover: #1fc8db;
+#root {
+  //using # to override bootstrap
+  font-family: "Roboto", "Helvetica Neue, Helvetica, Arial", sans-serif;
+}
+
+body {
+  font-style: normal;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #212121;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.App {
+  // min-height: 80vh;
+  .App-Body {
+  }
+}
+
+.Workstation {
+  display: flex;
+  height: 100%;
+  margin-left: 260px;
+  overflow: hidden !important;
+  @include respond-to(small) {
+    margin-left: 0px;
+  }
+  .workstation-header {
+    display: flex;
+    margin-top: 7vh;
+    color: $turq !important;
+
+    @include respond-to(short) {
+      visibility: hidden;
+      margin-top: 2vh;
+    }
+    .dropdown-menu {
+      .dropdown-toggle {
+        font-size: 12px;
+      }
+      // right:5px;
+      // left: 100px;
+      img {
+        height: 20px;
+        margin-right: 5px;
+      }
+    }
+  }
+  .workstation-dbTitle {
+    font-size: 30px;
+    font-weight: bold;
+  }
+  .workArea {
+    width: 100%;
+    display: block;
+  }
+  .commitbtn {
+    margin-right: 5px;
+  }
+  .workstation-btns {
+    display: flex;
+    justify-content: space-between;
+  }
+  .util-btns {
+    display: flex;
+    margin-right: 15px;
+    button {
+      margin-left: 3px;
+    }
+  }
+  .workstation-underWorkbook {
+    height: 53vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    justify-content: flex-start;
+    .objectTree-container {
+      h4 {
+        display: inline-block;
+      }
+      .results-header {
+        .gray-icon {
+          float: right;
+          background-color: white;
+          color: $gray;
+          font-size: 30px;
+          cursor: pointer;
+        }
+      }
+      display: flex;
+      flex-direction: column;
+      flex: 1.5;
+      overflow-x: hidden;
+      overflow-y: hidden;
+      position: relative;
+    }
+
+    .QueryHistory {
+      display: flex;
+      flex-direction: column;
+      margin-top: 1vh;
+      flex: 1;
+      .histTable-container {
+        overflow: scroll;
+        overflow-x: hidden;
+      }
+      .clickable {
+        cursor: pointer;
+        &:hover {
+          background-color: lightgray;
+        }
+      }
+    }
+    .ObjectTree {
+      display: flex;
+      overflow-y: scroll;
+      overflow-x: hidden;
+    }
+    .queryError {
+      color: red;
+    }
+  }
+  .resultsCollapsed {
+    .objectTree-container {
+      flex: 0.1 !important;
+    }
+  }
+}
+
+.Workbook {
+  .AceEditor {
+    textarea {
+      // width: 100% !important;
+      // height: 20vh !important;
+    }
+    margin-bottom: 7px;
+  }
+  .commitbtn {
+    margin-right: 5px;
+  }
+}
+
+.Modal {
+  position: fixed;
+  z-index: 6;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: none;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
+  .modal-content {
+    position: relative;
+    margin-left: 6vw;
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 550px;
+  }
+  .closeBtn {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+  }
+}
+
+.detailText {
+  color: #7b879e;
+  font-size: 14px;
+  font-family: Lato, sans-serif;
+  &.sm {
+    font-size: 12px;
+  }
+}
+
+.AddDatabase {
+  h5 {
+    display: flex;
+    span {
+      margin-top: 8px;
+      margin-left: 8px;
+    }
+    small {
+      margin-left: 4px;
+      font-size: 12px;
+      font-style: italic;
+    }
+  }
+  a {
+    color: #0000ee !important;
+    text-decoration: underline !important;
+    cursor: pointer;
+  }
+  .bt,
+  .white {
+    margin-right: 15px;
+  }
+}
+
+.DatabaseConfig {
+  .serviceAcctEdit {
+    display: flex;
+    button {
+      margin-right: 10px;
+    }
+    margin-bottom: 20px;
+  }
+  .nameEdit {
+    display: flex;
+    input {
+      margin-left: 10px;
+      margin-bottom: 8px;
+    }
+    margin-bottom: 16px;
+  }
+  .red {
+    margin-left: 10px;
+  }
+  .firestore-toggle {
+    display: flex;
+    align-items: center;
+    label {
+      margin-right: 10px;
+    }
+  }
+  .delete-db-btn {
+    position: absolute;
+    right: 30px;
+  }
+}
+
+b {
+  font-weight: bold;
+}
+
+i {
+  font-style: italic;
+}
+
+.Sidemenu {
+  height: 100%;
+  width: 250px;
+  padding-top: 80px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background: linear-gradient(141deg, $turq 0%, $turqhover 51%, #2cb5e8 75%);
+  display: flex;
+  flex-direction: column;
+  @include respond-to(small) {
+    width: 0px;
+    display: none;
+  }
+  a {
+    @extend .noselect;
+    margin-top: 2.5px;
+    margin-bottom: 2.5px;
+    padding-left: 30px;
+    width: 100%;
+    height: 30px;
+    color: white !important;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    padding-top: 2px;
+    &:hover {
+      background: #267e88 !important;
+    }
+  }
+  .sidemenu-savedQueries {
+    margin-top: 0.5vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .sidemenu-savedQuery {
+    width: 130px;
+    display: flex;
+    justify-content: space-between;
+    color: #e5e2dc;
+    cursor: pointer;
+    i {
+      display: none;
+    }
+    i:hover {
+      color: red;
+    }
+    &:hover {
+      color: white !important;
+      i {
+        display: block;
+      }
+    }
+  }
+  .firebase-sidemenu-icon {
+    width: 16px;
+    margin-right: 5px;
+    margin-left: 2px;
+    padding-bottom: 5px;
+  }
+}
+
+.Landing {
+  margin-top: 100px;
+}
+
+.Demo {
+}
+
+h1,
+h2 {
+  color: $turq !important;
+}
+
+h3 {
+  color: goldenrod;
+}
+
+h4 {
+  color: $turq;
+  font-weight: bold;
+}
+
+.dropdown-item,
+.dropdown-toggle {
+  cursor: pointer;
+}
+
+.navbar {
+  z-index: 5;
+  display: flex !important;
+  flex-direction: row;
+  text-align: center;
+  -webkit-box-shadow: 0 8px 6px -6px #999;
+  -moz-box-shadow: 0 8px 6px -6px #999;
+  box-shadow: 0 8px 6px -6px #999;
+  @extend .noselect;
+  span {
+    color: white;
+  }
+
+  background: linear-gradient(141deg, #f4c242 0%, #e2c743 51%, #e2a844 75%);
+  li {
+    color: white !important;
+  }
+  .nav-db {
+    a {
+      color: white !important;
+    }
+    padding-top: 0.2vh;
+  }
+  .navbar-brand {
+    display: flex;
+    img {
+      height: 25px;
+    }
+    span {
+      padding-top: 0.2vh;
+    }
+  }
+  .nav-item.dropdown {
+    padding-top: 0.4vh;
+  }
+  .nav-link.dropdown-toggle {
+    color: white !important;
+    cursor: pointer;
+  }
+  .dropdown-menu {
+    .dropdown-toggle {
+      background-color: transparent !important;
+    }
+    a {
+      cursor: pointer;
+    }
+    a:hover {
+      color: $turqhover;
+    }
+    a {
+      color: $turq;
+    }
+  }
+  .navbar-collapse.collapse {
+    .dropdown-menu {
+      position: absolute !important;
+    }
+  }
+}
+
+//// BUTTON CSS ////
+i.fa-times {
+  cursor: pointer;
+  &:hover {
+    color: red;
+  }
+}
+
+.closeBtn {
+  color: #aaa;
+  float: right;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.bt {
+  width: 120px;
+  height: 40px;
+  padding: 0;
+  overflow: hidden;
+  border-width: 0;
+  outline: none;
+  border-radius: 2px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  background-color: #2ecc71;
+  color: #ecf0f1;
+  transition: background-color 0.3s;
+  cursor: pointer;
+}
+
+.bt:hover,
+.bt:focus {
+  background-color: #27ae60;
+}
+
+.bt > * {
+  position: relative;
+}
+
+.bt span {
+  display: block;
+  padding: 12px 24px;
+}
+
+.bt:before {
+  content: "";
+  display: block;
+  width: 0;
+  padding-top: 0;
+  border-radius: 70%;
+  background-color: rgba(236, 240, 241, 0.3);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.bt:active:before {
+  width: 120%;
+  padding-top: 120%;
+  transition: width 0.2s ease-out, padding-top 0.2s ease-out;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+.bt.blue {
+  background-color: #0fb8ad;
+  &:hover {
+    background-color: #1fc8db; // color: white;
+  }
+}
+
+.bt.red {
+  background-color: #f4425f;
+  &:hover {
+    background-color: #ad2d41; // color: white;
+  }
+}
+
+.bt.white {
+  background-color: #9191a3;
+  &:hover {
+    background-color: #565666; // color: white;
+  }
+}
+
+.bt.sm {
+  width: 40px;
+}
+
+//// END - BUTTON CSS ////
+//// OBJECT TREE ////
+.onClickOutside {
+  position: fixed;
+  z-index: 0;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.object-tree {
+  z-index: 2;
+  .editable {
+    &:hover {
+      outline: 2px solid black;
+    }
+  }
+  .object-node {
+    .object-label {
+      cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      .toggle-icon {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        font-size: 14px;
+        line-height: 12px;
+        text-align: center;
+        font-style: normal;
+        border: 1px dotted #aaa;
+        &:before {
+          content: "+";
+        }
+        &.opened {
+          &:before {
+            content: "-";
+          }
+        }
+      }
+      .object-type {
+        font-style: italic;
+      }
+      i {
+        display: none;
+        margin-top: 1px;
+        margin-left: 3px;
+      }
+      &:hover {
+        i {
+          display: inline-block;
+        }
+        i.fa-times {
+          color: red;
+          &:hover {
+            color: black;
+          }
+        }
+        i.fa-plus {
+          color: green;
+        }
+      }
+      .new-prop {
+        display: flex;
+        margin-bottom: 5px;
+        .new-prop-btns {
+          display: flex;
+          flex-direction: column;
+          justify-content: space-around;
+        }
+        button {
+          height: 18px;
+          width: 55px;
+        }
+      }
+    }
+    table {
+      i {
+        display: none;
+      }
+      width: 100%;
+      tr {
+        vertical-align: top;
+        th.prop-name {
+          cursor: text;
+          padding: 4px 8px;
+          text-align: left;
+          background-color: #eee;
+          color: #333;
+          input {
+            border: 0;
+            outline: 0px;
+          }
+          &:hover {
+            // border: 2px solid black;
+            background-color: white;
+            -webkit-box-shadow: inset 0px 0px 0px 2px black;
+            -moz-box-shadow: inset 0px 0px 0px 2px black;
+            box-shadow: inset 0px 0px 0px 2px black;
+          }
+        }
+        td.prop-value {
+          cursor: text;
+          padding: 4px 8px;
+          width: 145%;
+          border-top: 1px solid #aaa;
+          display: flex;
+          min-width: 15vw;
+          div {
+            min-width: 8vw;
+          }
+        }
+        tr:hover > .prop-value > th > .delete-prop {
+          display: block;
+          cursor: pointer;
+          color: red;
+          margin-left: 5px;
+
+          &:hover {
+            color: black;
+          }
+        }
+      }
+    }
+  }
+}
+
+//// END - OBJECT TREE ////
+//// SLIDER TOGGLE CSS ////
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  display: none;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 4px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #2196f3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(10px);
+  -ms-transform: translateX(10px);
+  transform: translateX(10px);
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                    supported by Chrome and Opera */
+}
+
+//// END: SLIDER TOGGLE ////

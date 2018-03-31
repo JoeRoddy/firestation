@@ -31,11 +31,19 @@
       "npm test && webpack --config=build/webpack.app.config.js --env=production && electron-builder"
   },
   "dependencies": {
+    "bootstrap": "^4.0.0",
+    "classnames": "^2.2.5",
+    "firebase-admin": "^5.11.0",
     "fs-jetpack": "^1.0.0",
+    "jquery": "^3.3.1",
     "mobx": "^4.1.1",
     "mobx-react": "^5.0.0",
+    "moment": "^2.21.0",
+    "popper.js": "^1.14.1",
     "react": "^16.3.0",
-    "react-dom": "^16.3.0"
+    "react-ace": "^5.10.0",
+    "react-dom": "^16.3.0",
+    "react-tooltip": "^3.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.5",
@@ -56,6 +64,7 @@
     "css-loader": "^0.28.7",
     "electron": "^1.8.2-beta5",
     "electron-builder": "^19.43.3",
+    "electron-devtools-installer": "^2.2.3",
     "electron-mocha": "^5.0.0",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "mocha": "^4.0.1",

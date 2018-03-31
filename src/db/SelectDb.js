@@ -1,0 +1,331 @@
+import * as admin from "firebase-admin";
+import StringHelper from "../helpers/StringHelper";
+import { isValidDate, executeDateComparison } from "../helpers/DateHelper";
+import { startFirebaseApp } from "./FirebaseDb";
+
+const getDataForSelect = function(
+  databaseSavedData,
+  collection,
+  selectedFields,
+  wheres,
+  orderBys,
+  shouldApplyListener,
+  callback
+) {
+  console.log(
+    "getData (collection, selectedFields, wheres):",
+    collection,
+    selectedFields,
+    wheres
+  );
+
+  let isFirestore = databaseSavedData.firestoreEnabled;
+  if (/(db|firestore)\//i.test(collection)) {
+    if (
+      // only flip the db if it's not already enabled
+      (isFirestore && /(db)\//i.test(collection)) ||
+      (!isFirestore && /(firestore)\//i.test(collection))
+    ) {
+      isFirestore = !isFirestore;
+    }
+    collection = collection.substring(collection.indexOf("/") + 1);
+  }
+
+  const app = startFirebaseApp(databaseSavedData);
+  let db = isFirestore ? app.firestore() : app.database();
+
+  //TODO: reimplement listeners, using firestore listeners as well
+  let results = {
+    statementType: "SELECT_STATEMENT",
+    path: collection,
+    orderBys: orderBys,
+    payload: {}
+  };
+  if (
+    !wheres ||
+    (wheres[0] && wheres[0] && wheres[0].error === "NO_EQUALITY_STATEMENTS")
+  ) {
+    //unfilterable query, grab whole collection
+    const args = [
+      db,
+      collection,
+      selectedFields,
+      results,
+      shouldApplyListener,
+      res => {
+        if (wheres && wheres[0]) {
+          res.payload = filterWheresAndNonSelectedFields(
+            res.payload,
+            wheres,
+            selectedFields
+          );
+          // results.firebaseListener = ref;
+        }
+        return callback(res);
+      }
+    ];
+    if (isFirestore) {
+      queryEntireFirestoreCollection(...args);
+    } else {
+      queryEntireRealtimeCollection(...args);
+    }
+  } else {
+    //filterable query
+    if (isFirestore) {
+      executeFilteredFirestoreQuery(results, db, ...arguments);
+    } else {
+      executeFilteredRealtimeQuery(results, db, ...arguments);
+    }
+  }
+};
+
+//private utility members
+const queryEntireFirestoreCollection = function(
+  db,
+  collection,
+  selectedFields,
+  results,
+  shouldApplyListener,
+  callback
+) {
+  console.log("NON_FILTERABLE_FIRESTORE_QUERY");
+
+  //TODO: figure out a way to make this a listener
+  db
+    .collection(collection)
+    .get()
+    .then(querySnapshot => {
+      querySnapshot.forEach(doc => {
+        results.payload[doc.id] = doc.data();
+      });
+      if (selectedFields) {
+        results.payload = removeNonSelectedFieldsFromResults(
+          results.payload,
+          selectedFields
+        );
+      }
+      return callback(results);
+    });
+};
+
+const queryEntireRealtimeCollection = function(
+  db,
+  collection,
+  selectedFields,
+  results,
+  shouldApplyListener,
+  callback
+) {
+  console.log("NON_FILTERED_REALTIME_QUERY");
+  console.log("collection:", collection);
+
+  let ref = db.ref(collection);
+  ref[shouldApplyListener ? "on" : "once"]("value", snapshot => {
+    results.payload = snapshot.val();
+    if (selectedFields) {
+      results.payload = removeNonSelectedFieldsFromResults(
+        results.payload,
+        selectedFields
+      );
+    }
+    results.firebaseListener = {
+      unsubscribe: () => ref.off("value"),
+      type: "realtime"
+    };
+    return callback(results);
+  });
+};
+
+const executeFilteredFirestoreQuery = function(
+  results,
+  db,
+  databaseSavedData,
+  collection,
+  selectedFields,
+  wheres,
+  orderBys,
+  shouldApplyListener,
+  callback
+) {
+  console.log("FILTERED_FIRESTORE");
+  const mainWhere = wheres[0];
+  let unsub = db
+    .collection(collection)
+    .where(mainWhere.field, mainWhere.comparator, mainWhere.value)
+    .onSnapshot(snapshot => {
+      let payload = {};
+      snapshot.forEach(doc => {
+        payload[doc.id] = doc.data();
+      });
+      payload = filterWheresAndNonSelectedFields(
+        payload,
+        wheres,
+        selectedFields
+      );
+
+      results.payload = payload;
+      results.firebaseListener = {
+        type: "firestore",
+        unsubscribe: () => unsub()
+      };
+
+      // console.log("onSnap:", onSnap);
+
+      callback(results);
+    });
+};
+
+const executeFilteredRealtimeQuery = function(
+  results,
+  db,
+  databaseSavedData,
+  collection,
+  selectedFields,
+  wheres,
+  orderBys,
+  shouldApplyListener,
+  callback
+) {
+  console.log("FILTERED_REALTIME");
+
+  const mainWhere = wheres[0];
+  let ref = db.ref(collection);
+  ref
+    .orderByChild(mainWhere.field)
+    .equalTo(mainWhere.value)
+    .on("value", snapshot => {
+      results.payload = filterWheresAndNonSelectedFields(
+        snapshot.val(),
+        wheres,
+        selectedFields
+      );
+      console.log("select results: ", results);
+      results.firebaseListener = {
+        unsubscribe: () => ref.off("value"),
+        type: "realtime"
+      };
+      return callback(results);
+    });
+};
+
+const filterWheresAndNonSelectedFields = function(
+  resultsPayload,
+  wheres,
+  selectedFields
+) {
+  if (wheres.length > 1) {
+    resultsPayload = filterResultsByWhereStatements(
+      resultsPayload,
+      wheres.slice(1)
+    );
+  }
+  if (selectedFields) {
+    resultsPayload = removeNonSelectedFieldsFromResults(
+      resultsPayload,
+      selectedFields
+    );
+  }
+  return resultsPayload;
+};
+
+const removeNonSelectedFieldsFromResults = function(results, selectedFields) {
+  if (!results || !selectedFields) {
+    return results;
+  }
+  Object.keys(results).forEach((objKey, index) => {
+    if (typeof results[objKey] !== "object") {
+      if (!selectedFields[objKey]) {
+        delete results[objKey];
+      }
+    } else {
+      Object.keys(results[objKey]).forEach((propKey, index) => {
+        if (!selectedFields[propKey]) {
+          delete results[objKey][propKey];
+        }
+      });
+    }
+  });
+  return Object.keys(results).length === 1
+    ? results[Object.keys(results)[0]]
+    : results;
+};
+
+const filterResultsByWhereStatements = function(results, whereStatements) {
+  if (!results) {
+    return null;
+  }
+  let returnedResults = {};
+  let nonMatch = {};
+  for (let i = 0; i < whereStatements.length; i++) {
+    let indexOffset = 1;
+    let where = whereStatements[i];
+    const that = this;
+    Object.keys(results).forEach(function(key, index) {
+      let thisResult = results[key][where.field];
+      if (!that.conditionIsTrue(thisResult, where.value, where.comparator)) {
+        nonMatch[key] = results[key];
+      }
+    });
+  }
+  if (nonMatch) {
+    Object.keys(results).forEach(function(key, index) {
+      if (!nonMatch[key]) {
+        returnedResults[key] = results[key];
+      }
+    });
+    return returnedResults;
+  } else {
+    return results;
+  }
+};
+
+const conditionIsTrue = function(val1, val2, comparator) {
+  switch (comparator) {
+    case "==":
+      return determineEquals(val1, val2);
+    case "!=":
+      return !determineEquals(val1, val2);
+    case "<=":
+    case "<":
+    case ">=":
+    case ">":
+      return determineGreaterOrLess(val1, val2, comparator);
+    case "like":
+      return StringHelper.determineStringIsLike(val1, val2);
+    case "!like":
+      return !StringHelper.determineStringIsLike(val1, val2);
+    default:
+      throw "Unrecognized comparator: " + comparator;
+  }
+};
+
+const determineEquals = function(val1, val2) {
+  val1 = typeof val1 == "undefined" || val1 == "null" ? null : val1;
+  val2 = typeof val2 == "undefined" || val2 == "null" ? null : val2;
+  return val1 === val2;
+};
+
+const determineGreaterOrLess = function(val1, val2, comparator) {
+  let isNum = false;
+  if (isNaN(val1) || isNaN(val2)) {
+    if (isValidDate(val1) && isValidDate(val2)) {
+      return executeDateComparison(val1, val2, comparator);
+    }
+  } else {
+    isNum = true;
+  }
+  switch (comparator) {
+    case "<=":
+      return isNum ? val1 <= val2 : val1.length <= val2.length;
+    case ">=":
+      return isNum ? val1 >= val2 : val1.length >= val2.length;
+    case ">":
+      return isNum ? val1 > val2 : val1.length < val2.length;
+    case "<":
+      return isNum ? val1 < val2 : val1.length < val2.length;
+  }
+};
+
+module.exports = {
+  getDataForSelect
+};
