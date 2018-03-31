@@ -2,6 +2,7 @@ node_modules
 .DS_Store
 Thumbs.db
 *.log
+tsconfig.json
 
 /dist
 /temp
@@ -10,3 +11,4 @@ Thumbs.db
 /app/app.js
 /app/background.js
 /app/**/*.map
+
