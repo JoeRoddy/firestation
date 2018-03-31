@@ -8,7 +8,7 @@ Firestation is a Firebase admin tool that executes SQL against Firebase database
 
 # Contribution
 
-I'll happily accept any and all feedback or contributions. I'm a hacker who wanted a simpler way to find his data, so if you any bugs (I'm sure they're plentiful), please either let me know, submit a PR.
+I'll happily accept any and all feedback or contributions. I'm a hacker who wanted a simpler way to find his data, so if you notice any bugs, please open an issue or submit a PR.
 
 ## Running Firestation in Development
 
