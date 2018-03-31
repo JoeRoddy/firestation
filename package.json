@@ -1,12 +1,11 @@
 {
-  "name": "electron-boilerplate",
-  "productName": "Electron Boilerplate",
+  "name": "firestation-electron",
+  "productName": "Firestation",
   "description": "Starter for your Electron application",
-  "version": "0.0.0",
+  "version": "0.2.0",
   "private": true,
-  "author": "Mr. Gumby <mr.gumby@example.com>",
-  "copyright": "© 2017, Gumby inc.",
-  "homepage": "http://example.com",
+  "author": "mrjoeroddy@gmail.com",
+  "homepage": "https://www.firestation.io",
   "main": "app/background.js",
   "build": {
     "appId": "com.example.electron-boilerplate",
