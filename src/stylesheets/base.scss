@@ -62,7 +62,7 @@ body {
   }
   .workstation-header {
     display: flex;
-    margin-top: 7vh;
+    margin-top: 1vh;
     color: $turq !important;
 
     @include respond-to(short) {

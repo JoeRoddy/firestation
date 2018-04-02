@@ -1,7 +1,7 @@
+import store from "../stores/Store";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { observer } from "mobx-react";
-import store from "../stores/Store";
 
 @observer
 export default class Navbar extends Component {
@@ -13,6 +13,7 @@ export default class Navbar extends Component {
       return (
         <a
           className="dropdown-item"
+          href="#"
           onClick={e => this.props.setCurrentDb(db)}
           key={index}
         >
@@ -23,7 +24,6 @@ export default class Navbar extends Component {
   };
 
   getDatabaseJsx = () => {
-    const { store } = this.props;
     if (!store.databases) {
       return (
         <li className={"nav-db "}>
@@ -35,7 +35,9 @@ export default class Navbar extends Component {
         <li className="nav-item dropdown">
           <a
             className="nav-link dropdown-toggle"
-            id="navbarDropdownMenuLink"
+            href="#"
+            id="navbarDropdown"
+            role="button"
             data-toggle="dropdown"
             aria-haspopup="true"
             aria-expanded="false"
@@ -44,16 +46,15 @@ export default class Navbar extends Component {
               ? store.currentDatabase.title
               : "Databases"}
           </a>
-          <div
-            className="dropdown-menu"
-            aria-labelledby="navbarDropdownMenuLink"
-          >
+          <div className="dropdown-menu" aria-labelledby="navbarDropdown">
             <a
               className="dropdown-item"
+              href="#"
               onClick={e => store.modal.set("newDB")}
             >
               Add New DB
             </a>
+
             <div className="dropdown-divider" />
             {this.renderDatabases()}
           </div>
@@ -64,7 +65,7 @@ export default class Navbar extends Component {
 
   render() {
     return (
-      <nav className="navbar fixed-top navbar-toggleable-xl navbar-inverse bg-primary">
+      <nav className="navbar navbar-expand-sm navbar-light bg-light">
         <a className="navbar-brand" onClick={e => {}}>
           <img
             src="https://firebasestorage.googleapis.com/v0/b/firestation-e149d.appspot.com/o/logo.ico?alt=media&token=7d5634ac-d956-42a8-8942-60bdeb21c06b"
@@ -72,8 +73,8 @@ export default class Navbar extends Component {
           />
           <span> &nbsp;Firestation</span>
         </a>
-        <div className="navbar-collapse collapse">
-          <ul className="navbar-nav">{this.getDatabaseJsx()}</ul>
+        <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul className="navbar-nav mr-auto">{this.getDatabaseJsx()}</ul>
         </div>
       </nav>
     );
