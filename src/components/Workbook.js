@@ -25,10 +25,10 @@ export default class Workbook extends Component {
 
   componentDidUpdate() {
     //query inserted, move to end of workbook
-    if (store && store.focus && this.refs.code) {
+    if (store && store.focus.get() && this.refs.code) {
       this.refs.code.editor.focus();
       this.refs.code.editor.navigateFileEnd();
-      store.focus = false;
+      store.focus.set(false);
     }
   }
 

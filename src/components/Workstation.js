@@ -27,7 +27,7 @@ export default class Workstation extends Component {
   }
 
   execute = () => {
-    store.focus = true; //refocus after execute
+    store.focus.set(true); //refocus after execute
     let selectedText = store.selectedText.get();
     let query = store.query.get();
     if (selectedText && query.includes(selectedText)) {
@@ -55,7 +55,6 @@ export default class Workstation extends Component {
   render() {
     const query = store.query.get(); //updates children
     const results = store.results; //needed to trigger rerender. lame.
-    console.log("results:", results);
 
     if (!store.databases[0]) {
       return <span />;

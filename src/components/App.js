@@ -72,7 +72,7 @@ export default class App extends Component {
   };
 
   commit = () => {
-    store.focus = true; //refocus text after commit click
+    store.focus.set(true); //refocus text after commit click
     store.killListeners();
     if (!store.commitQuery.get() || !store.currentDatabase) {
       return;
