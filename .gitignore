@@ -3,7 +3,6 @@ node_modules
 Thumbs.db
 *.log
 tsconfig.json
-TODO.md
 
 /dist
 /temp
