@@ -3,7 +3,7 @@ import classnames from "classnames";
 import PropTypes from "prop-types";
 import ObjectNode from "./ObjectNode";
 import { subObject } from "../../helpers/ObjectHelper";
-import store from "../../stores/Store";
+
 /**
  * https://github.com/stomita/react-object-tree/
  */

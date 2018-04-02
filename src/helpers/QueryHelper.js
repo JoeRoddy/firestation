@@ -4,7 +4,7 @@ import { getDataForSelect } from "../db/SelectDb";
 import { startFirebaseApp } from "../db/FirebaseDb";
 import { pushObject, deleteObject, updateFields } from "../db/UpdateDb";
 import { isValidDate, executeDateComparison } from "../helpers/DateHelper";
-import { debug } from "util";
+import QueryDetails from "../stores/models/QueryDetails";
 const NO_EQUALITY_STATEMENTS = "NO_EQUALITY_STATEMENTS";
 const SELECT_STATEMENT = "SELECT_STATEMENT";
 const UPDATE_STATEMENT = "UPDATE_STATEMENT";
@@ -65,10 +65,10 @@ export default class QueryHelper {
         let keys = insertObjects && Object.keys(insertObjects);
         for (let i = 1; i < insertCount; i++) {
           //insert clones
-          UpdateService.pushObject(db, path, insertObjects[keys[0]]);
+          pushObject(db, path, insertObjects[keys[0]]);
         }
         for (let key in insertObjects) {
-          UpdateService.pushObject(db, path, insertObjects[key]);
+          pushObject(db, path, insertObjects[key]);
         }
       }
       let results = {
@@ -96,7 +96,7 @@ export default class QueryHelper {
           if (dataToAlter && commitResults) {
             Object.keys(dataToAlter.payload).forEach((objKey, index) => {
               const path = collection + "/" + objKey;
-              UpdateService.deleteObject(db, path);
+              deleteObject(db, path);
             });
           }
           let results = {
@@ -112,63 +112,57 @@ export default class QueryHelper {
   }
 
   static executeSelect(query, db, callback) {
-    const collection = this.getCollection(query, SELECT_STATEMENT);
-    const orderBys = this.getOrderBys(query);
-    const selectedFields = this.getSelectedFields(query);
+    let col = this.getCollection(query, SELECT_STATEMENT);
+    const { collection, isFirestore } = this.checkForCrossDbQuery(db, col);
+
+    let queryDetails = new QueryDetails();
+    queryDetails.collection = collection;
+    queryDetails.isFirestore = isFirestore;
+    queryDetails.orderBys = this.getOrderBys(query);
+    queryDetails.selectedFields = this.getSelectedFields(query);
+    queryDetails.shouldApplyListener = true;
+
     this.getWheres(query, db, wheres => {
-      getDataForSelect(
-        db,
-        collection,
-        selectedFields,
-        wheres,
-        orderBys,
-        true,
-        callback
-      );
+      queryDetails.wheres = wheres;
+      getDataForSelect(db, queryDetails, callback);
     });
   }
 
   static executeUpdate(query, db, callback, commitResults) {
-    const collection = this.getCollection(query, UPDATE_STATEMENT);
+    const col = this.getCollection(query, UPDATE_STATEMENT);
+    const { collection, isFirestore } = this.checkForCrossDbQuery(db, col);
+
     const sets = this.getSets(query);
     if (!sets) {
       return null;
     }
     const that = this;
     this.getWheres(query, db, wheres => {
-      getDataForSelect(
-        db,
-        collection,
-        null,
-        wheres,
-        !commitResults,
-        null,
-        dataToAlter => {
-          let data = dataToAlter.payload;
-          let payload = {};
-          Object.keys(data).forEach((objKey, index) => {
-            let updateObj = that.updateItemWithSets(data[objKey], sets);
-            console.log("update object b4 call:", updateObj);
-            const path = collection + "/" + objKey;
-            if (commitResults) {
-              UpdateService.updateFields(
-                db,
-                path,
-                updateObj,
-                Object.keys(sets)
-              );
-            }
-            payload[objKey] = updateObj;
-          });
-          let results = {
-            statementType: UPDATE_STATEMENT,
-            payload,
-            firebaseListener: dataToAlter.firebaseListener,
-            path: collection
-          };
-          callback(results);
-        }
-      );
+      let queryDetails = new QueryDetails();
+      queryDetails.collection = collection;
+      queryDetails.isFirestore = isFirestore;
+      queryDetails.db = db;
+      queryDetails.wheres = wheres;
+      getDataForSelect(db, queryDetails, dataToAlter => {
+        let data = dataToAlter.payload;
+        let payload = {};
+        Object.keys(data).forEach((objKey, index) => {
+          let updateObj = that.updateItemWithSets(data[objKey], sets);
+          console.log("update object b4 call:", updateObj);
+          const path = collection + "/" + objKey;
+          if (commitResults) {
+            updateFields(db, path, updateObj, Object.keys(sets));
+          }
+          payload[objKey] = updateObj;
+        });
+        let results = {
+          statementType: UPDATE_STATEMENT,
+          payload,
+          firebaseListener: dataToAlter.firebaseListener,
+          path: collection
+        };
+        callback(results);
+      });
     });
   }
 
@@ -204,7 +198,36 @@ export default class QueryHelper {
         }
         updateObject[objKey] = finalValue;
       } else {
-        updateObject[objKey] = thisSet;
+        if (objKey.includes("/")) {
+          // "users/userId/name" -> users: { userId: { name: ""}}, etc
+          if (typeof updateObject !== "object") {
+            updateObject = {};
+          }
+          let currentObject = updateObject;
+          let dataPath = objKey.split("/");
+          dataPath.forEach((val, i) => {
+            // i >= dataPath.length ?
+            if (i === dataPath.length - 1) {
+              currentObject[val] = thisSet;
+            } else {
+              let currVal = currentObject[val];
+
+              currentObject[val] =
+                currVal && typeof currVal === "object"
+                  ? currentObject[val]
+                  : {};
+            }
+            currentObject = currentObject[val];
+          });
+
+          // let keyValSplit = objKey.split("/");
+          // let curr = obj[keyValSplit[0]];
+          // updateObject[keyValSplit[0]] =
+          //   curr && typeof curr === "object" ? curr : {};
+          // updateObject[keyValSplit[0]][keyValSplit[1]] = thisSet;
+        } else {
+          updateObject[objKey] = thisSet;
+        }
       }
     });
     return updateObject;
@@ -538,5 +561,20 @@ export default class QueryHelper {
 
     wheres.unshift({ error: NO_EQUALITY_STATEMENTS });
     return wheres;
+  }
+
+  static checkForCrossDbQuery(db, collection) {
+    let isFirestore = db.firestoreEnabled;
+    if (/(db|firestore)\//i.test(collection)) {
+      if (
+        // only flip the db if it's not already enabled
+        (isFirestore && /(db)\//i.test(collection)) ||
+        (!isFirestore && /(firestore)\//i.test(collection))
+      ) {
+        isFirestore = !isFirestore;
+      }
+      collection = collection.substring(collection.indexOf("/") + 1);
+    }
+    return { collection, isFirestore };
   }
 }

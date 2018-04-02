@@ -107,7 +107,6 @@ class Store {
 
   addNewListener = listener => {
     if (!listener) {
-      debugger;
       return;
     }
 
@@ -143,6 +142,7 @@ class Store {
   toggleFirestore(isFirestore = true) {
     this.firestoreEnabled.set(isFirestore);
     this.currentDatabase.firestoreEnabled = isFirestore;
+    this.updateDatabase(this.currentDatabase);
   }
 
   createNewDatabase(database) {

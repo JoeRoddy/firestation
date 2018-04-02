@@ -5,6 +5,7 @@ import {
   startFirebaseApp,
   databaseConfigInitializes
 } from "./FirebaseDb";
+import { start } from "repl";
 
 const updateFields = function(savedDatabase, path, object, fields) {
   if (!fields || !object) {
@@ -17,18 +18,17 @@ const updateFields = function(savedDatabase, path, object, fields) {
   console.log("\n\n");
 
   const app = startFirebaseApp(savedDatabase);
-  const db = savedDatabase.firestoreEnabled ? app.firestore() : app.database();
   return savedDatabase.firestoreEnabled
-    ? updateFirestoreFields(db, path, object, fields)
-    : updateRealtimeFields(db, path, object, fields);
+    ? updateFirestoreFields(app.firestore(), path, object, fields)
+    : updateRealtimeFields(app.database(), path, object, fields);
 };
 
 const updateRealtimeFields = function(db, path, object, fields) {
   db.ref(path).once(
     "value",
     snapshot => {
-      let updateObject = getUpdateObject(object, fields, snapshot.val());
-      return db.ref(path).set(updateObject);
+      let updateObject = Object.assign(currentData, newData);
+      return db.ref(path).update(updateObject);
     },
     errorObject => {
       console.log("UPDATE ERROR: " + errorObject.code);
@@ -55,30 +55,14 @@ const updateFirestoreFields = function(db, path, object, fields) {
     });
 };
 
-const getUpdateObject = function(object, fields, newObject) {
-  let updateObject = newObject || {};
-  fields.forEach(field => {
-    let val = object[field];
-    if (typeof val === "undefined") {
-      return console.error(`Cannot set firebase key ${field} to undefined`);
-    }
-    if (field.includes("/")) {
-      let keyValSplit = field.split("/");
-      updateObject[keyValSplit[0]] = results[keyValSplit[0]] || {};
-      updateObject[keyValSplit[0]][keyValSplit[1]] = object[field];
-    } else {
-      updateObject[field] = object[field];
-    }
-  });
-  return updateObject;
-};
-
-const deleteObject = function(savedDatabase, path) {
+const deleteObject = function(savedDatabase, path, isFirestore) {
   const app = startFirebaseApp(savedDatabase);
-  const db = savedDatabase.firestoreEnabled ? app.firestore() : app.database();
-  savedDatabase.firestoreEnabled
-    ? deleteFirestoreData(db, path)
-    : db.ref(path).remove();
+  isFirestore
+    ? deleteFirestoreData(app.firestore(), path)
+    : app
+        .database()
+        .ref(path)
+        .remove();
 };
 
 const deleteFirestoreData = function(db, path) {
@@ -104,6 +88,7 @@ const deleteFirestoreDoc = function(db, collection, doc) {
 
 const deleteFirestoreField = function(db, collection, docAndField) {
   let [doc, field] = docAndField.split(/\/(.+)/);
+  field = StringHelper.replaceAll(field, "/", ".");
   console.log(`deleting field, ${field} from col:${collection}, doc: ${doc}`);
   db
     .collection(collection)
@@ -150,8 +135,10 @@ const pushFirestoreDocToGeneratedId = function(db, collection, data) {
     });
 };
 
-const set = function(db, path, data) {
-  if (db.api && db.api.Firestore) {
+const set = function(savedDatabase, path, data, isFirestore) {
+  const app = startFirebaseApp(savedDatabase);
+  const db = isFirestore ? app.firestore() : app.database();
+  if (isFirestore) {
     let [collection, docId] = path.split(/\/(.+)/);
     docId.includes("/")
       ? setFirestoreProp(db, path, data)
@@ -161,19 +148,21 @@ const set = function(db, path, data) {
   }
 };
 
-const setObjectProperty = function(db, path, value) {
+const setObjectProperty = function(savedDatabase, path, value, isFirestore) {
   value = StringHelper.getParsedValue(value);
-  if (db.api && db.api.Firestore) {
-    setFirestoreProp(db, path, value);
-  } else {
-    db.ref(path).set(value);
-  }
+  const app = startFirebaseApp(savedDatabase);
+  isFirestore
+    ? setFirestoreProp(app.firestore(), path, value)
+    : app
+        .database()
+        .ref(path)
+        .set(value);
 };
 
 const setFirestoreProp = function(db, path, value) {
   path = StringHelper.replaceAll(path, "/", ".");
-  let [collection, docAndfield] = path.split(/\.(.+)/);
-  let [docId, field] = docAndfield.split(/\.(.+)/);
+  let [collection, docAndField] = path.split(/\.(.+)/);
+  let [docId, field] = docAndField.split(/\.(.+)/);
   console.log(`setting document prop ${field} @ ${collection}/${docId}`);
   db
     .collection(collection)

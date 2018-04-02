@@ -47,8 +47,8 @@ export default class ObjectNode extends React.Component {
       "warning All data at this location, including nested data, will be permanently deleted: \nData location: " +
       path;
     if (confirm(confirmationMsg)) {
-      let db = store.currentDatabaseObject;
-      deleteObject(db, path);
+      const isFirestore = (store.results || {}).isFirestore;
+      deleteObject(store.currentDatabase, path, isFirestore);
     }
   }
 
@@ -89,7 +89,10 @@ export default class ObjectNode extends React.Component {
   }
 
   renderObject(obj, type) {
-    const { path, level, store, fbPath } = this.props;
+    const { path, level, fbPath, isFirestore } = this.props;
+    if (!fbPath) {
+      return null;
+    }
     const { opened } = this.state;
     const clevel = level > 0 ? level - 1 : 0;
     const that = this;
@@ -241,7 +244,6 @@ export default class ObjectNode extends React.Component {
                   {!this.props.noValue && (
                     <td className="prop-value">
                       <ObjectNode
-                        store={store}
                         value={value}
                         path={cpath}
                         fbPath={entireFbPath}
@@ -286,7 +288,6 @@ export default class ObjectNode extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    let db = store.currentDatabaseObject;
     let newValue = StringHelper.getParsedValue(this.state.newVal);
     let path = this.props.fbPath;
     const pathUnderEdit = this.props.pathUnderEdit;
@@ -296,18 +297,32 @@ export default class ObjectNode extends React.Component {
       pathUnderEdit +
       " ---> " +
       path +
+      "/" +
       newValue;
-    if (pathUnderEdit && this.state.keyEdit && confirm(keyConfirmationMsg)) {
-      keyChangeConfirmed = true;
-      let newObject = _.clone(this.props.value);
-      let oldKey = pathUnderEdit.substring(pathUnderEdit.lastIndexOf("/") + 1);
-      newObject[newValue] = newObject[oldKey];
-      delete newObject[oldKey];
-      newValue = newObject;
-    }
 
-    if (!this.state.keyEdit || keyChangeConfirmed) {
-      set(db, path, newValue);
+    const isFirestore = (store.results || {}).isFirestore;
+
+    if (!this.state.keyEdit) {
+      //value update
+      set(store.currentDatabase, path, newValue, isFirestore);
+    } else if (pathUnderEdit && confirm(keyConfirmationMsg)) {
+      if (path.indexOf("/") < 0) {
+        //root obj key update
+        const key = pathUnderEdit.substring(pathUnderEdit.lastIndexOf("/") + 1);
+        const val = this.props.value[key];
+        set(store.currentDatabase, `${path}/${newValue}`, val, isFirestore);
+        deleteObject(store.currentDatabase, pathUnderEdit, isFirestore);
+      } else {
+        //deep key update
+        let newObject = _.clone(this.props.value);
+        let oldKey = pathUnderEdit.substring(
+          pathUnderEdit.lastIndexOf("/") + 1
+        );
+        newObject[newValue] = newObject[oldKey];
+        delete newObject[oldKey];
+        newValue = newObject;
+        set(store.currentDatabase, path, newValue, isFirestore);
+      }
     }
 
     this.setState({ newVal: null, keyEdit: false });
@@ -319,11 +334,12 @@ export default class ObjectNode extends React.Component {
   }
 
   createNewProperty(e) {
-    let db = store.currentDatabaseObject;
+    const isFirestore = (store.results || {}).isFirestore;
     setObjectProperty(
-      db,
+      store.currentDatabase,
       this.props.creationPath + "/" + this.state.newKey,
-      this.state.newVal
+      this.state.newVal,
+      isFirestore
     );
     this.props.setCreationPath(null);
   }
