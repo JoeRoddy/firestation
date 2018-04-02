@@ -206,7 +206,6 @@ export default class QueryHelper {
           let currentObject = updateObject;
           let dataPath = objKey.split("/");
           dataPath.forEach((val, i) => {
-            // i >= dataPath.length ?
             if (i === dataPath.length - 1) {
               currentObject[val] = thisSet;
             } else {
@@ -219,12 +218,6 @@ export default class QueryHelper {
             }
             currentObject = currentObject[val];
           });
-
-          // let keyValSplit = objKey.split("/");
-          // let curr = obj[keyValSplit[0]];
-          // updateObject[keyValSplit[0]] =
-          //   curr && typeof curr === "object" ? curr : {};
-          // updateObject[keyValSplit[0]][keyValSplit[1]] = thisSet;
         } else {
           updateObject[objKey] = thisSet;
         }
