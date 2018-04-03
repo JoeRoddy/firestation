@@ -261,7 +261,7 @@ export default class QueryHelper {
   }
 
   static getWheres(query, db, callback) {
-    const whereIndexStart = query.indexOf(" where ") + 1;
+    const whereIndexStart = query.toUpperCase().indexOf(" WHERE ") + 1;
     if (whereIndexStart < 1) {
       return callback(null);
     }
@@ -269,7 +269,7 @@ export default class QueryHelper {
     const whereIndexEnd = orderByIndex >= 0 ? orderByIndex : query.length;
     let wheresArr = query
       .substring(whereIndexStart + 5, whereIndexEnd)
-      .split(" and ");
+      .split(/\sand\s/i);
     wheresArr[wheresArr.length - 1] = wheresArr[wheresArr.length - 1].replace(
       ";",
       ""
@@ -453,8 +453,7 @@ export default class QueryHelper {
       //traditional insert
       let keysStr = query.substring(query.indexOf("(") + 1, query.indexOf(")"));
       let keys = keysStr.split(",");
-
-      let valuesStr = query.match(/(values).+\);/)[0];
+      let valuesStr = query.match(/(values).+\)/)[0];
       let valuesStrArr = valuesStr.split(/[\(](?!\))/); //splits on "(", unless its a function "func()"
       valuesStrArr.shift(); //removes "values ("
       let valuesArr = valuesStrArr.map(valueStr => {
