@@ -54,23 +54,6 @@ const SideMenu = ({
     );
   };
 
-  const downloadBackup = () => {
-    let db = startFirebaseApp(store.currentDatabase).database();
-    let path =
-      app.getPath("desktop") +
-      "/" +
-      moment().format("MMMDo_") +
-      store.currentDatabase.title +
-      ".json";
-    db.ref("/").once("value", snap => {
-      let dbContent = snap.val();
-      dialog.showSaveDialog({ defaultPath: path }, fileName => {
-        if (fileName === undefined) return;
-        fs.writeFile(fileName, JSON.stringify(dbContent), function(err) {});
-      });
-    });
-  };
-
   let projectId =
     store.currentDatabase &&
     store.currentDatabase.serviceKey &&
@@ -96,7 +79,7 @@ const SideMenu = ({
           <div className="sidemenu-savedQueries">{renderSavedQueries()}</div>
         )}
       {/*<a className="sidemenu-item"><i className="fa fa-code" /> Query Translator</a>*/}
-      <a onClick={downloadBackup} className="sidemenu-item">
+      <a className="sidemenu-item" onClick={e => store.modal.set("backup")}>
         <i className="fa fa-download" /> &nbsp;Download Backup
       </a>
       <a

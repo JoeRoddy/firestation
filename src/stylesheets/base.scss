@@ -27,6 +27,10 @@ $break-short: 960px;
 @mixin non-highlightable() {
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 $lavender: #9370db;
 $turq: #0fb8ad;
 $turqhover: #1fc8db;

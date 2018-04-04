@@ -1,6 +1,7 @@
 import React from "react";
 import AddDatabase from "./AddDatabase";
 import DatabaseConfig from "./DatabaseConfig";
+import DownloadBackup from "./DownloadBackup";
 import SaveQuery from "./SaveQuery";
 import fs from "fs";
 import { observer } from "mobx-react";
@@ -42,13 +43,14 @@ const Modal = observer(({ currentDatabase, createDb, firestoreEnabled }) => {
     store.newDb.clear();
   };
 
+  const modalMode = store.modal.get();
+
   return (
     <div className="Modal col-md-12" onClick={closeModal}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <i className="fa fa-times closeBtn" onClick={closeModal} />
-        {store.modal.get().includes("config") && (
+        {modalMode.includes("config") && (
           <DatabaseConfig
-            store={store}
             firestoreEnabled={firestoreEnabled}
             closeModal={closeModal}
             handleFile={handleFile}
@@ -56,15 +58,15 @@ const Modal = observer(({ currentDatabase, createDb, firestoreEnabled }) => {
             currentDatabase={currentDatabase}
           />
         )}
-        {store.modal.get().includes("newDB") && (
+        {modalMode.includes("newDB") && (
           <AddDatabase
-            store={store}
             createDb={createDb}
             handleFile={handleFile}
             serviceAccount={serviceAccount}
           />
         )}
-        {store.modal.get() === "saveQuery" && <SaveQuery store={store} />}
+        {modalMode === "saveQuery" && <SaveQuery />}
+        {modalMode === "backup" && <DownloadBackup />}
       </div>
     </div>
   );
