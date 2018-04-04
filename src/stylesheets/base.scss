@@ -62,13 +62,14 @@ body {
   }
   .workstation-header {
     display: flex;
-    margin-top: 1vh;
+    margin-top: 5px;
+    margin-bottom: 5px;
     color: $turq !important;
 
-    @include respond-to(short) {
-      visibility: hidden;
-      margin-top: 2vh;
-    }
+    // @include respond-to(short) {
+    //   visibility: hidden;
+    //   margin-top: 2vh;
+    // }
     .dropdown-menu {
       .dropdown-toggle {
         font-size: 12px;
