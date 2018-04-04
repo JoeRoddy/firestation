@@ -90,6 +90,10 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
           );
         }
         return callback(results);
+      })
+      .catch(err => {
+        results.error = err.message;
+        return callback(results);
       });
   }
 };
@@ -129,27 +133,29 @@ const executeFilteredFirestoreQuery = function(db, results, query, callback) {
   let unsub = db
     .collection(collection)
     .where(mainWhere.field, mainWhere.comparator, mainWhere.value)
-    .onSnapshot(snapshot => {
-      let payload = {};
-      snapshot.forEach(doc => {
-        payload[doc.id] = doc.data();
-      });
-      payload = filterWheresAndNonSelectedFields(
-        payload,
-        wheres,
-        selectedFields
-      );
-
-      results.payload = payload;
-      results.firebaseListener = {
-        type: "firestore",
-        unsubscribe: () => unsub()
-      };
-
-      // console.log("onSnap:", onSnap);
-
-      callback(results);
-    });
+    .onSnapshot(
+      snapshot => {
+        let payload = {};
+        snapshot.forEach(doc => {
+          payload[doc.id] = doc.data();
+        });
+        payload = filterWheresAndNonSelectedFields(
+          payload,
+          wheres,
+          selectedFields
+        );
+        results.payload = payload;
+        results.firebaseListener = {
+          type: "firestore",
+          unsubscribe: () => unsub()
+        };
+        callback(results);
+      },
+      err => {
+        results.error = err.message;
+        return callback(results);
+      }
+    );
 };
 
 const executeFilteredRealtimeQuery = function(db, results, query, callback) {
@@ -300,5 +306,6 @@ const determineGreaterOrLess = (val1, val2, comparator) => {
 };
 
 module.exports = {
-  getDataForSelect
+  getDataForSelect,
+  unfilteredFirestoreQuery
 };
