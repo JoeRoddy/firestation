@@ -4,25 +4,26 @@ import { inject, observer } from "mobx-react";
 import { databaseConfigInitializes } from "../../db/FirebaseDb";
 import store from "../../stores/Store";
 
-const DatabaseConfig = ({ handleFile, closeModal, firestoreEnabled }) => {
+const DatabaseConfig = observer(({ handleFile, closeModal }) => {
   const currentDatabase = store.currentDatabase;
   const save = () => {
     let database = store.currentDatabase;
     let title = document.getElementById("db-title-input").value;
-    let firestoreToggle = document.getElementById("firestore-toggle-input")
-      .checked;
     title = title ? title : store.currentDatabase.title;
     database.title = title;
     if (!store.newDb || !store.newDb.data) {
       store.modal.set(null);
-      database.firestoreEnabled = firestoreToggle;
       store.updateDatabase(database);
-      store.firestoreEnabled.set(firestoreToggle);
       return;
     }
 
     let path = store.newDb.path;
     path = path.substring(path.lastIndexOf("/") + 1);
+    let serviceKey = store.newDb.data;
+    if (!serviceKey) {
+      alert("Something went wrong with your file.");
+      return;
+    }
     database.serviceKey = serviceKey;
     database.url = "https://" + serviceKey.project_id + ".firebaseio.com";
     database.path = path;
@@ -39,10 +40,6 @@ const DatabaseConfig = ({ handleFile, closeModal, firestoreEnabled }) => {
 
   const clearNewDb = () => {
     store.newDb.clear();
-  };
-
-  const toggleFirestore = () => {
-    store.firestoreEnabled.set(!store.firestoreEnabled.get());
   };
 
   const confirmDelete = () => {
@@ -91,17 +88,6 @@ const DatabaseConfig = ({ handleFile, closeModal, firestoreEnabled }) => {
             </div>
           )}
         </div>
-        <div className="firestore-toggle">
-          <label className="switch">
-            <input
-              type="checkbox"
-              id="firestore-toggle-input"
-              defaultChecked={firestoreEnabled}
-            />
-            <span className="slider" />
-          </label>
-          <span> Cloud Firestore</span>
-        </div>{" "}
         <br />
         <button className="bt blue" onClick={save}>
           Save
@@ -129,6 +115,6 @@ const DatabaseConfig = ({ handleFile, closeModal, firestoreEnabled }) => {
       </div>
     </div>
   );
-};
+});
 
 export default DatabaseConfig;
