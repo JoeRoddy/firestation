@@ -7,7 +7,13 @@ import {
 } from "./FirebaseDb";
 import { start } from "repl";
 
-const updateFields = function(savedDatabase, path, object, fields) {
+const updateFields = function(
+  savedDatabase,
+  path,
+  object,
+  fields,
+  isFirestore
+) {
   if (!fields || !object) {
     return;
   }
@@ -18,22 +24,18 @@ const updateFields = function(savedDatabase, path, object, fields) {
   console.log("\n\n");
 
   const app = startFirebaseApp(savedDatabase);
-  return savedDatabase.firestoreEnabled
+  return isFirestore
     ? updateFirestoreFields(app.firestore(), path, object, fields)
     : updateRealtimeFields(app.database(), path, object, fields);
 };
 
-const updateRealtimeFields = function(db, path, object, fields) {
-  db.ref(path).once(
-    "value",
-    snapshot => {
-      let updateObject = Object.assign(currentData, newData);
-      return db.ref(path).update(updateObject);
-    },
-    errorObject => {
-      console.log("UPDATE ERROR: " + errorObject.code);
-    }
-  );
+const updateRealtimeFields = function(db, path, newData, fields) {
+  let updateObject = {};
+  fields.forEach(field => {
+    updateObject[field] = newData[field];
+  });
+
+  return db.ref(path).update(updateObject);
 };
 
 const updateFirestoreFields = function(db, path, object, fields) {
@@ -98,12 +100,14 @@ const deleteFirestoreField = function(db, collection, docAndField) {
     });
 };
 
-const pushObject = function(savedDatabase, path, object) {
+const pushObject = function(savedDatabase, path, object, isFirestore) {
   const app = startFirebaseApp(savedDatabase);
-  const db = savedDatabase.firestoreEnabled ? app.firestore() : app.database();
-  savedDatabase.firestoreEnabled
-    ? createFirestoreDocument(db, path, object)
-    : db.ref(path).push(object);
+  isFirestore
+    ? createFirestoreDocument(app.firestore(), path, object)
+    : app
+        .database()
+        .ref(path)
+        .push(object);
 };
 
 const createFirestoreDocument = function(db, path, data) {

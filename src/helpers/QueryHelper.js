@@ -46,8 +46,6 @@ export default class QueryHelper {
   }
 
   static formatAndCleanQuery(query) {
-    console.log("format and clean query:", query);
-
     //called by App.jsx to remove comments before saving to history
     query = StringHelper.replaceAll(query, /(\/\/|--).+/, "");
     query = query.replace(/\r?\n|\r/g, " ");
@@ -56,8 +54,8 @@ export default class QueryHelper {
   }
 
   static executeInsert(query, db, callback, commitResults) {
-    const collection = this.getCollection(query, INSERT_STATEMENT);
-    const that = this;
+    const col = this.getCollection(query, INSERT_STATEMENT);
+    const { collection, isFirestore } = this.checkForCrossDbQuery(db, col);
     const insertCount = this.getInsertCount(query);
     const path = collection + "/";
     this.getObjectsFromInsert(query, db, !commitResults, insertObjects => {
@@ -65,10 +63,10 @@ export default class QueryHelper {
         let keys = insertObjects && Object.keys(insertObjects);
         for (let i = 1; i < insertCount; i++) {
           //insert clones
-          pushObject(db, path, insertObjects[keys[0]]);
+          pushObject(db, path, insertObjects[keys[0]], isFirestore);
         }
         for (let key in insertObjects) {
-          pushObject(db, path, insertObjects[key]);
+          pushObject(db, path, insertObjects[key], isFirestore);
         }
       }
       let results = {
@@ -82,37 +80,34 @@ export default class QueryHelper {
   }
 
   static executeDelete(query, db, callback, commitResults) {
-    const collection = this.getCollection(query, DELETE_STATEMENT);
-    const that = this;
+    const col = this.getCollection(query, DELETE_STATEMENT);
+    const { collection, isFirestore } = this.checkForCrossDbQuery(db, col);
     this.getWheres(query, db, wheres => {
-      getDataForSelect(
-        db,
-        collection,
-        null,
-        wheres,
-        null,
-        !commitResults,
-        dataToAlter => {
-          if (dataToAlter && commitResults) {
-            Object.keys(dataToAlter.payload).forEach((objKey, index) => {
-              const path = collection + "/" + objKey;
-              deleteObject(db, path);
-            });
-          }
-          let results = {
-            statementType: DELETE_STATEMENT,
-            payload: dataToAlter.payload,
-            firebaseListener: dataToAlter.firebaseListener,
-            path: collection
-          };
-          callback(results);
+      let queryDetails = new QueryDetails();
+      queryDetails.collection = collection;
+      queryDetails.isFirestore = isFirestore;
+      queryDetails.db = db;
+      queryDetails.wheres = wheres;
+      getDataForSelect(db, queryDetails, dataToAlter => {
+        if (dataToAlter && commitResults) {
+          Object.keys(dataToAlter.payload).forEach((objKey, index) => {
+            const path = collection + "/" + objKey;
+            deleteObject(db, path, isFirestore);
+          });
         }
-      );
+        let results = {
+          statementType: DELETE_STATEMENT,
+          payload: dataToAlter.payload,
+          firebaseListener: dataToAlter.firebaseListener,
+          path: collection
+        };
+        callback(results);
+      });
     });
   }
 
   static executeSelect(query, db, callback) {
-    let col = this.getCollection(query, SELECT_STATEMENT);
+    const col = this.getCollection(query, SELECT_STATEMENT);
     const { collection, isFirestore } = this.checkForCrossDbQuery(db, col);
 
     let queryDetails = new QueryDetails();
@@ -148,10 +143,9 @@ export default class QueryHelper {
         let payload = {};
         Object.keys(data).forEach((objKey, index) => {
           let updateObj = that.updateItemWithSets(data[objKey], sets);
-          console.log("update object b4 call:", updateObj);
           const path = collection + "/" + objKey;
           if (commitResults) {
-            updateFields(db, path, updateObj, Object.keys(sets));
+            updateFields(db, path, updateObj, Object.keys(sets), isFirestore);
           }
           payload[objKey] = updateObj;
         });
@@ -427,27 +421,11 @@ export default class QueryHelper {
   static getObjectsFromInsert(query, db, shouldApplyListener, callback) {
     //insert based on select data
     if (/^(insert into )[^\s]+( select).+/i.test(query)) {
-      const queryUpper = query.toUpperCase();
-      const that = this;
       const selectStatement = query
-        .substring(queryUpper.indexOf("SELECT "))
+        .substring(query.toUpperCase().indexOf("SELECT "))
         .trim();
-      const selectedFields = this.getSelectedFields(selectStatement);
-      const collection = this.getCollection(selectStatement, SELECT_STATEMENT);
-      this.getWheres(selectStatement, db, wheres => {
-        getDataForSelect(
-          db,
-          collection,
-          selectedFields,
-          wheres,
-          shouldApplyListener,
-          null,
-          selectData => {
-            // console.log()
-
-            return callback(selectData.payload);
-          }
-        );
+      this.executeSelect(selectStatement, db, selectData => {
+        return callback(selectData.payload);
       });
     } else {
       //traditional insert
