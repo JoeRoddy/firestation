@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import StringHelper from "../helpers/StringHelper";
 import { isValidDate, executeDateComparison } from "../helpers/DateHelper";
 import { startFirebaseApp } from "./FirebaseDb";
+import QueryDetails from "../stores/models/QueryDetails";
 
 const getDataForSelect = function(databaseSavedData, query, callback) {
   const { wheres, selectedFields, isFirestore } = query;
@@ -45,7 +46,32 @@ const getDataForSelect = function(databaseSavedData, query, callback) {
 const unfilteredFirestoreQuery = function(db, results, query, callback) {
   console.log("NON_FILTERABLE_FIRESTORE_QUERY");
   const { collection, selectedFields, shouldApplyListener } = query;
-  if (collection.includes("/")) {
+  if (collection === "/") {
+    //root query: select * from /;
+    db
+      .getCollections()
+      .then(collections => {
+        let colIds = Object.keys(collections);
+        let numDone = 0;
+        let firestoreData = {};
+        collections.forEach(collection => {
+          let colId = collection.id;
+          let query = new QueryDetails();
+          query.collection = colId;
+          unfilteredFirestoreQuery(db, { payload: {} }, query, res => {
+            firestoreData[colId] = res.payload;
+            if (++numDone >= collections.length) {
+              results.payload = firestoreData;
+              return callback(results);
+            }
+          });
+        });
+      })
+      .catch(err => {
+        results.error = err.message;
+        return callback(results);
+      });
+  } else if (collection.includes("/")) {
     //select * from collection.document
     let [col, field] = collection.split(/\/(.+)/);
     field = StringHelper.replaceAll(field, "/", ".");

@@ -79,28 +79,11 @@ export default class DownloadBackup extends Component {
     let callback = this.handleDownloadResult;
     let db = startFirebaseApp(store.currentDatabase).firestore();
     callback(null, "firestore", "Downloading Firestore DB..");
-    db
-      .getCollections()
-      .then(collections => {
-        let colIds = Object.keys(collections);
-        let numDone = 0;
-        let firestoreData = {};
-        collections.forEach(collection => {
-          let colId = collection.id;
-          let query = new QueryDetails();
-          query.collection = colId;
-          unfilteredFirestoreQuery(db, { payload: {} }, query, res => {
-            firestoreData[colId] = res.payload;
-            if (++numDone >= collections.length) {
-              callback(null, "Writing Firestore DB to Disk");
-              return this.writeDataToDisk(firestoreData, "firestore", callback);
-            }
-          });
-        });
-      })
-      .catch(err => {
-        callback(err.message);
-      });
+    let query = new QueryDetails();
+    query.collection = "/";
+    unfilteredFirestoreQuery(db, { payload: {} }, query, res => {
+      return this.writeDataToDisk(res.payload, "firestore", callback);
+    });
   };
 
   render() {
@@ -119,7 +102,6 @@ export default class DownloadBackup extends Component {
               <RadioInput val="both" name="Both" that={this} />
             </form>
             <button className="bt blue" onClick={this.download}>
-              <i className="fa fa-circle-o-notch fa-spin" />
               Download
             </button>{" "}
             &nbsp;&nbsp;

@@ -5,7 +5,6 @@ import {
   startFirebaseApp,
   databaseConfigInitializes
 } from "./FirebaseDb";
-import { start } from "repl";
 
 const updateFields = function(
   savedDatabase,
@@ -164,9 +163,15 @@ const setObjectProperty = function(savedDatabase, path, value, isFirestore) {
 };
 
 const setFirestoreProp = function(db, path, value) {
+  path = path.charAt(0) === "/" && path.length > 1 ? path.substring(1) : path;
   path = StringHelper.replaceAll(path, "/", ".");
   let [collection, docAndField] = path.split(/\.(.+)/);
   let [docId, field] = docAndField.split(/\.(.+)/);
+  if (!field) {
+    //trying to create a new doc from obj tree
+    return createFirestoreDocument(db, collection, { [docId]: value });
+  }
+
   console.log(`setting document prop ${field} @ ${collection}/${docId}`);
   db
     .collection(collection)
