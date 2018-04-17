@@ -1,6 +1,5 @@
 import React from "react";
 import { startFirebaseApp } from "../db/FirebaseDb";
-import fs from "fs";
 import moment from "moment";
 import store from "../stores/Store";
 const { dialog, app } = require("electron").remote;

@@ -10,8 +10,6 @@ const databaseConfigInitializes = function(db) {
   let testApp;
 
   try {
-    console.log("test: init fb app");
-
     testApp = admin.initializeApp(
       {
         credential: admin.credential.cert(db.serviceKey),
@@ -33,18 +31,16 @@ const startFirebaseApp = function(db) {
   if (!db) {
     return null;
   }
-  let preexistingApp = _getAppIfAlreadyExists(db.url);
-  if (preexistingApp) return preexistingApp;
 
-  //app doesnt exist yet
-  console.log("real: init fb app");
-
-  return admin.initializeApp(
-    {
-      credential: admin.credential.cert(db.serviceKey),
-      databaseURL: db.url
-    },
-    db.url
+  return (
+    _getAppIfAlreadyExists(db.url) ||
+    admin.initializeApp(
+      {
+        credential: admin.credential.cert(db.serviceKey),
+        databaseURL: db.url
+      },
+      db.url
+    )
   );
 };
 
