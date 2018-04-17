@@ -218,7 +218,7 @@ class Store {
       queriesByDb && queriesByDb[url] ? queriesByDb[url] : [];
     queriesForThisDb.push(query);
     queriesByDb[url] = queriesForThisDb;
-    this.savedQueriesByDb = queriesByDb;
+    this.savedQueriesByDb[url] = queriesForThisDb;
     CacheHelper.updateLocalStore("savedQueriesByDb", queriesByDb);
   }
 
@@ -235,8 +235,16 @@ class Store {
       }
     }
     queriesByDb[url] = queriesForThisDb;
-    this.savedQueriesByDb = queriesByDb;
     CacheHelper.updateLocalStore("savedQueriesByDb", queriesByDb);
+    this.savedQueriesByDb[url] = queriesForThisDb;
+  }
+
+  getSavedQueries() {
+    const savedQueries =
+      this.savedQueriesByDb && this.currentDatabase
+        ? this.savedQueriesByDb[this.currentDatabase.url]
+        : null;
+    return savedQueries;
   }
 
   getExampleQueries() {

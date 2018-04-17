@@ -14,7 +14,6 @@ import ButtonRow from "./ButtonRow";
 @observer
 export default class Workstation extends Component {
   state = {
-    savedQueries: null,
     savedQueriesIsOpen: true,
     modal: null,
     resultsOpen: true

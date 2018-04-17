@@ -103,10 +103,6 @@ export default class App extends Component {
 
   render() {
     console.log("store:", store);
-    const savedQueries =
-      store.savedQueriesByDb && store.currentDatabase
-        ? store.savedQueriesByDb[store.currentDatabase.url]
-        : null;
 
     const props = {
       cancelCommit: this.cancelCommit,
@@ -115,7 +111,7 @@ export default class App extends Component {
       executeQuery: this.executeQuery,
       results: store.results,
       newDb: store.newDb,
-      savedQueries: savedQueries,
+      savedQueries: store.getSavedQueries(),
       setCurrentDb: this.setCurrentDb,
       startFirebaseForDb: this.startFirebaseForDb,
       store: store,
