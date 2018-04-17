@@ -15,7 +15,7 @@ export default class App extends Component {
   }
 
   setCurrentDb = currentDatabase => {
-    if (!currentDatabase) {
+    if (!currentDatabase || !currentDatabase.url) {
       return;
     }
     store.killListeners();
@@ -103,6 +103,7 @@ export default class App extends Component {
 
   render() {
     console.log("store:", store);
+    const update = store.forceUpdate.get(); //hack
 
     const props = {
       cancelCommit: this.cancelCommit,

@@ -24,6 +24,11 @@ class Store {
   firebaseListeners = observable([]);
   firestoreListeners = observable([]);
 
+  //this is a gross hack, sometimes the obj observables
+  //won't trigger a re-render, flipping this will if the
+  //component watches the value
+  forceUpdate = observable.box(false);
+
   //Modals
   newDb = observable({
     data: null,
@@ -133,6 +138,8 @@ class Store {
       this.firestoreEnabled.set(database.firestoreEnabled);
     }
     this.currentDatabase = database;
+    this.forceUpdate.set(!this.forceUpdate.get());
+    this.currentDatabase.title = database.title;
     this.queryHistoryIsOpen.set(false);
     this.query.set("");
     this.clearResults();
