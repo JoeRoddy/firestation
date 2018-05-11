@@ -4,7 +4,12 @@
     "syntax-decorators",
     "@babel/plugin-proposal-class-properties",
     "add-module-exports",
-    "transform-decorators-legacy",
+    [
+      "@babel/plugin-proposal-decorators",
+      {
+        "legacy": true
+      }
+    ],
     ["transform-object-rest-spread", { "useBuiltIns": true }]
   ]
 }

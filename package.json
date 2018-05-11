@@ -9,7 +9,11 @@
   "main": "app/background.js",
   "build": {
     "appId": "com.example.electron-boilerplate",
-    "files": ["app/**/*", "node_modules/**/*", "package.json"],
+    "files": [
+      "app/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
     "directories": {
       "buildResources": "resources"
     },
@@ -17,17 +21,13 @@
   },
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
-    "preunit":
-      "webpack --config=build/webpack.unit.config.js --env=test --display=none",
-    "unit":
-      "electron-mocha temp/specs.js --renderer --require source-map-support/register",
-    "pree2e":
-      "webpack --config=build/webpack.app.config.js --env=test --display=none && webpack --config=build/webpack.e2e.config.js --env=test --display=none",
+    "preunit": "webpack --config=build/webpack.unit.config.js --env=test --display=none",
+    "unit": "electron-mocha temp/specs.js --renderer --require source-map-support/register",
+    "pree2e": "webpack --config=build/webpack.app.config.js --env=test --display=none && webpack --config=build/webpack.e2e.config.js --env=test --display=none",
     "e2e": "mocha temp/e2e.js --require source-map-support/register",
     "test": "npm run unit && npm run e2e",
     "start": "node build/start.js",
-    "release":
-      "npm test && webpack --config=build/webpack.app.config.js --env=production && electron-builder"
+    "release": "npm test && webpack --config=build/webpack.app.config.js --env=production && electron-builder"
   },
   "dependencies": {
     "bootstrap": "^4.0.0",
@@ -47,6 +47,7 @@
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.5",
     "@babel/plugin-proposal-class-properties": "^7.0.0-beta.42",
+    "@babel/plugin-proposal-decorators": "^7.0.0-beta.46",
     "@babel/preset-env": "^7.0.0-beta.5",
     "@babel/preset-react": "^7.0.0-beta.42",
     "babel-loader": "^8.0.0-beta.0",
@@ -54,7 +55,6 @@
     "babel-plugin-syntax-decorators": "^6.13.0",
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-transform-decorators": "^6.24.1",
-    "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
     "babel-plugin-typecheck": "^3.9.0",
