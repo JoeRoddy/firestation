@@ -136,6 +136,7 @@ class Store {
   setCurrentDatabase(database) {
     if (!database) {
       this.modal.set("newDB");
+      return;
     } else {
       this.firestoreEnabled.set(database.firestoreEnabled);
     }
