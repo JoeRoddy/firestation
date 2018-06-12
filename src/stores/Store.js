@@ -43,6 +43,7 @@ class Store {
   queryHistoryIsOpen = observable.box(false);
   query = observable.box("");
   executingQuery = observable.box(false);
+  resultsPage = observable.box(0);
 
   //Workbook
   focus = observable.box(false);
@@ -107,6 +108,7 @@ class Store {
 
   clearResults() {
     this.commitQuery.set(null);
+    this.resultsPage.set(0);
     this.results.clear();
   }
 

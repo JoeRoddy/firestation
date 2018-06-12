@@ -51,6 +51,7 @@ export default class App extends Component {
 
   executeQuery = query => {
     store.killListeners();
+    store.clearResults();
     query = QueryHelper.formatAndCleanQuery(query);
     store.addQueryToHistory(query);
     store.executingQuery.set(true);

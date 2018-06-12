@@ -1,12 +1,16 @@
 import React from "react";
 import classnames from "classnames";
 import PropTypes from "prop-types";
+import { observer } from "mobx-react";
+
+import store from "../../stores/Store";
 import ObjectNode from "./ObjectNode";
 import { subObject } from "../../helpers/ObjectHelper";
 
 /**
  * https://github.com/stomita/react-object-tree/
  */
+@observer
 export default class ObjectTree extends React.Component {
   constructor(props) {
     super(props);
@@ -33,7 +37,8 @@ export default class ObjectTree extends React.Component {
     }
     //^ payload can be false
 
-    const resultsToDisplayInTree = subObject(value.payload, 0, 50);
+    const page = store.resultsPage.get();
+    const resultsToDisplayInTree = subObject(value.payload, page, page + 50);
     const props = {
       value: resultsToDisplayInTree,
       path: "",
