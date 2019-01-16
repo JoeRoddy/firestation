@@ -107,7 +107,7 @@ export default class DownloadBackup extends Component {
             &nbsp;&nbsp;
             <button
               className="bt red"
-              onClick={e => {
+              onClick={() => {
                 store.modal.set(null);
               }}
             >

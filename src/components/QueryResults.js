@@ -22,7 +22,7 @@ const QueryResults = observer(props => {
             (props.resultsOpen ? "minus" : "plus") +
             "-square-o gray-icon"
           }
-          onClick={e => {
+          onClick={() => {
             props.setWorkstationState("resultsOpen", !props.resultsOpen);
           }}
         />

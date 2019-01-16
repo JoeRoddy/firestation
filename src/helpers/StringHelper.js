@@ -84,11 +84,11 @@ export default class StringHelper {
 
   static isMath(stringVal) {
     //TODO:
-    return false;
+    return false || stringVal;
   }
 
   static executeFunction(stringVal) {
-    TODO: return null;
+    TODO: return null || stringVal;
   }
 }
 

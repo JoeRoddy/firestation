@@ -90,7 +90,7 @@ export default class QueryHelper {
       queryDetails.wheres = wheres;
       getDataForSelect(db, queryDetails, dataToAlter => {
         if (dataToAlter && commitResults) {
-          Object.keys(dataToAlter.payload).forEach((objKey, index) => {
+          Object.keys(dataToAlter.payload).forEach(objKey => {
             const path = collection + "/" + objKey;
             deleteObject(db, path, isFirestore);
           });
@@ -141,7 +141,7 @@ export default class QueryHelper {
       getDataForSelect(db, queryDetails, dataToAlter => {
         let data = dataToAlter.payload;
         let payload = {};
-        Object.keys(data).forEach((objKey, index) => {
+        Object.keys(data).forEach(objKey => {
           let updateObj = that.updateItemWithSets(data[objKey], sets);
           const path = collection + "/" + objKey;
           if (commitResults) {
@@ -163,7 +163,7 @@ export default class QueryHelper {
   static updateItemWithSets(obj, sets) {
     const that = this;
     let updateObject = _.clone(obj);
-    Object.keys(sets).forEach((objKey, index) => {
+    Object.keys(sets).forEach(objKey => {
       const thisSet = sets[objKey];
       if (
         thisSet &&

@@ -14,7 +14,7 @@ class Navbar extends Component {
         <a
           className="dropdown-item"
           href="#"
-          onClick={e => this.props.setCurrentDb(db)}
+          onClick={() => this.props.setCurrentDb(db)}
           key={index}
         >
           {db.title}
@@ -27,7 +27,7 @@ class Navbar extends Component {
     if (!store.databases) {
       return (
         <li className={"nav-db "}>
-          <a onClick={e => store.modal.set("newDB")}>Add Your DB</a>
+          <a onClick={() => store.modal.set("newDB")}>Add Your DB</a>
         </li>
       );
     } else {
@@ -50,7 +50,7 @@ class Navbar extends Component {
             <a
               className="dropdown-item"
               href="#"
-              onClick={e => store.modal.set("newDB")}
+              onClick={() => store.modal.set("newDB")}
             >
               Add New DB
             </a>
@@ -66,7 +66,7 @@ class Navbar extends Component {
   render() {
     return (
       <nav className="navbar navbar-expand-sm navbar-light bg-light">
-        <a className="navbar-brand" onClick={e => {}}>
+        <a className="navbar-brand" onClick={() => {}}>
           <img
             src="https://firebasestorage.googleapis.com/v0/b/firestation-e149d.appspot.com/o/logo.ico?alt=media&token=7d5634ac-d956-42a8-8942-60bdeb21c06b"
             alt=""

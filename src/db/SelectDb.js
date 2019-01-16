@@ -44,12 +44,11 @@ const getDataForSelect = function(databaseSavedData, query, callback) {
 
 const unfilteredFirestoreQuery = function(db, results, query, callback) {
   console.log("NON_FILTERABLE_FIRESTORE_QUERY");
-  const { collection, selectedFields, shouldApplyListener } = query;
+  const { collection, selectedFields } = query;
   if (collection === "/") {
     //root query: select * from /;
     db.getCollections()
       .then(collections => {
-        let colIds = Object.keys(collections);
         let numDone = 0;
         let firestoreData = {};
         collections.forEach(collection => {
@@ -92,7 +91,7 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
           return callback(results);
         }
       })
-      .catch(function(error) {
+      .catch(() => {
         results.error = { message: "No such document" };
         return callback(results);
       });
@@ -143,13 +142,7 @@ const queryEntireRealtimeCollection = function(db, results, query, callback) {
 };
 
 const executeFilteredFirestoreQuery = function(db, results, query, callback) {
-  const {
-    collection,
-    selectedFields,
-    wheres,
-    orderBys,
-    shouldApplyListener
-  } = query;
+  const { collection, selectedFields, wheres } = query;
   console.log("FILTERED_FIRESTORE");
   const mainWhere = wheres[0];
   let unsub = db
@@ -181,13 +174,7 @@ const executeFilteredFirestoreQuery = function(db, results, query, callback) {
 };
 
 const executeFilteredRealtimeQuery = function(db, results, query, callback) {
-  const {
-    collection,
-    selectedFields,
-    wheres,
-    orderBys,
-    shouldApplyListener
-  } = query;
+  const { collection, selectedFields, wheres } = query;
   console.log("FILTERED_REALTIME");
 
   const mainWhere = wheres[0];
@@ -234,13 +221,13 @@ const removeNonSelectedFieldsFromResults = (results, selectedFields) => {
   if (!results || !selectedFields) {
     return results;
   }
-  Object.keys(results).forEach((objKey, index) => {
+  Object.keys(results).forEach(objKey => {
     if (typeof results[objKey] !== "object") {
       if (!selectedFields[objKey]) {
         delete results[objKey];
       }
     } else {
-      Object.keys(results[objKey]).forEach((propKey, index) => {
+      Object.keys(results[objKey]).forEach(propKey => {
         if (!selectedFields[propKey]) {
           delete results[objKey][propKey];
         }
@@ -259,9 +246,8 @@ const filterResultsByWhereStatements = (results, whereStatements) => {
   let returnedResults = {};
   let nonMatch = {};
   for (let i = 0; i < whereStatements.length; i++) {
-    let indexOffset = 1;
     let where = whereStatements[i];
-    Object.keys(results).forEach(function(key, index) {
+    Object.keys(results).forEach(key => {
       let thisResult = results[key][where.field];
       if (!conditionIsTrue(thisResult, where.value, where.comparator)) {
         nonMatch[key] = results[key];
@@ -269,7 +255,7 @@ const filterResultsByWhereStatements = (results, whereStatements) => {
     });
   }
   if (nonMatch) {
-    Object.keys(results).forEach(function(key, index) {
+    Object.keys(results).forEach(key => {
       if (!nonMatch[key]) {
         returnedResults[key] = results[key];
       }

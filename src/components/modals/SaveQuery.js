@@ -27,7 +27,7 @@ const SaveQuery = ({}) => {
       &nbsp;&nbsp;
       <button
         className="bt red"
-        onClick={e => {
+        onClick={() => {
           store.modal.set(null);
         }}
       >

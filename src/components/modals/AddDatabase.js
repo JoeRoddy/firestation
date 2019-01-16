@@ -4,7 +4,7 @@ import { shell } from "electron";
 
 import store from "../../stores/Store";
 
-const AddDatabase = observer(({ createDb, serviceAccount, handleFile }) => {
+const AddDatabase = observer(({ createDb, handleFile }) => {
   // let { newDb } = store;
   let newDb = store.newDb;
   let { path } = newDb;
@@ -47,7 +47,7 @@ const AddDatabase = observer(({ createDb, serviceAccount, handleFile }) => {
           <p>
             1){" "}
             <a
-              onClick={e =>
+              onClick={() =>
                 shell.openExternal(
                   "https://console.firebase.google.com/u/0/project/_/settings/serviceaccounts/adminsdk"
                 )

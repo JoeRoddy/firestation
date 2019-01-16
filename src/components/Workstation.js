@@ -36,10 +36,6 @@ class Workstation extends Component {
     store.modal.set("saveQuery");
   };
 
-  deleteQuery = query => {
-    store.deleteQuery;
-  };
-
   toggleSavedQueries = () => {
     this.setState({ savedQueriesIsOpen: !this.state.savedQueriesIsOpen });
   };
@@ -49,6 +45,7 @@ class Workstation extends Component {
   };
 
   render() {
+    // eslint-disable-next-line
     const query = store.query.get(); //updates children
     const results = store.results; //needed to trigger rerender. lame.
 
@@ -79,7 +76,6 @@ class Workstation extends Component {
       <div className="Workstation">
         <SideMenu
           savedQueries={this.props.savedQueries}
-          deleteQuery={this.deleteQuery}
           savedQueriesIsOpen={this.state.savedQueriesIsOpen}
           toggleSavedQueries={this.toggleSavedQueries}
           {...props}

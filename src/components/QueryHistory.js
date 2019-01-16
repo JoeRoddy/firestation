@@ -7,7 +7,6 @@ import store from "../stores/Store";
 
 const QueryHistory = ({ history }) => {
   const queryTextLimit = 20;
-  const query = store.query.get();
 
   return (
     <div className="QueryHistory">
@@ -31,7 +30,7 @@ const QueryHistory = ({ history }) => {
                       data-tip
                       data-for={"q-bodyTooltip " + i}
                       className="clickable"
-                      onClick={e => store.appendQuery(query.body)}
+                      onClick={() => store.appendQuery(query.body)}
                     >
                       {query.body.length <= queryTextLimit
                         ? query.body

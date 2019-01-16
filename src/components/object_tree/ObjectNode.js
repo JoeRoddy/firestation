@@ -28,7 +28,7 @@ export default class ObjectNode extends React.Component {
     }
   }
 
-  toggleNode(e) {
+  toggleNode() {
     this.setState({ opened: !this.state.opened });
   }
 
@@ -90,7 +90,7 @@ export default class ObjectNode extends React.Component {
   }
 
   renderObject(obj, type) {
-    const { path, level, fbPath, isFirestore } = this.props;
+    const { path, level, fbPath } = this.props;
     if (!fbPath) {
       return null;
     }
@@ -151,7 +151,7 @@ export default class ObjectNode extends React.Component {
                   Save
                 </button>
                 <button
-                  onClick={e => this.props.setCreationPath(null)}
+                  onClick={() => this.props.setCreationPath(null)}
                   className="bt red sm"
                 >
                   Cancel
@@ -162,7 +162,7 @@ export default class ObjectNode extends React.Component {
           {clevel !== 1 && !that.props.creationPath && (
             <span>
               <i
-                onClick={e => that.props.setCreationPath(fbPath)}
+                onClick={() => that.props.setCreationPath(fbPath)}
                 data-tip
                 data-for={"add-child " + fbPath}
                 className="fa fa-plus"
@@ -234,7 +234,7 @@ export default class ObjectNode extends React.Component {
                       </form>
                       <div
                         className="onClickOutside"
-                        onClick={e => this.props.setPathUnderEdit(null)}
+                        onClick={() => this.props.setPathUnderEdit(null)}
                       />
                     </th>
                   ) : (
@@ -292,7 +292,6 @@ export default class ObjectNode extends React.Component {
     let newValue = StringHelper.getParsedValue(this.state.newVal);
     let path = this.props.fbPath;
     const pathUnderEdit = this.props.pathUnderEdit;
-    let keyChangeConfirmed = false;
     const keyConfirmationMsg =
       "This will permanently move all child data.\n Data location: " +
       pathUnderEdit +
@@ -334,7 +333,7 @@ export default class ObjectNode extends React.Component {
     this.setState({ newVal: e.target.value });
   }
 
-  createNewProperty(e) {
+  createNewProperty() {
     const isFirestore = (store.results || {}).isFirestore;
     setObjectProperty(
       store.currentDatabase,
@@ -361,14 +360,14 @@ export default class ObjectNode extends React.Component {
               />
               <span
                 className="onClickOutside"
-                onClick={e => this.props.setPathUnderEdit(null)}
+                onClick={() => this.props.setPathUnderEdit(null)}
               />
             </form>
           </div>
         ) : (
           <div
             className="object-node editable"
-            onClick={e =>
+            onClick={() =>
               this.props.setPathUnderEdit(this.props.fbPath + this.props.prop)
             }
           >
@@ -382,6 +381,8 @@ export default class ObjectNode extends React.Component {
   }
 
   renderOther(value, type) {
+    console.log(`renderOther:${type} --- ${value}`);
+
     return (
       <div className="object-node">
         <div className="object-label" onClick={this.toggleNode.bind(this)}>

@@ -39,6 +39,8 @@ const updateFirestoreFields = function(db, path, object, fields) {
   console.log("path:", path);
   console.log("col:", col);
   console.log("doc:", doc);
+  console.log("fields:", fields);
+
   console.log("new data:", object);
 
   return db

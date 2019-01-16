@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { inject, observer } from "mobx-react";
+import { observer } from "mobx-react";
 
 import store from "../stores/Store";
 import { startFirebaseApp } from "../db/FirebaseDb";
@@ -26,8 +26,7 @@ class App extends Component {
     // })
   };
 
-  updateSavedQueries = db => {
-    const dbUrl = db.config.databaseURL;
+  updateSavedQueries = () => {
     let queriesByDb = store.savedQueriesByDb;
     let savedQueries =
       !queriesByDb || !queriesByDb[url] ? null : queriesByDb[url];
@@ -102,6 +101,7 @@ class App extends Component {
 
   render() {
     console.log("store:", store);
+    // eslint-disable-next-line
     const update = store.forceUpdate.get(); //hack
 
     const props = {

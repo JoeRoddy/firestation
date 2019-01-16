@@ -44,7 +44,7 @@ const startFirebaseApp = function(db) {
   );
 };
 
-const killFirebaseApps = function(db) {
+const killFirebaseApps = function() {
   admin.apps.forEach(app => {
     app.delete();
   });

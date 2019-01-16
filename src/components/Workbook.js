@@ -38,7 +38,7 @@ class Workbook extends Component {
       }
     ];
 
-    let selectedTextChange = (newValue, e) => {
+    let selectedTextChange = () => {
       store.selectedText.set(this.codeRef.editor.getSelectedText());
     };
 

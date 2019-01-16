@@ -39,10 +39,6 @@ const DatabaseConfig = observer(({ handleFile, closeModal }) => {
     }
   };
 
-  const clearNewDb = () => {
-    store.newDb.clear();
-  };
-
   const confirmDelete = () => {
     const confirmationMsg =
       "Are you sure you want to remove this database from Firestation?\n\nYour Firebase DB will be unaffected.";
