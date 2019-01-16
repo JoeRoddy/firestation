@@ -48,8 +48,7 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
   const { collection, selectedFields, shouldApplyListener } = query;
   if (collection === "/") {
     //root query: select * from /;
-    db
-      .getCollections()
+    db.getCollections()
       .then(collections => {
         let colIds = Object.keys(collections);
         let numDone = 0;
@@ -75,8 +74,7 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
     //select * from collection.document
     let [col, field] = collection.split(/\/(.+)/);
     field = StringHelper.replaceAll(field, "/", ".");
-    db
-      .collection(col)
+    db.collection(col)
       .doc(field)
       .get()
       .then(doc => {
@@ -102,8 +100,7 @@ const unfilteredFirestoreQuery = function(db, results, query, callback) {
   } else {
     //select * from collection
     //TODO: figure out a way to make this a listener
-    db
-      .collection(collection)
+    db.collection(collection)
       .get()
       .then(querySnapshot => {
         querySnapshot.forEach(doc => {
@@ -331,7 +328,4 @@ const determineGreaterOrLess = (val1, val2, comparator) => {
   }
 };
 
-module.exports = {
-  getDataForSelect,
-  unfilteredFirestoreQuery
-};
+export { getDataForSelect, unfilteredFirestoreQuery };

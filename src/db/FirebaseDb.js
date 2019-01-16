@@ -50,11 +50,7 @@ const killFirebaseApps = function(db) {
   });
 };
 
-module.exports = {
-  killFirebaseApps,
-  startFirebaseApp,
-  databaseConfigInitializes
-};
+export { killFirebaseApps, startFirebaseApp, databaseConfigInitializes };
 
 const _getAppIfAlreadyExists = url => {
   let apps = admin.apps;

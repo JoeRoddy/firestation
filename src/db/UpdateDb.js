@@ -75,8 +75,7 @@ const deleteFirestoreData = function(db, path) {
 
 const deleteFirestoreDoc = function(db, collection, doc) {
   console.log(`delete, col: ${collection}\ndoc: ${doc}`);
-  db
-    .collection(collection)
+  db.collection(collection)
     .doc(doc)
     .delete()
     .then(function() {
@@ -91,8 +90,7 @@ const deleteFirestoreField = function(db, collection, docAndField) {
   let [doc, field] = docAndField.split(/\/(.+)/);
   field = StringHelper.replaceAll(field, "/", ".");
   console.log(`deleting field, ${field} from col:${collection}, doc: ${doc}`);
-  db
-    .collection(collection)
+  db.collection(collection)
     .doc(doc)
     .update({
       [field]: admin.firestore.FieldValue.delete()
@@ -118,8 +116,7 @@ const createFirestoreDocument = function(db, path, data) {
 
 const setFirestoreDocWithExplicitId = function(db, collection, docId, data) {
   console.log(`setting doc ${docId} in collection ${collection}, data:`, data);
-  db
-    .collection(collection)
+  db.collection(collection)
     .doc(docId)
     .set(data);
 };
@@ -127,8 +124,7 @@ const setFirestoreDocWithExplicitId = function(db, collection, docId, data) {
 const pushFirestoreDocToGeneratedId = function(db, collection, data) {
   collection = collection.replace(/\/+$/, ""); //remove trailing "/"
   console.log(`pushing to collection ${collection}, data:`, data);
-  db
-    .collection(collection)
+  db.collection(collection)
     .add(data)
     .then(docRef => {
       console.log("Document written with ID: ", docRef.id);
@@ -173,18 +169,11 @@ const setFirestoreProp = function(db, path, value) {
   }
 
   console.log(`setting document prop ${field} @ ${collection}/${docId}`);
-  db
-    .collection(collection)
+  db.collection(collection)
     .doc(docId)
     .update({
       [field]: value
     });
 };
 
-module.exports = {
-  deleteObject,
-  set,
-  setObjectProperty,
-  pushObject,
-  updateFields
-};
+export { deleteObject, set, setObjectProperty, pushObject, updateFields };
