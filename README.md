@@ -19,3 +19,14 @@ $ git clone https://github.com/JoeRoddy/firestation.git
 $ cd firestation && npm install
 $ npm run dev
 ```
+
+### Firestore
+Firestore support is currently in development.  To try it out:
+
+```bash
+git clone https://github.com/JoeRoddy/firestation.git
+cd firestation
+git checkout projectRevamp
+npm install
+npm start
+```
