@@ -8,9 +8,8 @@ import Workstation from "./Workstation";
 import Navbar from "./Navbar";
 import Modal from "./modals/Modal";
 
-@observer
-export default class App extends Component {
-  componentWillMount() {
+class App extends Component {
+  UNSAFE_componentWillMount() {
     this.setCurrentDb(store.currentDatabase);
   }
 
@@ -92,8 +91,7 @@ export default class App extends Component {
         true
       );
     } catch (error) {
-      debugger;
-      console.log("executeQuery err: ", error);
+      console.warn("executeQuery err: ", error);
       store.results.update({ error });
     }
   };
@@ -130,3 +128,5 @@ export default class App extends Component {
     );
   }
 }
+
+export default observer(App);

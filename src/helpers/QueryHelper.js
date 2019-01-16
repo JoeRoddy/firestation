@@ -1,10 +1,10 @@
 import _ from "lodash";
+
 import StringHelper from "./StringHelper";
 import { getDataForSelect } from "../db/SelectDb";
-import { startFirebaseApp } from "../db/FirebaseDb";
 import { pushObject, deleteObject, updateFields } from "../db/UpdateDb";
-import { isValidDate, executeDateComparison } from "../helpers/DateHelper";
 import QueryDetails from "../stores/models/QueryDetails";
+
 const NO_EQUALITY_STATEMENTS = "NO_EQUALITY_STATEMENTS";
 const SELECT_STATEMENT = "SELECT_STATEMENT";
 const UPDATE_STATEMENT = "UPDATE_STATEMENT";

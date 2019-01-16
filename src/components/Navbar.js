@@ -1,10 +1,10 @@
-import store from "../stores/Store";
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { observer } from "mobx-react";
 
-@observer
-export default class Navbar extends Component {
+import store from "../stores/Store";
+
+class Navbar extends Component {
   renderDatabases = () => {
     if (!store.databases) {
       return null;
@@ -80,3 +80,9 @@ export default class Navbar extends Component {
     );
   }
 }
+
+Navbar.propTypes = {
+  setCurrentDb: PropTypes.func
+};
+
+export default observer(Navbar);

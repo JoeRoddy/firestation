@@ -54,14 +54,14 @@
     "babel-eslint": "9.0.0",
     "babel-jest": "23.6.0",
     "babel-loader": "8.0.4",
-    "babel-plugin-named-asset-import": "^0.3.0",
-    "babel-preset-react-app": "^7.0.0",
     "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-plugin-named-asset-import": "^0.3.0",
     "babel-plugin-syntax-flow": "^6.18.0",
     "babel-plugin-transform-decorators-legacy": "^1.3.5",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-object-rest-spread": "^7.0.0-beta.3",
     "babel-plugin-typecheck": "^3.9.0",
+    "babel-preset-react-app": "^7.0.0",
     "babel-preset-stage-0": "^6.24.1",
     "chai": "^4.1.0",
     "css-loader": "^0.28.7",
@@ -69,6 +69,9 @@
     "electron-builder": "^19.43.3",
     "electron-devtools-installer": "^2.2.3",
     "electron-mocha": "^5.0.0",
+    "eslint": "^5.12.0",
+    "eslint-loader": "^2.1.1",
+    "eslint-plugin-react": "^7.12.3",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "mocha": "^4.0.1",
     "node-sass": "^4.11.0",
@@ -99,5 +102,21 @@
       "@babel/preset-env",
       "@babel/preset-react"
     ]
+  },
+  "eslintConfig": {
+    "parser": "babel-eslint",
+    "extends": [
+      "plugin:react/recommended"
+    ],
+    "rules": {
+      "no-unused-vars": [
+        "warn",
+        {
+          "vars": "all",
+          "args": "after-used",
+          "ignoreRestSiblings": false
+        }
+      ]
+    }
   }
 }

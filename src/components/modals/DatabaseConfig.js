@@ -1,6 +1,7 @@
 import React from "react";
 import ReactTooltip from "react-tooltip";
-import { inject, observer } from "mobx-react";
+import { observer } from "mobx-react";
+
 import { databaseConfigInitializes } from "../../db/FirebaseDb";
 import store from "../../stores/Store";
 

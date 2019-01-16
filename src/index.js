@@ -3,7 +3,6 @@ import "bootstrap"; //js for bootrap dropdowns and stuff
 import React from "react";
 import { render } from "react-dom";
 import App from "./components/App";
-import Store from "./stores/Store";
 import CacheHelper from "./helpers/CacheHelper";
 import { CACHE_RESET } from "./config";
 

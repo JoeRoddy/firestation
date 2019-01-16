@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import ReactTooltip from "react-tooltip";
+import PropTypes from "prop-types";
 import { observer } from "mobx-react";
 
 import store from "../stores/Store";
@@ -8,11 +8,8 @@ import SideMenu from "./SideMenu";
 import QueryHistory from "./QueryHistory";
 import QueryResults from "./QueryResults";
 import ButtonRow from "./ButtonRow";
-// import FirestoreIcon from '../assets/images/firestore_icon.png';
-// import RealtimeIcon from '../assets/images/realtime_icon.png';
 
-@observer
-export default class Workstation extends Component {
+class Workstation extends Component {
   state = {
     savedQueriesIsOpen: true,
     modal: null,
@@ -140,16 +137,16 @@ export default class Workstation extends Component {
                 : "workstation-underWorkbook resultsCollapsed"
             }
           >
-            {results &&
-              results.error && (
-                <h4 className="queryError">
-                  {results.error.message || results.error}
-                  <br />
-                  {results.error.stack}
-                </h4>
-              )}
-            {results &&
-              payloadSize !== undefined && <QueryResults {...props} />}
+            {results && results.error && (
+              <h4 className="queryError">
+                {results.error.message || results.error}
+                <br />
+                {results.error.stack}
+              </h4>
+            )}
+            {results && payloadSize !== undefined && (
+              <QueryResults {...props} />
+            )}
             {store.queryHistoryIsOpen.get() && (
               <QueryHistory history={store.getQueryHistory()} {...props} />
             )}
@@ -159,3 +156,12 @@ export default class Workstation extends Component {
     );
   }
 }
+
+Workstation.propTypes = {
+  executeQuery: PropTypes.func,
+  commit: PropTypes.func,
+  cancelCommit: PropTypes.func,
+  savedQueries: PropTypes.object
+};
+
+export default observer(Workstation);

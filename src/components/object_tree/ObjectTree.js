@@ -10,8 +10,7 @@ import { subObject } from "../../helpers/ObjectHelper";
 /**
  * https://github.com/stomita/react-object-tree/
  */
-@observer
-export default class ObjectTree extends React.Component {
+class ObjectTree extends React.Component {
   constructor(props) {
     super(props);
     this.setPathUnderEdit = this.setPathUnderEdit.bind(this);
@@ -60,6 +59,14 @@ export default class ObjectTree extends React.Component {
     );
   }
 }
+
+ObjectTree.propTypes = {
+  className: PropTypes.string,
+  noValue: PropTypes.bool,
+  resultsOpen: PropTypes.bool
+};
+
+export default observer(ObjectTree);
 
 ObjectTree.propTypes = {
   value: PropTypes.any.isRequired,

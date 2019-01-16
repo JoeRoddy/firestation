@@ -4,8 +4,6 @@ import ReactTooltip from "react-tooltip";
 import { observer } from "mobx-react";
 
 import store from "../stores/Store";
-import { formatDate } from "../helpers/DateHelper";
-import StringHelper from "../helpers/StringHelper";
 import ObjectTree from "./object_tree/ObjectTree";
 
 const QueryResults = observer(props => {
@@ -29,13 +27,18 @@ const QueryResults = observer(props => {
           }}
         />
       </div>
-      {props.payloadSize > 0 &&
-        store.results.payload != null && (
-          <ObjectTree value={store.results} level={2} {...props} />
-        )}
+      {props.payloadSize > 0 && store.results.payload != null && (
+        <ObjectTree value={store.results} level={2} {...props} />
+      )}
     </div>
   );
 });
+
+QueryResults.propTypes = {
+  resultsOpen: PropTypes.bool,
+  payloadSize: PropTypes.number,
+  store: PropTypes.object.isRequired
+};
 
 const renderResultsTitle = (payloadSize, results) => {
   let payloadDescription = payloadSize + ")";
@@ -93,10 +96,9 @@ const PageBtn = ({ backBtn, page }) => {
   );
 };
 
-QueryResults.propTypes = {
-  resultsOpen: PropTypes.bool,
-  payloadSize: PropTypes.number,
-  store: PropTypes.object.isRequired
+PageBtn.propTypes = {
+  backBtn: PropTypes.bool,
+  page: PropTypes.number
 };
 
 export default QueryResults;

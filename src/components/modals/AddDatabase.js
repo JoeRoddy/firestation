@@ -1,14 +1,13 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { observer } from "mobx-react";
-import { convertJsonToDbConfig } from "../../helpers/JsonHelper";
 import { shell } from "electron";
+
 import store from "../../stores/Store";
 
 const AddDatabase = observer(({ createDb, serviceAccount, handleFile }) => {
   // let { newDb } = store;
   let newDb = store.newDb;
-  let { path, data } = newDb;
+  let { path } = newDb;
 
   console.log("ADD_DB, newDb:", newDb);
 
@@ -57,7 +56,7 @@ const AddDatabase = observer(({ createDb, serviceAccount, handleFile }) => {
               Select your project on Firebase
             </a>
           </p>
-          <p>2) Select "GENERATE NEW PRIVATE KEY"</p>
+          <p>{`2) Select "GENERATE NEW PRIVATE KEY"`}</p>
           <p>3) Import the key into Firestation</p>
           <div>
             <button onClick={handleFile} className="bt white">
@@ -67,13 +66,12 @@ const AddDatabase = observer(({ createDb, serviceAccount, handleFile }) => {
               <i>Note:</i> this key <b>never</b> leaves your machine
             </span>
           </div>
-          {newDb &&
-            newDb.path && (
-              <div className="detailText">
-                <br />
-                {newDb.path} <i className="fa fa-times" onClick={clearNewDb} />
-              </div>
-            )}
+          {newDb && newDb.path && (
+            <div className="detailText">
+              <br />
+              {newDb.path} <i className="fa fa-times" onClick={clearNewDb} />
+            </div>
+          )}
           <br />
           <br />
           <input

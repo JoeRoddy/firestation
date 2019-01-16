@@ -1,39 +1,30 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { observer } from "mobx-react";
 import AceEditor from "react-ace";
-import brace from "brace";
 import "brace/mode/sql";
 import "brace/theme/github";
 import "brace/ext/language_tools";
-import store from "../stores/Store";
-import { observer } from "mobx-react";
 
-@observer
-export default class Workbook extends Component {
-  componentWillReceiveProps(nextProps) {
-    // const langTools = ace.acequire('ace/ext/language_tools');
-    // const terms = ["SELECT", "UPDATE", "INSERT", "WHERE", "select"];
-    // var customCompleter = {
-    //   getCompletions: function (editor, session, pos, prefix, callback) {
-    //     if (prefix.length === 0) { callback(null, []); return }
-    //     callback(null, terms.map(term => {
-    //       return { name: term, value: term, score: 300, meta: "rhyme" }
-    //     }))
-    //   }
-    // }
-    // langTools.addCompleter(customCompleter);
+import store from "../stores/Store";
+
+class Workbook extends Component {
+  constructor() {
+    super();
+    this.codeRef;
   }
 
   componentDidUpdate() {
     //query inserted, move to end of workbook
-    if (store && store.focus.get() && this.refs.code) {
-      this.refs.code.editor.focus();
-      this.refs.code.editor.navigateFileEnd();
+    if (store && store.focus.get() && this.codeRef) {
+      this.codeRef.editor.focus();
+      this.codeRef.editor.navigateFileEnd();
       store.focus.set(false);
     }
   }
 
   render() {
-    const { execute, query, defaultValue, listenForCtrlEnter } = this.props;
+    const { execute, defaultValue, listenForCtrlEnter } = this.props;
 
     if (!store) {
       return <span />;
@@ -48,7 +39,7 @@ export default class Workbook extends Component {
     ];
 
     let selectedTextChange = (newValue, e) => {
-      store.selectedText.set(this.refs.code.editor.getSelectedText());
+      store.selectedText.set(this.codeRef.editor.getSelectedText());
     };
 
     return (
@@ -62,7 +53,7 @@ export default class Workbook extends Component {
           height="25vh"
           width="100%"
           fontSize={14}
-          ref="code"
+          ref={el => (this.codeRef = el)}
           onKeyDown={listenForCtrlEnter}
           onChange={e => {
             store.query.set(e);
@@ -78,3 +69,11 @@ export default class Workbook extends Component {
     );
   }
 }
+
+Workbook.propTypes = {
+  defaultValue: PropTypes.string,
+  execute: PropTypes.func,
+  listenForCtrlEnter: PropTypes.func
+};
+
+export default observer(Workbook);

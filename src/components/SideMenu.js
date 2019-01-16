@@ -1,16 +1,10 @@
 import React from "react";
-import { startFirebaseApp } from "../db/FirebaseDb";
-import moment from "moment";
+import PropTypes from "prop-types";
+
 import store from "../stores/Store";
-const { dialog, app } = require("electron").remote;
 const shell = require("electron").shell;
 
-const SideMenu = ({
-  savedQueries,
-  deleteQuery,
-  savedQueriesIsOpen,
-  toggleSavedQueries
-}) => {
+const SideMenu = ({ savedQueries, savedQueriesIsOpen, toggleSavedQueries }) => {
   const del = (e, query) => {
     e.stopPropagation();
     let queryDescrip = query.title
@@ -66,17 +60,14 @@ const SideMenu = ({
       <a className="sidemenu-item" onClick={e => store.modal.set("config")}>
         <i className="fa fa-cog" /> &nbsp;DB Config
       </a>
-      {savedQueries &&
-        savedQueries.length > 0 && (
-          <a className="sidemenu-item" onClick={toggleSavedQueries}>
-            <i className="fa fa-floppy-o" /> &nbsp;Saved Queries {savedCaret()}
-          </a>
-        )}
-      {savedQueries &&
-        savedQueries.length > 0 &&
-        savedQueriesIsOpen && (
-          <div className="sidemenu-savedQueries">{renderSavedQueries()}</div>
-        )}
+      {savedQueries && savedQueries.length > 0 && (
+        <a className="sidemenu-item" onClick={toggleSavedQueries}>
+          <i className="fa fa-floppy-o" /> &nbsp;Saved Queries {savedCaret()}
+        </a>
+      )}
+      {savedQueries && savedQueries.length > 0 && savedQueriesIsOpen && (
+        <div className="sidemenu-savedQueries">{renderSavedQueries()}</div>
+      )}
       {/*<a className="sidemenu-item"><i className="fa fa-code" /> Query Translator</a>*/}
       <a className="sidemenu-item" onClick={e => store.modal.set("backup")}>
         <i className="fa fa-download" /> &nbsp;Download Backup
@@ -100,6 +91,12 @@ const SideMenu = ({
       </a>
     </div>
   );
+};
+
+SideMenu.propTypes = {
+  savedQueries: PropTypes.object,
+  savedQueriesIsOpen: PropTypes.bool,
+  toggleSavedQueries: PropTypes.func
 };
 
 export default SideMenu;

@@ -24,6 +24,11 @@ module.exports = env => {
           use: ["babel-loader"]
         },
         {
+          test: /\.js$/,
+          exclude: /node_modules/,
+          use: ["eslint-loader"]
+        },
+        {
           test: /\.css$/,
           use: ["style-loader", "css-loader"]
         },

@@ -3,9 +3,10 @@ import classnames from "classnames";
 import typeName from "type-name";
 import ReactTooltip from "react-tooltip";
 import PropTypes from "prop-types";
-import StringHelper from "../../helpers/StringHelper";
 import _ from "lodash";
+
 import store from "../../stores/Store";
+import StringHelper from "../../helpers/StringHelper";
 
 import { set, deleteObject, setObjectProperty } from "../../db/UpdateDb";
 
@@ -21,7 +22,7 @@ export default class ObjectNode extends React.Component {
     };
   }
 
-  componentWillReceiveProps(newProps) {
+  UNSAFE_componentWillReceiveProps(newProps) {
     if (this.props.value !== newProps.value) {
       this.setState({ opened: newProps.level > 0 });
     }
@@ -37,8 +38,8 @@ export default class ObjectNode extends React.Component {
     return /^(Array|Object)$/.test(type)
       ? this.renderObject(value, type)
       : /^(number|string|boolean|null)$/.test(type)
-        ? this.renderValue(value, type)
-        : this.renderOther(value, type);
+      ? this.renderValue(value, type)
+      : this.renderOther(value, type);
   }
 
   deleteConfirmation(e, path) {
@@ -126,72 +127,70 @@ export default class ObjectNode extends React.Component {
           >
             {opened ? "Collapse Data" : "Expand Data"}
           </ReactTooltip>
-          {clevel !== 1 &&
-            that.props.creationPath === fbPath && (
-              <div className="new-prop">
-                <div>
-                  <input
-                    type="text"
-                    placeholder="Key"
-                    onChange={e => this.setState({ newKey: e.target.value })}
-                  />{" "}
-                  <br />
-                  <input
-                    type="text"
-                    placeholder="Value"
-                    onChange={e => this.setState({ newVal: e.target.value })}
-                  />
-                  <br />
-                </div>
-                <div className="new-prop-btns">
-                  <button
-                    onClick={this.createNewProperty.bind(this)}
-                    className="bt sm"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={e => this.props.setCreationPath(null)}
-                    className="bt red sm"
-                  >
-                    Cancel
-                  </button>
-                </div>
+          {clevel !== 1 && that.props.creationPath === fbPath && (
+            <div className="new-prop">
+              <div>
+                <input
+                  type="text"
+                  placeholder="Key"
+                  onChange={e => this.setState({ newKey: e.target.value })}
+                />{" "}
+                <br />
+                <input
+                  type="text"
+                  placeholder="Value"
+                  onChange={e => this.setState({ newVal: e.target.value })}
+                />
+                <br />
               </div>
-            )}
-          {clevel !== 1 &&
-            !that.props.creationPath && (
-              <span>
-                <i
-                  onClick={e => that.props.setCreationPath(fbPath)}
-                  data-tip
-                  data-for={"add-child " + fbPath}
-                  className="fa fa-plus"
-                />
-                <ReactTooltip
-                  id={"add-child " + fbPath}
-                  type="dark"
-                  effect="solid"
-                  place="top"
+              <div className="new-prop-btns">
+                <button
+                  onClick={this.createNewProperty.bind(this)}
+                  className="bt sm"
                 >
-                  Add Property
-                </ReactTooltip>
-                <i
-                  onClick={e => this.deleteConfirmation(e, fbPath)}
-                  data-tip
-                  data-for={"delete-child " + fbPath}
-                  className="fa fa-times"
-                />
-                <ReactTooltip
-                  id={"delete-child " + fbPath}
-                  type="dark"
-                  effect="solid"
-                  place="top"
+                  Save
+                </button>
+                <button
+                  onClick={e => this.props.setCreationPath(null)}
+                  className="bt red sm"
                 >
-                  Delete Object
-                </ReactTooltip>
-              </span>
-            )}
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+          {clevel !== 1 && !that.props.creationPath && (
+            <span>
+              <i
+                onClick={e => that.props.setCreationPath(fbPath)}
+                data-tip
+                data-for={"add-child " + fbPath}
+                className="fa fa-plus"
+              />
+              <ReactTooltip
+                id={"add-child " + fbPath}
+                type="dark"
+                effect="solid"
+                place="top"
+              >
+                Add Property
+              </ReactTooltip>
+              <i
+                onClick={e => this.deleteConfirmation(e, fbPath)}
+                data-tip
+                data-for={"delete-child " + fbPath}
+                className="fa fa-times"
+              />
+              <ReactTooltip
+                id={"delete-child " + fbPath}
+                type="dark"
+                effect="solid"
+                place="top"
+              >
+                Delete Object
+              </ReactTooltip>
+            </span>
+          )}
         </div>
         <table
           style={{ display: opened ? "block" : "none" }}
@@ -202,7 +201,9 @@ export default class ObjectNode extends React.Component {
               const cpath =
                 type === "Array"
                   ? `${path}[${prop}]`
-                  : path ? `${path}.${prop}` : prop;
+                  : path
+                  ? `${path}.${prop}`
+                  : prop;
               const entireFbPath =
                 fbPath +
                 (fbPath.charAt(fbPath.length - 1) === "/" ? "" : "/") +
@@ -394,5 +395,13 @@ export default class ObjectNode extends React.Component {
 ObjectNode.propTypes = {
   value: PropTypes.any.isRequired,
   path: PropTypes.string.isRequired,
-  level: PropTypes.number.isRequired
+  level: PropTypes.number.isRequired,
+  isFirestore: PropTypes.bool,
+  pathUnderEdit: PropTypes.string,
+  setPathUnderEdit: PropTypes.func,
+  creationPath: PropTypes.string,
+  setCreationPath: PropTypes.func,
+  fbPath: PropTypes.string,
+  noValue: PropTypes.bool,
+  prop: PropTypes.string
 };

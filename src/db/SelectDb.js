@@ -1,4 +1,3 @@
-import * as admin from "firebase-admin";
 import StringHelper from "../helpers/StringHelper";
 import { isValidDate, executeDateComparison } from "../helpers/DateHelper";
 import { startFirebaseApp } from "./FirebaseDb";

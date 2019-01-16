@@ -1,10 +1,7 @@
 import * as admin from "firebase-admin";
+
 import StringHelper from "../helpers/StringHelper";
-import {
-  killFirebaseApps,
-  startFirebaseApp,
-  databaseConfigInitializes
-} from "./FirebaseDb";
+import { startFirebaseApp } from "./FirebaseDb";
 
 const updateFields = function(
   savedDatabase,

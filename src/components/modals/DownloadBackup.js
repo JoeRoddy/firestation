@@ -1,13 +1,13 @@
 import React, { Component } from "react";
+import PropTypes from "prop-types";
 import moment from "moment";
-import fs, { write } from "fs";
+import fs from "fs";
 const { app, dialog } = require("electron").remote;
 
 import store from "../../stores/Store";
 import QueryDetails from "../../stores/models/QueryDetails";
 import { unfilteredFirestoreQuery } from "../../db/SelectDb";
 import { startFirebaseApp } from "../../db/FirebaseDb";
-import { spawn } from "builder-util";
 
 export default class DownloadBackup extends Component {
   state = {
@@ -92,7 +92,7 @@ export default class DownloadBackup extends Component {
         <h4>
           Download Backup{" "}
           {store.currentDatabase && ` - ${store.currentDatabase.title}`}
-        </h4>{" "}
+        </h4>
         <br />
         {!this.state.downloadStarted ? (
           <div>
@@ -134,6 +134,8 @@ export default class DownloadBackup extends Component {
   }
 }
 
+DownloadBackup.propTypes = {};
+
 const RadioInput = ({ val, name, that }) => {
   return (
     <span
@@ -149,4 +151,10 @@ const RadioInput = ({ val, name, that }) => {
       <br />
     </span>
   );
+};
+
+RadioInput.propTypes = {
+  val: PropTypes.bool,
+  name: PropTypes.string,
+  that: PropTypes.object
 };
