@@ -58,7 +58,7 @@ const renderResultsTitle = (payloadSize, results) => {
     case "UPDATE_STATEMENT":
       return <span>Updated Records ({payloadDescription}</span>;
     case "INSERT_STATEMENT":
-      let numInserted =
+      const numInserted =
         results.insertCount > 1 ? " (" + results.insertCount + "): " : ": ";
       return "Inserted Records" + numInserted;
     case "DELETE_STATEMENT":

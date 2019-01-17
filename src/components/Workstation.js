@@ -17,14 +17,12 @@ class Workstation extends Component {
   };
 
   componentDidMount() {
-    if (!store.databases[0]) {
-      store.modal.set("newDB");
-    }
+    if (!store.databases[0]) store.modal.set("newDB");
   }
 
   execute = () => {
     store.focus.set(true); //refocus after execute
-    let selectedText = store.selectedText.get();
+    const selectedText = store.selectedText.get();
     let query = store.query.get();
     if (selectedText && query.includes(selectedText)) {
       query = selectedText;

@@ -1,4 +1,5 @@
 import { observable, computed } from "mobx";
+
 import CacheHelper from "../helpers/CacheHelper";
 import {
   startFirebaseApp,
@@ -135,8 +136,7 @@ class Store {
 
   setCurrentDatabase(database) {
     if (!database) {
-      this.modal.set("newDB");
-      return;
+      return this.modal.set("newDB");
     } else {
       this.firestoreEnabled.set(database.firestoreEnabled);
     }

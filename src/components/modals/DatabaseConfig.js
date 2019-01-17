@@ -6,29 +6,25 @@ import { databaseConfigInitializes } from "../../db/FirebaseDb";
 import store from "../../stores/Store";
 
 const DatabaseConfig = observer(({ handleFile, closeModal }) => {
-  const currentDatabase = store.currentDatabase;
-  const save = () => {
-    let database = store.currentDatabase;
+  const saveDbDetails = () => {
+    const database = store.currentDatabase;
     let title = document.getElementById("db-title-input").value;
     title = title ? title : store.currentDatabase.title;
     database.title = title;
     if (!store.newDb || !store.newDb.data) {
       store.modal.set(null);
-      store.updateDatabase(database);
-      return;
+      return store.updateDatabase(database);
     }
 
     let path = store.newDb.path;
     path = path.substring(path.lastIndexOf("/") + 1);
-    let serviceKey = store.newDb.data;
-    if (!serviceKey) {
-      alert("Something went wrong with your file.");
-      return;
-    }
+    const serviceKey = store.newDb.data;
+    if (!serviceKey) return alert("Something went wrong with your file.");
     database.serviceKey = serviceKey;
     database.url = "https://" + serviceKey.project_id + ".firebaseio.com";
     database.path = path;
-    let errMsg = databaseConfigInitializes(database)
+
+    const errMsg = databaseConfigInitializes(database)
       ? null
       : "Something went wrong with your DB config file. It should look something like: myDatabaseName-firebase-adminsdk-4ieef-1521f1bc13.json";
     if (errMsg) {
@@ -47,6 +43,8 @@ const DatabaseConfig = observer(({ handleFile, closeModal }) => {
       store.deleteCurrentDatabase();
     }
   };
+
+  const currentDatabase = store.currentDatabase;
 
   return (
     <div className="DatabaseConfig">
@@ -86,7 +84,7 @@ const DatabaseConfig = observer(({ handleFile, closeModal }) => {
           )}
         </div>
         <br />
-        <button className="bt blue" onClick={save}>
+        <button className="bt blue" onClick={saveDbDetails}>
           Save
         </button>
         <button className="bt red" onClick={closeModal}>

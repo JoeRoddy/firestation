@@ -1,13 +1,13 @@
 import React from "react";
 import PropTypes from "prop-types";
+const shell = require("electron").shell;
 
 import store from "../stores/Store";
-const shell = require("electron").shell;
 
 const SideMenu = ({ savedQueries, savedQueriesIsOpen, toggleSavedQueries }) => {
   const del = (e, query) => {
     e.stopPropagation();
-    let queryDescrip = query.title
+    const queryDescrip = query.title
       ? query.title
       : query.queryDescrip.substring(0, 100);
     if (
@@ -47,7 +47,7 @@ const SideMenu = ({ savedQueries, savedQueriesIsOpen, toggleSavedQueries }) => {
     );
   };
 
-  let projectId =
+  const projectId =
     store.currentDatabase &&
     store.currentDatabase.serviceKey &&
     store.currentDatabase.serviceKey.project_id;

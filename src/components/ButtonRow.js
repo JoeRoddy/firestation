@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import ReactTooltip from "react-tooltip";
 import { observer } from "mobx-react";
+
 import store from "../stores/Store";
 
 const ButtonRow = observer(props => {

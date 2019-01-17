@@ -27,17 +27,15 @@ class App extends Component {
   };
 
   updateSavedQueries = () => {
-    let queriesByDb = store.savedQueriesByDb;
-    let savedQueries =
+    const queriesByDb = store.savedQueriesByDb;
+    const savedQueries =
       !queriesByDb || !queriesByDb[url] ? null : queriesByDb[url];
     this.setState({ savedQueries });
   };
 
   createDb = database => {
-    let err = store.createNewDatabase(database);
-    if (err) {
-      return err;
-    }
+    const err = store.createNewDatabase(database);
+    if (err) return err;
     this.setCurrentDb(database);
     store.currentDatabase = database;
     store.modal.set(null);

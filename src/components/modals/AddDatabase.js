@@ -5,28 +5,22 @@ import { shell } from "electron";
 import store from "../../stores/Store";
 
 const AddDatabase = observer(({ createDb, handleFile }) => {
-  // let { newDb } = store;
-  let newDb = store.newDb;
-  let { path } = newDb;
-
+  const newDb = store.newDb;
+  const { path } = newDb;
   console.log("ADD_DB, newDb:", newDb);
 
   const save = () => {
-    let serviceKey = newDb.data;
-    if (!serviceKey) {
-      alert("Something went wrong with your file.");
-      return;
-    }
+    const serviceKey = newDb.data;
+    if (!serviceKey) return alert("Something went wrong with your file.");
     let title = document.getElementById("db-title-input").value;
     title = title ? title : "My Firebase DB";
-    let dbPath = path.substring(path.lastIndexOf("/") + 1);
+    const dbPath = path.substring(path.lastIndexOf("/") + 1);
     const database = {
       title: title,
-      serviceKey: serviceKey,
+      serviceKey,
       url: "https://" + serviceKey.project_id + ".firebaseio.com",
       path: dbPath
     };
-
     const errMsg = createDb(database);
     if (errMsg) {
       alert(errMsg);

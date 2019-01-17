@@ -1,37 +1,36 @@
-import React, { Component } from "react";
+import React from "react";
 import PropTypes from "prop-types";
-import { observer } from "mobx-react";
+import { observer, propTypes } from "mobx-react";
 
 import store from "../stores/Store";
 
-class Navbar extends Component {
-  renderDatabases = () => {
-    if (!store.databases) {
-      return null;
-    }
-    return store.databases.map((db, index) => {
-      return (
-        <a
-          className="dropdown-item"
-          href="#"
-          onClick={() => this.props.setCurrentDb(db)}
-          key={index}
-        >
-          {db.title}
-        </a>
-      );
-    });
-  };
+const Navbar = ({ setCurrentDb }) => (
+  <nav className="navbar navbar-expand-sm navbar-light bg-light">
+    <a className="navbar-brand" onClick={() => {}}>
+      <img
+        src="https://firebasestorage.googleapis.com/v0/b/firestation-e149d.appspot.com/o/logo.ico?alt=media&token=7d5634ac-d956-42a8-8942-60bdeb21c06b"
+        alt=""
+      />
+      <span> &nbsp;Firestation</span>
+    </a>
+    <DatabaseDropdown setCurrentDb={setCurrentDb} />
+  </nav>
+);
 
-  getDatabaseJsx = () => {
-    if (!store.databases) {
-      return (
+Navbar.propTypes = {
+  setCurrentDb: PropTypes.func
+};
+
+export default observer(Navbar);
+
+const DatabaseDropdown = ({ setCurrentDb }) => (
+  <div className="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul className="navbar-nav mr-auto">
+      {!store.databases ? (
         <li className={"nav-db "}>
           <a onClick={() => store.modal.set("newDB")}>Add Your DB</a>
         </li>
-      );
-    } else {
-      return (
+      ) : (
         <li className="nav-item dropdown">
           <a
             className="nav-link dropdown-toggle"
@@ -54,35 +53,40 @@ class Navbar extends Component {
             >
               Add New DB
             </a>
-
             <div className="dropdown-divider" />
-            {this.renderDatabases()}
+            <DatabaseList
+              databases={store.databases}
+              setCurrentDb={setCurrentDb}
+            />
           </div>
         </li>
-      );
-    }
-  };
+      )}
+    </ul>
+  </div>
+);
 
-  render() {
-    return (
-      <nav className="navbar navbar-expand-sm navbar-light bg-light">
-        <a className="navbar-brand" onClick={() => {}}>
-          <img
-            src="https://firebasestorage.googleapis.com/v0/b/firestation-e149d.appspot.com/o/logo.ico?alt=media&token=7d5634ac-d956-42a8-8942-60bdeb21c06b"
-            alt=""
-          />
-          <span> &nbsp;Firestation</span>
-        </a>
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul className="navbar-nav mr-auto">{this.getDatabaseJsx()}</ul>
-        </div>
-      </nav>
-    );
-  }
-}
-
-Navbar.propTypes = {
+DatabaseDropdown.propTypes = {
   setCurrentDb: PropTypes.func
 };
 
-export default observer(Navbar);
+const DatabaseList = ({ databases = [], setCurrentDb }) => (
+  <React.Fragment>
+    {databases.map((db, index) => {
+      return (
+        <a
+          className="dropdown-item"
+          href="#"
+          onClick={() => setCurrentDb(db)}
+          key={index}
+        >
+          {db.title}
+        </a>
+      );
+    })}
+  </React.Fragment>
+);
+
+DatabaseList.propTypes = {
+  databases: propTypes.arrayOrObservableArray,
+  setCurrentDb: PropTypes.func
+};

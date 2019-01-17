@@ -21,16 +21,17 @@ export default class DownloadBackup extends Component {
 
   download = () => {
     this.setState({ downloadStarted: true }, () => {
-      if (this.state.checked === "both") {
+      const { checked } = this.state;
+      if (checked === "both") {
         this.setState({ downloading: ["realtime", "firestore"] }, () => {
           this.backUpFirestoreDb();
           this.backUpRealtimeDb();
         });
-      } else if (this.state.checked === "realtime") {
+      } else if (checked === "realtime") {
         this.setState({ downloading: ["realtime"] }, () =>
           this.backUpRealtimeDb()
         );
-      } else if (this.state.checked === "firestore") {
+      } else if (checked === "firestore") {
         this.setState({ downloading: ["firestore"] }, () =>
           this.backUpFirestoreDb()
         );
@@ -57,7 +58,7 @@ export default class DownloadBackup extends Component {
 
   writeDataToDisk = (data, dbType, callback) => {
     callback(null, dbType, "Writing db to disk");
-    let path = `${app.getPath("desktop")}/${moment().format("MMMDo")}_${
+    const path = `${app.getPath("desktop")}/${moment().format("MMMDo")}_${
       store.currentDatabase.title
     }_${dbType}.json`;
     dialog.showSaveDialog({ defaultPath: path }, fileName => {

@@ -9,11 +9,6 @@ import "brace/ext/language_tools";
 import store from "../stores/Store";
 
 class Workbook extends Component {
-  constructor() {
-    super();
-    this.codeRef;
-  }
-
   componentDidUpdate() {
     //query inserted, move to end of workbook
     if (store && store.focus.get() && this.codeRef) {
@@ -23,24 +18,20 @@ class Workbook extends Component {
     }
   }
 
+  selectedTextChange = () => {
+    store.selectedText.set(this.codeRef.editor.getSelectedText());
+  };
+
   render() {
+    if (!store) return <span />;
     const { execute, defaultValue, listenForCtrlEnter } = this.props;
-
-    if (!store) {
-      return <span />;
-    }
-
-    let commands = [
+    const commands = [
       {
         name: "execute",
         exec: execute,
         bindKey: { mac: "cmd-enter", win: "ctrl-enter" }
       }
     ];
-
-    let selectedTextChange = () => {
-      store.selectedText.set(this.codeRef.editor.getSelectedText());
-    };
 
     return (
       // add props enableBasicAutocompletion, enableLiveAutocompletion
@@ -63,7 +54,7 @@ class Workbook extends Component {
           name="UNIQUE_ID_OF_DIV"
           commands={commands}
           editorProps={{ $blockScrolling: true }}
-          onSelectionChange={selectedTextChange}
+          onSelectionChange={this.selectedTextChange}
         />
       </div>
     );
