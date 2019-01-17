@@ -116,6 +116,12 @@
           "ignoreRestSiblings": false
         }
       ]
+    },
+    "settings": {
+      "react": {
+        "pragma": "React",
+        "version": "detect"
+      }
     }
   }
 }
