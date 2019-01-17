@@ -421,6 +421,8 @@ export default class QueryHelper {
   static getObjectsFromInsert(query, db, shouldApplyListener, callback) {
     //insert based on select data
     if (/^(insert into )[^\s]+( select).+/i.test(query)) {
+      console.log("SUPER");
+
       const selectStatement = query
         .substring(query.toUpperCase().indexOf("SELECT "))
         .trim();
@@ -538,8 +540,8 @@ export default class QueryHelper {
     if (/(db|firestore)/i.test(collection)) {
       if (
         // only flip the db if it's not already enabled
-        (isFirestore && /(db)\//i.test(collection)) ||
-        (!isFirestore && /(firestore)\//i.test(collection))
+        (isFirestore && /(db)/i.test(collection)) ||
+        (!isFirestore && /(firestore)/i.test(collection))
       ) {
         isFirestore = !isFirestore;
       }
