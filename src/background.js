@@ -4,12 +4,6 @@ import { app, Menu } from "electron";
 import { devMenuTemplate } from "./menu/dev_menu_template";
 import { editMenuTemplate } from "./menu/edit_menu_template";
 import createWindow from "./helpers/window";
-
-//Remove this for release
-import installExtension, {
-  REACT_DEVELOPER_TOOLS
-} from "electron-devtools-installer";
-
 // Special module holding environment variables which you declared
 // in config/env_xxx.json file.
 import env from "env";
@@ -28,6 +22,13 @@ const setApplicationMenu = () => {
 if (env.name !== "production") {
   const userDataPath = app.getPath("userData");
   app.setPath("userData", `${userDataPath} (${env.name})`);
+}
+
+let installExtension, REACT_DEVELOPER_TOOLS;
+if (env.name === "development") {
+  let devtools = require("electron-devtools-installer");
+  installExtension = devtools.default;
+  REACT_DEVELOPER_TOOLS = devtools.REACT_DEVELOPER_TOOLS;
 }
 
 app.on("ready", () => {
