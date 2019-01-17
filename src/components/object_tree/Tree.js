@@ -49,7 +49,7 @@ export default class Tree extends React.Component {
         data={data}
         shouldExpandNode={(key, data, level) => level < 2}
         theme={TREE_THEME}
-        labelRenderer={(path, type) => {
+        labelRenderer={path => {
           return path.equals(keyUnderEdit) ? (
             <EditValue
               isKey
@@ -162,7 +162,7 @@ class EditValue extends React.Component {
     keyCode === 27 && this.props.setPathUnderEdit(null);
 
   render() {
-    const { isKey, setKeyUnderEdit, setPathUnderEdit, value } = this.props;
+    const { setPathUnderEdit, value } = this.props;
 
     return (
       <em>
@@ -229,14 +229,6 @@ const TREE_THEME = {
   base0E: "#ae81ff",
   base0F: "#cc6633"
 };
-
-// const KEY_CONFIRMATION_MSG =
-//   "This will permanently move all child data.\n Data location: " +
-//   pathUnderEdit +
-//   " ---> " +
-//   path +
-//   "/" +
-//   newValue;
 
 if (Array.prototype.equals)
   console.warn(
