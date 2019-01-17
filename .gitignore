@@ -6,6 +6,7 @@ tsconfig.json
 
 /dist
 /temp
+yarn.lock
 
 # ignore everything in 'app' folder what had been generated from 'src' folder
 /app/app.js
