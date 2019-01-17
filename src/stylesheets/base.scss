@@ -526,6 +526,21 @@ i.fa-times {
 }
 
 //// END - BUTTON CSS ////
+
+.Tree-key {
+  .fa-pencil {
+    visibility: hidden;
+    // display: none;
+    cursor: pointer;
+  }
+  &:hover {
+    .fa-pencil {
+      // display: inline;
+      visibility: visible;
+    }
+  }
+}
+
 //// OBJECT TREE ////
 .onClickOutside {
   position: fixed;

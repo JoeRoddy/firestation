@@ -2,11 +2,14 @@ import React from "react";
 import PropTypes from "prop-types";
 import ReactTooltip from "react-tooltip";
 import { observer } from "mobx-react";
+import { toJS } from "mobx";
 
 import store from "../stores/Store";
-import ObjectTree from "./object_tree/ObjectTree";
+import Tree from "./object_tree/Tree";
 
 const QueryResults = observer(props => {
+  const { payload: data, path } = toJS(store.results);
+
   return (
     <div className="objectTree-container">
       <div className="results-header">
@@ -28,7 +31,7 @@ const QueryResults = observer(props => {
         />
       </div>
       {props.payloadSize > 0 && store.results.payload != null && (
-        <ObjectTree value={store.results} level={2} {...props} />
+        <Tree data={data} rootPath={path} />
       )}
     </div>
   );
