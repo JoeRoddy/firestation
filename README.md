@@ -13,8 +13,8 @@ I'll happily accept any and all feedback or contributions. I'm a hacker who want
 ## Running Firestation in Development
 
 ```bash
-$ git clone https://github.com/JoeRoddy/firestation.git
-$ cd firestation
-$ npm install
-$ npm start
+git clone https://github.com/JoeRoddy/firestation.git
+cd firestation
+npm install
+npm start
 ```
