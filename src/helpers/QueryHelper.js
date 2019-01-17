@@ -535,7 +535,7 @@ export default class QueryHelper {
 
   static checkForCrossDbQuery(db, collection) {
     let isFirestore = db.firestoreEnabled;
-    if (/(db|firestore)\//i.test(collection)) {
+    if (/(db|firestore)/i.test(collection)) {
       if (
         // only flip the db if it's not already enabled
         (isFirestore && /(db)\//i.test(collection)) ||
@@ -544,6 +544,9 @@ export default class QueryHelper {
         isFirestore = !isFirestore;
       }
       collection = collection.substring(collection.indexOf("/") + 1);
+      if (collection === "db" || collection === "firestore") {
+        collection = "/";
+      }
     }
     return { collection, isFirestore };
   }
