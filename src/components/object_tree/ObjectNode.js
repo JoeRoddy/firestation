@@ -11,16 +11,12 @@ import StringHelper from "../../helpers/StringHelper";
 import { set, deleteObject, setObjectProperty } from "../../db/UpdateDb";
 
 export default class ObjectNode extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleEditChange = this.handleEditChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.VALUE_EDIT = "FIRESTATION_RESERVED_VALUE_EDIT";
-    this.state = {
-      opened: props.level > 0,
-      keyEdit: false
-    };
-  }
+  state = {
+    opened: this.props.level > 0,
+    keyEdit: false
+  };
+
+  VALUE_EDIT = "FIRESTATION_RESERVED_VALUE_EDIT";
 
   UNSAFE_componentWillReceiveProps(newProps) {
     if (this.props.value !== newProps.value) {
@@ -28,9 +24,9 @@ export default class ObjectNode extends React.Component {
     }
   }
 
-  toggleNode() {
+  toggleNode = () => {
     this.setState({ opened: !this.state.opened });
-  }
+  };
 
   render() {
     const { value } = this.props;
@@ -113,7 +109,7 @@ export default class ObjectNode extends React.Component {
         <div className="object-label">
           {clevel !== 1 && (
             <i
-              onClick={this.toggleNode.bind(this)}
+              onClick={this.toggleNode}
               className={classnames("toggle-icon", { opened })}
               data-tip
               data-for={"data-collapse " + fbPath}
@@ -144,10 +140,7 @@ export default class ObjectNode extends React.Component {
                 <br />
               </div>
               <div className="new-prop-btns">
-                <button
-                  onClick={this.createNewProperty.bind(this)}
-                  className="bt sm"
-                >
+                <button onClick={this.createNewProperty} className="bt sm">
                   Save
                 </button>
                 <button
@@ -287,7 +280,7 @@ export default class ObjectNode extends React.Component {
     );
   }
 
-  handleSubmit(e) {
+  handleSubmit = e => {
     e.preventDefault();
     let newValue = StringHelper.getParsedValue(this.state.newVal);
     let path = this.props.fbPath;
@@ -327,13 +320,13 @@ export default class ObjectNode extends React.Component {
 
     this.setState({ newVal: null, keyEdit: false });
     this.props.setPathUnderEdit(null);
-  }
+  };
 
-  handleEditChange(e) {
+  handleEditChange = e => {
     this.setState({ newVal: e.target.value });
-  }
+  };
 
-  createNewProperty() {
+  createNewProperty = () => {
     const isFirestore = (store.results || {}).isFirestore;
     setObjectProperty(
       store.currentDatabase,
@@ -342,7 +335,7 @@ export default class ObjectNode extends React.Component {
       isFirestore
     );
     this.props.setCreationPath(null);
-  }
+  };
 
   renderValue(value, type) {
     return (
@@ -385,7 +378,7 @@ export default class ObjectNode extends React.Component {
 
     return (
       <div className="object-node">
-        <div className="object-label" onClick={this.toggleNode.bind(this)}>
+        <div className="object-label" onClick={this.toggleNode}>
           {/*<span className='object-type'>{'(' + type + ')'}</span>*/}
         </div>
       </div>

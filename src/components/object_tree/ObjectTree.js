@@ -11,30 +11,25 @@ import { subObject } from "../../helpers/ObjectHelper";
  * https://github.com/stomita/react-object-tree/
  */
 class ObjectTree extends React.Component {
-  constructor(props) {
-    super(props);
-    this.setPathUnderEdit = this.setPathUnderEdit.bind(this);
-    this.setCreationPath = this.setCreationPath.bind(this);
-    this.state = {
-      pathUnderEdit: null,
-      creationPath: null
-    };
-  }
+  state = {
+    pathUnderEdit: null,
+    creationPath: null
+  };
 
-  setPathUnderEdit(pathUnderEdit) {
+  setPathUnderEdit = pathUnderEdit => {
     this.setState({ pathUnderEdit, creationPath: null });
-  }
+  };
 
-  setCreationPath(creationPath) {
+  setCreationPath = creationPath => {
     this.setState({ creationPath, pathUnderEdit: null });
-  }
+  };
 
   render() {
     const { className, value, level, noValue } = this.props;
     if (!value || value.payload == undefined) {
+      //^ payload can be false
       return <span />;
     }
-    //^ payload can be false
 
     const page = store.resultsPage.get();
     const resultsToDisplayInTree = subObject(value.payload, page, page + 50);
