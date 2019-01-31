@@ -31,6 +31,7 @@
   "dependencies": {
     "bootstrap": "^4.0.0",
     "classnames": "^2.2.5",
+    "fbsql": "^1.0.12",
     "firebase-admin": "^6.5.0",
     "fs-jetpack": "^1.0.0",
     "jquery": "^3.3.1",

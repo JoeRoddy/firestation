@@ -52,15 +52,22 @@ class App extends Component {
     store.addQueryToHistory(query);
     store.executingQuery.set(true);
     try {
-      QueryHelper.executeQuery(query, store.currentDatabase, results => {
-        store.addNewListener(results.firebaseListener);
-        store.executingQuery.set(false);
-        // store.results = null; //updating object props alone won't work w/mobx objects, need to reset to trigger observables
-        store.results.update(results);
-        if (results && results.statementType != "SELECT_STATEMENT") {
-          store.commitQuery.set(query);
+      QueryHelper.executeQuery(
+        {
+          query,
+          db: store.currentDatabase,
+          isFirestore: store.firestoreEnabled.get()
+        },
+        results => {
+          store.addNewListener(results.firebaseListener);
+          store.executingQuery.set(false);
+          // store.results = null; //updating object props alone won't work w/mobx objects, need to reset to trigger observables
+          store.results.update(results);
+          if (results && results.statementType != "SELECT_STATEMENT") {
+            store.commitQuery.set(query);
+          }
         }
-      });
+      );
     } catch (error) {
       debugger;
       store.results.update({ error });
@@ -78,14 +85,17 @@ class App extends Component {
     store.markQueryAsCommitted(query);
     try {
       QueryHelper.executeQuery(
-        query,
-        store.currentDatabase,
+        {
+          query,
+          db: store.currentDatabase,
+          shouldCommitResults: true,
+          isFirestore: store.firestoreEnabled.get()
+        },
         results => {
           store.addNewListener(results.firebaseListener);
           store.killListeners();
           store.clearResults();
-        },
-        true
+        }
       );
     } catch (error) {
       console.warn("executeQuery err: ", error);
