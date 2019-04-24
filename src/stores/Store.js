@@ -25,9 +25,9 @@ class Store {
   firebaseListeners = observable([]);
   firestoreListeners = observable([]);
 
-  //this is a gross hack, sometimes the obj observables
-  //won't trigger a re-render, flipping this will if the
-  //component watches the value
+  // this is a gross hack, sometimes the obj observables
+  // won't trigger a re-render, flipping this will if the
+  // component watches the value
   forceUpdate = observable.box(false);
 
   //Modals
@@ -134,6 +134,10 @@ class Store {
     this.firestoreListeners = [];
   };
 
+  forceUpdateComponents = () => {
+    this.forceUpdate.set(!this.forceUpdate.get());
+  };
+
   setCurrentDatabase(database) {
     if (!database) {
       return this.modal.set("newDB");
@@ -141,7 +145,7 @@ class Store {
       this.firestoreEnabled.set(database.firestoreEnabled);
     }
     this.currentDatabase = database;
-    this.forceUpdate.set(!this.forceUpdate.get());
+    this.forceUpdateComponents();
     this.currentDatabase.title = database.title;
     this.queryHistoryIsOpen.set(false);
     this.query.set("");
@@ -199,6 +203,7 @@ class Store {
     });
     this.databases = databases;
     this.currentDatabase = database;
+    this.forceUpdateComponents();
     CacheHelper.updateLocalStore("currentDatabase", database);
     CacheHelper.updateLocalStore("databases", databases);
   }

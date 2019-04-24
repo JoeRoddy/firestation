@@ -45,7 +45,10 @@ class Workstation extends Component {
   render() {
     // eslint-disable-next-line
     const query = store.query.get(); //updates children
-    const results = store.results; //needed to trigger rerender. lame.
+    // eslint-disable-next-line
+    const update = store.forceUpdate.get(); // hack
+
+    const results = store.results;
 
     if (!store.databases[0]) {
       return <span />;
