@@ -64,7 +64,7 @@
     "flow": "^0.2.3",
     "flow-bin": "^0.31.1",
     "json-loader": "^0.5.4",
-    "minimist": "^1.2.0",
+    "minimist": "^1.2.3",
     "node-libs-browser": "^1.0.0",
     "node-sass": "^3.4.2",
     "prettier": "^1.5.2",
