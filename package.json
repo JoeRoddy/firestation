@@ -78,7 +78,7 @@
     "webpack-merge": "^0.14.1"
   },
   "dependencies": {
-    "aws-sdk": "^2.154.0",
+    "aws-sdk": "^2.814.0",
     "electron-debug": "^1.0.1",
     "firebase": "^4.6.2",
     "firebase-admin": "^5.5.0",
